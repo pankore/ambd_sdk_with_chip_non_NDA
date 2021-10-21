@@ -19,6 +19,7 @@ time_t _time( time_t * tloc );
 int32_t initPref(void);
 int32_t deinitPref(void);
 int32_t registerPref(const char * ns);
+int32_t registerPref2(char * ns);
 int32_t clearPref(const char * ns);
 int32_t deleteKey(const char *domain, const char *key);
 BOOL checkExist(const char *domain, const char *key);
