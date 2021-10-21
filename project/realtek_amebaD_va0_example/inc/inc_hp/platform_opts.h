@@ -60,6 +60,31 @@
 #endif
 #define CONFIG_ENABLE_RDP		0
 
+//IF Support MATTER
+#undef FTL_PHY_PAGE_START_ADDR
+#undef FAST_RECONNECT_DATA
+#define FTL_PHY_PAGE_START_ADDR         0x001D8000  // 3K
+#define FAST_RECONNECT_DATA             0x001EB000  // 1K
+
+// DCT size : module size is 4k, module number is 4, the total module number is 4 + 0*4 = 4, the size is 4*4 = 16k,
+//            if backup enabled, the total module number is 4 + 1*4 = 8, the size is 4*8 = 32k;
+//            if wear leveling enabled, the total module number is 4 + 2*4 + 3*4 = 24, the size is 96k
+#define MATTER_KVS_ENABLE_BACKUP        0
+#define MATTER_KVS_ENABLE_WEAR_LEVELING 0
+
+// MATTER KVS (chip-factory, chip-config, chip-counters)
+#define MATTER_KVS_BEGIN_ADDR           0x001EC000  // 16K (4*4), DCT begin address of flash, ex: 0x100000 = 1M
+#define MATTER_KVS_MODULE_NUM           4           // max number of module
+#define MATTER_KVS_VARIABLE_NAME_SIZE   32          // max size of the variable name
+#define MATTER_KVS_VARIABLE_VALUE_SIZE  64 + 4      // max size of the variable value
+                                                    // max value number in moudle = 4024 / (32 + 64+4) = 40
+// MATTER KVS2, for key length large than 64 (Fabric1 ~ FabricF)
+#define MATTER_KVS_BEGIN_ADDR2	        0x001F0000  // 64K (4*16)
+#define MATTER_KVS_MODULE_NUM2          16          // max number of module
+#define MATTER_KVS_VARIABLE_NAME_SIZE2  32          // max size of the variable name
+#define MATTER_KVS_VARIABLE_VALUE_SIZE2 1860 + 4    // max size of the variable value
+                                                    // max value number in moudle = 4024 / (32 + 1860+4) = 2
+
 /**
  * For Wlan configurations
  */

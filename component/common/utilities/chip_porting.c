@@ -124,19 +124,18 @@ int _vTaskDelay( const TickType_t xTicksToDelay )
    if backup enabled, the total module number is 12 + 1*12 = 24, the size is 96k;
    if wear leveling enabled, the total module number is 12 + 2*12 + 3*12 = 36, the size is 288k"
 */
-#define DCT_BEGIN_ADDR_MATTER   0x1EC000          /*!< DCT begin address of flash, ex: 0x100000 = 1M */
-#define MODULE_NUM              4                /*!< max number of module */
-#define VARIABLE_NAME_SIZE      32                /*!< max size of the variable name */
-#define VARIABLE_VALUE_SIZE     64 + 4          /*!< max size of the variable value
-                                                  /*!< max value number in moudle = 4024 / (32 + 64+4) = 40 */
+#define DCT_BEGIN_ADDR_MATTER   MATTER_KVS_BEGIN_ADDR
+#define MODULE_NUM              MATTER_KVS_MODULE_NUM
+#define VARIABLE_NAME_SIZE      MATTER_KVS_VARIABLE_NAME_SIZE
+#define VARIABLE_VALUE_SIZE     MATTER_KVS_VARIABLE_VALUE_SIZE
 
-#define DCT_BEGIN_ADDR_MATTER2   0x1F0000          /*!< DCT begin address of flash, ex: 0x100000 = 1M */
-#define MODULE_NUM2              16                /*!< max number of module */
-#define VARIABLE_NAME_SIZE2      32                /*!< max size of the variable name */
-#define VARIABLE_VALUE_SIZE2     1860 + 4          /*!< max size of the variable value
-                                                  /*!< max value number in moudle = 4024 / (32 + 1860+4) = 2 */
-#define ENABLE_BACKUP           0
-#define ENABLE_WEAR_LEVELING    0
+#define DCT_BEGIN_ADDR_MATTER2  MATTER_KVS_BEGIN_ADDR2
+#define MODULE_NUM2             MATTER_KVS_MODULE_NUM2
+#define VARIABLE_NAME_SIZE2     MATTER_KVS_VARIABLE_NAME_SIZE2
+#define VARIABLE_VALUE_SIZE2    MATTER_KVS_VARIABLE_VALUE_SIZE2
+
+#define ENABLE_BACKUP           MATTER_KVS_ENABLE_BACKUP
+#define ENABLE_WEAR_LEVELING    MATTER_KVS_ENABLE_WEAR_LEVELING
 
 int32_t initPref(void)
 {
