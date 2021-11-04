@@ -891,7 +891,38 @@ void fATSM(void *arg)
 }
 #endif
 
-//extern void ChipTest(void);
+extern uint16_t _ZN4chip12Base64DecodeEPKctPh(const char * in, uint16_t inLen, uint8_t * out);
+extern uint16_t _ZN4chip12Base64EncodeEPKhtPc(const uint8_t * in, uint16_t inLen, char * out);
+
+void TestBase64(const char * test)
+{
+    uint8_t buf[256];
+    char buf2[256];
+    uint16_t len;
+
+    strcpy((char *) buf, test);
+
+    len = _ZN4chip12Base64DecodeEPKctPh((char *) buf, strlen((char *) buf), buf);
+    printf("%s: ", test);
+    if (len != UINT16_MAX)
+    {
+        printf("(%d) ", len);
+        for (uint16_t i = 0; i < len; i++)
+            printf("%c", buf[i]);
+
+        len = _ZN4chip12Base64EncodeEPKhtPc(buf, len, buf2);
+        printf(" (%d) ", len);
+        for (uint16_t i = 0; i < len; i++)
+            printf("%c", buf2[i]);
+    }
+    else
+        printf("ERROR");
+    printf("\n");
+}
+
+extern void ChipTest(void);
+extern void amebaQueryImageCmdHandler(void);
+extern void amebaApplyUpdateCmdHandler(void);
 extern int32_t deinitPref(void);
 //void chipapp(void *param)
 //{
@@ -907,6 +938,20 @@ void fATchipapp(void *arg)
 //                                1, NULL);
 }
 
+void fATchipapp1(void *arg)
+{
+	(void) arg;
+	printf("Chip Test: fATchipapp1 amebaQueryImageCmdHandler\r\n");
+	amebaQueryImageCmdHandler();
+
+}
+
+void fATchipapp2(void *arg)
+{
+	(void) arg;
+	printf("Chip Test:fATchipapp2 amebaApplyUpdateCmdHandler\r\n");
+	amebaApplyUpdateCmdHandler();
+}
 
 void fATSt(void *arg)
 {
@@ -1642,6 +1687,8 @@ log_item_t at_sys_items[] = {
 	{"ATS!", fATSc,{NULL,NULL}},	// Debug config setting
 	{"ATS#", fATSt,{NULL,NULL}},	// test command
 	{"ATS$", fATchipapp, {NULL, NULL}},
+	{"ATS%", fATchipapp1, {NULL, NULL}},
+	{"ATS^", fATchipapp2, {NULL, NULL}},
 	{"ATS?", fATSx,{NULL,NULL}},	// Help
 #if WIFI_LOGO_CERTIFICATION_CONFIG
 	{"ATSV", fATSV},				// Write SW version for wifi logo test

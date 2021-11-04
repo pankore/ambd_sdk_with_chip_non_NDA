@@ -37,6 +37,10 @@ elif [ "$4" == "lighting-app" ]; then
     export MATTER_EXAMPLE_PATH=${AMEBA_MATTER}/examples/lighting-app/ameba
 elif [ "$4" == "pigweed-app" ]; then
     export MATTER_EXAMPLE_PATH=${AMEBA_MATTER}/examples/pigweed-app/ameba
+elif [ "$4" == "otap" ]; then
+    export MATTER_EXAMPLE_PATH=${AMEBA_MATTER}/examples/ota-provider-app/ameba
+elif [ "$4" == "otar" ]; then
+    export MATTER_EXAMPLE_PATH=${AMEBA_MATTER}/examples/ota-requestor-app/ameba
 else
     export MATTER_EXAMPLE_PATH=${AMEBA_MATTER}/examples/all-clusters-app/ameba
 fi
@@ -45,7 +49,6 @@ echo "MATTER_EXAMPLE_PATH at: ${MATTER_EXAMPLE_PATH}"
 if [ "$5" == "rpc" ]; then
     export MATTER_ENABLE_RPC=1
 fi
-
 
 ## Check output directory
 if [ ! -z "$3" ]; then
