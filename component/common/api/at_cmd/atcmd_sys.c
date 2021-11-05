@@ -923,8 +923,8 @@ void TestBase64(const char * test)
 extern void ChipTest(void);
 extern int32_t deinitPref(void);
 #ifdef MATTER_OTA_REQUESTOR_APP
-extern void amebaQueryImageCmdHandler(void);
-extern void amebaApplyUpdateCmdHandler(void);
+extern void amebaQueryImageCmdHandler(char * ipAddress, uint32_t nodeId);
+extern void amebaApplyUpdateCmdHandler(char * ipAddress, uint32_t nodeId);
 #endif
 void chipapp(void *param)
 {
@@ -944,8 +944,18 @@ void fATchipapp1(void *arg)
 {
 	(void) arg;
 #ifdef MATTER_OTA_REQUESTOR_APP
+	// ATS%=192.168.0.101,12344321
+	unsigned char *argv[MAX_ARGC] = {0};
+	char * gipAddress[20];
+	uint32_t gnodeId;
+
 	printf("Chip Test: amebaQueryImageCmdHandler\r\n");
-	amebaQueryImageCmdHandler();
+
+	parse_param(arg, argv);
+	strcpy(gipAddress,argv[1]);
+	gnodeId = atoi(argv[2]);
+
+	amebaQueryImageCmdHandler(gipAddress, gnodeId);
 #endif
 }
 
@@ -953,8 +963,18 @@ void fATchipapp2(void *arg)
 {
 	(void) arg;
 #ifdef MATTER_OTA_REQUESTOR_APP
+	// ATS^=192.168.0.101,12344321
+	unsigned char *argv[MAX_ARGC] = {0};
+	char * gipAddress[20];
+	uint32_t gnodeId;
+
 	printf("Chip Test: amebaApplyUpdateCmdHandler\r\n");
-	amebaApplyUpdateCmdHandler();
+
+	parse_param(arg, argv);
+	strcpy(gipAddress,argv[1]);
+	gnodeId = atoi(argv[2]);
+
+	amebaApplyUpdateCmdHandler(gipAddress, gnodeId);
 #endif
 }
 
