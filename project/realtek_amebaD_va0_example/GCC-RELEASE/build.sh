@@ -63,6 +63,10 @@ function exe_cmake()
 	    exe_cmake_all
 	elif [ "$4" == "lighting-app" ]; then
 	    exe_cmake_light
+	elif [ "$4" == "otar" ]; then
+	    exe_cmake_otar
+	elif [ "$4" == "otap" ]; then
+	    exe_cmake_otap
 	else
 	    exe_cmake_all
 	fi
@@ -70,13 +74,26 @@ function exe_cmake()
 
 function exe_cmake_all()
 {
+	echo "Build all"
 	cmake $CMAKE_ROOT -G"$BUILD_METHOD" -DCMAKE_TOOLCHAIN_FILE=$CMAKE_ROOT/toolchain.cmake -DMATTER_ALL_CLUSTERS_APP=1
 }
 
 function exe_cmake_light()
 {
-	echo "Build OTA-R"
+	echo "Build light"
 	cmake $CMAKE_ROOT -G"$BUILD_METHOD" -DCMAKE_TOOLCHAIN_FILE=$CMAKE_ROOT/toolchain.cmake -DMATTER_LIGHTING_APP=1
+}
+
+function exe_cmake_otar()
+{
+	echo "Build OTA-R"
+	cmake $CMAKE_ROOT -G"$BUILD_METHOD" -DCMAKE_TOOLCHAIN_FILE=$CMAKE_ROOT/toolchain.cmake -DMATTER_OTA_REQUESTOR_APP=1
+}
+
+function exe_cmake_otap()
+{
+	echo "Build OTA-P"
+	cmake $CMAKE_ROOT -G"$BUILD_METHOD" -DCMAKE_TOOLCHAIN_FILE=$CMAKE_ROOT/toolchain.cmake -DMATTER_OTA_PROVIDER_APP=1
 }
 
 ## Decide meta build method
