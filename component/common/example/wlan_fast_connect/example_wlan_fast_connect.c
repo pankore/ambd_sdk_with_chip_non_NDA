@@ -28,13 +28,13 @@ write_reconnect_ptr p_write_reconnect_ptr;
 #if defined(CONFIG_FAST_DHCP) && CONFIG_FAST_DHCP
 uint32_t offer_ip = 0;
 #endif
-#define WIFI_RETRYCOUNT 5
+#define WIFI_RETRYCOUNT 1
 /*
 * Usage:
 *       wifi connection indication trigger this function to save current
 *       wifi profile in flash
 *
-* Condition: 
+* Condition:
 *       CONFIG_EXAMPLE_WLAN_FAST_CONNECT flag is set
 */
 
@@ -74,7 +74,7 @@ int wlan_write_reconnect_data_to_flash(u8 *data, uint32_t len)
 *
 *       This function read previous saved wlan profile in flash and execute connection.
 *
-* Condition: 
+* Condition:
 *       CONFIG_EXAMPLE_WLAN_FAST_CONNECT flag is set
 */
 int wlan_init_done_callback(void)

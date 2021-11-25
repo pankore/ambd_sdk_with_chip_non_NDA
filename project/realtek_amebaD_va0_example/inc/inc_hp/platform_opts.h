@@ -56,7 +56,7 @@
 #if defined(CONFIG_BAIDU_DUER) && CONFIG_BAIDU_DUER
 #define FAST_RECONNECT_DATA 	0x1FF000
 #else
-#define FAST_RECONNECT_DATA 	0x1DF000
+#define FAST_RECONNECT_DATA 	0x1D7000
 #endif
 #define CONFIG_ENABLE_RDP		0
 
@@ -139,7 +139,7 @@
 #define CONFIG_INCLUDE_SIMPLE_CONFIG		1
 
 /*For fast reconnection*/
-#define CONFIG_EXAMPLE_WLAN_FAST_CONNECT	0
+#define CONFIG_EXAMPLE_WLAN_FAST_CONNECT	1
 
 /*For wowlan service settings*/
 #define CONFIG_WOWLAN_SERVICE           			0
