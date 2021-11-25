@@ -528,7 +528,6 @@ exit:
 rtw_wifi_setting_t chip_wifi_setting = {0};
 int CHIP_SetWiFiConfig(rtw_wifi_setting_t *config)
 {
-	//printf("%s %d %s %sToDo\r\n", __func__,__LINE__, config->ssid, config->password);
 	if(config)
 		memcpy(&chip_wifi_setting, config, sizeof(chip_wifi_setting));
 	return 0;
@@ -536,10 +535,19 @@ int CHIP_SetWiFiConfig(rtw_wifi_setting_t *config)
 
 int CHIP_GetWiFiConfig(rtw_wifi_setting_t *config)
 {
-	//printf("%s %d %s %sToDo\r\n", __func__,__LINE__, chip_wifi_setting.ssid, chip_wifi_setting.password);
-	if(config)
-		memcpy(config, &chip_wifi_setting, sizeof(chip_wifi_setting));
-	//printf("%s %d %s %sToDo\r\n", __func__,__LINE__, config->ssid, config->password);
+	if (config) {
+		if(chip_wifi_setting.mode == 0) {
+			if(rltk_wlan_running(0)) {
+				printf("\r\nNetif is up\r\n");
+				wifi_get_setting((const char*)"wlan0", config);
+			}
+			else
+				printf("\r\nNetif is down\r\n");
+		}
+		else
+			memcpy(config, &chip_wifi_setting, sizeof(chip_wifi_setting));
+	}
+
 	return 0;
 }
 

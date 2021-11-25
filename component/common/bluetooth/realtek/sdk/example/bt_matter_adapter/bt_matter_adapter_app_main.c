@@ -217,11 +217,15 @@ int bt_matter_adapter_app_init(void)
 	T_GAP_CONN_INFO conn_info;
 	T_GAP_DEV_STATE new_state;
 
-	/*Check WIFI init complete*/
-	if( ! (wifi_is_up(RTW_STA_INTERFACE) || wifi_is_up(RTW_AP_INTERFACE))) {
-		BC_printf("WIFI is disabled\n\r");
-		return -1;
+	if(RTW_SUCCESS != wifi_is_connected_to_ap())
+	{
+		if( ! (wifi_is_up(RTW_STA_INTERFACE) || wifi_is_up(RTW_AP_INTERFACE))) {
+			BC_printf("WIFI is disabled\n\r");
+			return -1;
+		}
 	}
+	else
+		return 0;
 
 	set_bt_matter_adapter_state(BC_DEV_INIT); // BT Config on
 
@@ -319,11 +323,11 @@ static const uint8_t adv_data_chip[] =
     GAP_ADTYPE_16BIT_COMPLETE,
     LO_WORD(0xFFF6),
     HI_WORD(0xFFF6),
-    
-    // Local name 
-    0x07,             // length 
+
+    // Local name
+    0x07,             // length
     GAP_ADTYPE_LOCAL_NAME_COMPLETE,
-    'M', 'A', 'T', 'T', 'E', 'R', 
+    'M', 'A', 'T', 'T', 'E', 'R',
 };
 
 /**
@@ -400,10 +404,15 @@ int bt_matter_adapter_init(void)
 	T_GAP_DEV_STATE new_state;
 
 	/*Check WIFI init complete*/
-	if( ! (wifi_is_up(RTW_STA_INTERFACE) || wifi_is_up(RTW_AP_INTERFACE))) {
-		BC_printf("WIFI is disabled\n\r");
-		return -1;
+	if(RTW_SUCCESS != wifi_is_connected_to_ap())
+	{
+		if( ! (wifi_is_up(RTW_STA_INTERFACE) || wifi_is_up(RTW_AP_INTERFACE))) {
+			BC_printf("WIFI is disabled\n\r");
+			return -1;
+		}
 	}
+	else
+		return 0;
 
 	set_bt_matter_adapter_state(BC_DEV_INIT); // BT Config on
 
@@ -431,7 +440,7 @@ int bt_matter_adapter_init(void)
 		le_gap_init(APP_MAX_LINKS);
 		bt_matter_adapter_app_le_profile_init();
 	}
-	
+
 	bt_matter_adapter_app_le_gap_init_chip();
 	bt_matter_adapter_task_init();
 
@@ -444,7 +453,7 @@ int bt_matter_adapter_init(void)
 	} while (new_state.gap_init_state != GAP_INIT_STATE_STACK_READY);
 
 	//Start BT WIFI coexistence
-	wifi_btcoex_set_bt_on();	
+	wifi_btcoex_set_bt_on();
 
 	return 0;
 }

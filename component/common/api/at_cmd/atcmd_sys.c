@@ -948,74 +948,11 @@ void fATSt(void *arg)
 	printf("xPortGetMinimumEverFreeHeapSize = %d \n",xPortGetMinimumEverFreeHeapSize());
 
 	deinitPref();
-    // src/lib/core/tests
-    #if 0
-    _Z20TestReferenceCountedv();
-    _Z11TestCHIPTLVv();
-    _Z16TestCHIPErrorStrv();
-    _Z16TestCHIPCallbackv();
-    #endif
 
-    // src/inet/tests
-    #if 0
-    _Z15TestInetAddressv();
-    _Z16TestInetErrorStrv();
-    //_Z16TestInetEndPointv();   // undefined reference sigaction
-	#endif
-
-    // src/system/tests
-    #if 0
-    _Z19TestSystemWakeEventv();
-    _Z15TestSystemTimerv();
-    _Z22TestSystemPacketBufferv();
-    _Z16TestSystemObjectv();
-    _Z18TestSystemErrorStrv();
-    _Z14TestTimeSourcev();
-    #endif
-
-    // src/lib/support/tests
-    #if 0
-    _Z16TestBufferReaderv();
-    _Z16TestBufferWriterv();
-    _Z14TestBytesToHexv();
-    //_Z17TestCHIPArgParserv();   // ParseArgs() returned false
-    _Z15TestCHIPCounterv();
-    _Z12TestMemAllocv();
-    _Z12TestErrorStrv();
-    _Z8TestPoolv();
-    _Z11TestSafeIntv();
-    _Z14TestSafeStringv();
-    _Z16TestScopedBufferv();
-    _Z26TestSerializableIntegerSetv();
-    _Z17TestStringBuilderv();
-	printf("TestTimeUtils : ");
-    _Z13TestTimeUtilsv();
-    #endif
-
-    // src/crypto/tests
-    #if 0
-    TestCHIPCryptoPAL();
-    #endif
-
-    // src/transport/tests
-    #if 0
-    _Z21TestPeerConnectionsFnv();
-    _Z15TestPASESessionv();
-    _Z17TestSecureSessionv();
-    //_Z20TestSecureSessionMgrv();    // undefined reference getppid
-    #endif
-
-    // src/messaging/tests
-    #if 0
-    _Z17TestMessageHeaderv();
-    #endif
-
-	// src/transport/raw/tests
-	#if 0
-	_Z17TestMessageHeaderv();
-	_Z7TestTCPv();				// undefined reference getppid
-	_Z7TestUDPv();				// undefined reference getppid
-	#endif
+#if CONFIG_EXAMPLE_WLAN_FAST_CONNECT
+	Erase_Fastconnect_data();
+	printf("Erased Fast Connect data\r\n");
+#endif
 
 	AT_PRINTK("[ATS#]: _AT_SYSTEM_TEST_");
 }
