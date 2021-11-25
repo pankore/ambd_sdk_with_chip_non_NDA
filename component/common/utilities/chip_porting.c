@@ -257,49 +257,69 @@ exit:
 
 bool checkExist(char *domain, char *key)
 {
-    dct_handle_t handle;
-    int32_t ret = -1;
-    uint16_t DataLen = 0;
-    uint8_t *str = malloc(sizeof(uint8_t) * VARIABLE_VALUE_SIZE2);
+	dct_handle_t handle;
+	int32_t ret = -1;
+	uint16_t len = 0;
+	uint8_t found = 0;
+	uint8_t *str = malloc(sizeof(uint8_t) * VARIABLE_VALUE_SIZE-4);
 
 	if ( (strcmp(domain,"chip-factory")==0) || (strcmp(domain,"chip-config")==0) || (strcmp(domain,"chip-counters")==0))
 	{
-	    ret = dct_open_module(&handle, domain);
-	    if (ret != DCT_SUCCESS){
-	        printf("%s : dct_open_module(%s) failed\n",__FUNCTION__,domain);
-	        goto exit;
-	    }
+		ret = dct_open_module(&handle, domain);
+		if (ret != DCT_SUCCESS){
+			//printf("%s : dct_open_module(%s) failed\n",__FUNCTION__,domain);
+			goto exit;
+		}
 
-	    ret = dct_get_variable_new(&handle, key, str, &DataLen);
+		if(found == 0)
+		{
+			len = sizeof(uint32_t);
+			ret = dct_get_variable_new(&handle, key, (char *)str, &len);
+			if(ret == DCT_SUCCESS)
+			{
+				printf("checkExist key=%s found.\n",key);
+				found = 1;
+			}
+		}
 
-	    if(ret == DCT_ERR_NOT_FIND)
-	        printf("%s not found.\n", key);
-	    else if(ret == DCT_SUCCESS)
-	        printf("%s found.\n", key);
+		if(found == 0)
+		{
+			len = sizeof(uint64_t);
+			ret = dct_get_variable_new(&handle, key, (char *)str, &len);
+			if(ret == DCT_SUCCESS)
+			{
+				printf("checkExist key=%s found.\n",key);
+				found = 1;
+			}
+		}
 
-	    dct_close_module(&handle);
+		dct_close_module(&handle);
 	}
 	else
 	{
-	    ret = dct_open_module2(&handle, key);
-	    if (ret != DCT_SUCCESS){
-	        printf("%s : dct_open_module2(%s) failed\n",__FUNCTION__,key);
-	        goto exit;
-	    }
+		ret = dct_open_module2(&handle, key);
+		if (ret != DCT_SUCCESS){
+			//printf("%s : dct_open_module2(%s) failed\n",__FUNCTION__,key);
+			goto exit;
+		}
 
-	    ret = dct_get_variable_new2(&handle, key, str, &DataLen);
+		len = VARIABLE_VALUE_SIZE-4;
+		ret = dct_get_variable_new2(&handle, key, str, &len);
+		if(ret == DCT_SUCCESS)
+		{
+			printf("checkExist key=%s found.\n",key);
+			found = 1;
+		}
 
-	    if(ret == DCT_ERR_NOT_FIND)
-	        printf("%s not found.\n", key);
-	    else if(ret == DCT_SUCCESS)
-	        printf("%s found.\n", key);
-
-	    dct_close_module2(&handle);
+		dct_close_module2(&handle);
 	}
 
+	if(found == 0)
+		printf("checkExist key=%s not found. ret=%d\n",key ,ret);
+
 exit:
-    free(str);
-    return (DCT_SUCCESS == ret ? 1 : 0);
+	free(str);
+	return found;
 }
 
 int32_t setPref_new(char *domain, char *key, uint8_t *value, size_t byteCount)
