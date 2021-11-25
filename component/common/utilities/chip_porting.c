@@ -215,21 +215,41 @@ int32_t deleteKey(char *domain, char *key)
     dct_handle_t handle;
     int32_t ret = -1;
 
-    ret = dct_open_module(&handle, key);
-    if (DCT_SUCCESS != ret)
-    {
-        printf("%s : dct_open_module(%s) failed\n",__FUNCTION__,key);
-        goto exit;
-    }
+	if ( (strcmp(domain,"chip-factory")==0) || (strcmp(domain,"chip-config")==0) || (strcmp(domain,"chip-counters")==0))
+	{
 
-    ret = dct_delete_variable(&handle, key);
-    if(ret == DCT_ERR_NOT_FIND || ret == DCT_SUCCESS)
-        ret = DCT_SUCCESS;
-    else
-        printf("%s : dct_delete_variable(%s) failed\n",__FUNCTION__,key);
+	    ret = dct_open_module(&handle, domain);
+	    if (DCT_SUCCESS != ret)
+	    {
+	        printf("%s : dct_open_module(%s) failed\n",__FUNCTION__,key);
+	        goto exit;
+	    }
 
-    dct_close_module(&handle);
-    dct_unregister_module(key);
+	    ret = dct_delete_variable(&handle, key);
+	    if(ret == DCT_ERR_NOT_FIND || ret == DCT_SUCCESS)
+	        ret = DCT_SUCCESS;
+	    else
+	        printf("%s : dct_delete_variable(%s) failed\n",__FUNCTION__,key);
+
+	    dct_close_module(&handle);
+	}
+	else
+	{
+	    ret = dct_open_module2(&handle, key);
+	    if (ret != DCT_SUCCESS){
+	        printf("%s : dct_open_module2(%s) failed\n",__FUNCTION__,key);
+	        goto exit;
+	    }
+
+	    ret = dct_delete_variable(&handle, key);
+	    if(ret == DCT_ERR_NOT_FIND || ret == DCT_SUCCESS)
+	        ret = DCT_SUCCESS;
+	    else
+	        printf("%s : dct_delete_variable(%s) failed\n",__FUNCTION__,key);
+
+	    dct_close_module2(&handle);
+	    dct_unregister_module2(key);
+	}
 
 exit:
     return (DCT_SUCCESS == ret ? 1 : 0);
