@@ -94,6 +94,7 @@ list(
     #${dir}/competitive_headphones/headphone_burst.c
     #${dir}/competitive_headphones/headphone_packet_compensation.c
     #${dir}/competitive_headphones_dongle/example_competitive_headphones_dongle.c
+    ${dir}/matter_task/example_matter.c
 )
 
 if(${CONFIG_AUDIO_EN})

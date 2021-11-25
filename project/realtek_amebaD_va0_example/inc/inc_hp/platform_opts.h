@@ -679,6 +679,6 @@ in lwip_opt.h for support uart adapter*/
 #define CONFIG_BRIDGE                   0
 #endif
 
-#define CONFIG_EXAMPLE_MATTER 0
+#define CONFIG_EXAMPLE_MATTER 1
 
 #endif

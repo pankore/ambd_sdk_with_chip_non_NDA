@@ -921,20 +921,20 @@ void TestBase64(const char * test)
     printf("\n");
 }
 
-extern void ChipTest(void);
+//extern void ChipTest(void);
 extern int32_t deinitPref(void);
-void chipapp(void *param)
-{
-	ChipTest();
-}
+//void chipapp(void *param)
+//{
+//	ChipTest();
+//}
 
 void fATchipapp(void *arg)
 {
 	(void) arg;
-	printf("Chip Test:\r\n");
-	xTaskCreate(chipapp, "chipapp",
-                                4096 / sizeof(StackType_t), NULL,
-                                1, NULL);
+//	printf("Chip Test:\r\n");
+//	xTaskCreate(chipapp, "chipapp",
+//                                4096 / sizeof(StackType_t), NULL,
+//                                1, NULL);
 }
 
 
