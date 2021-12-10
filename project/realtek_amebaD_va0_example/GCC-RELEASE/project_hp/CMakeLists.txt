@@ -10,6 +10,7 @@ set (ameba_matter_root $ENV{AMEBA_MATTER})
 set (matter_output_path $ENV{MATTER_OUTPUT})
 set (matter_example_path $ENV{MATTER_EXAMPLE_PATH})
 set (matter_config_path $ENV{MATTER_CONFIG_PATH})
+set (matter_enable_rpc $ENV{MATTER_ENABLE_RPC})
 
 set (BUILD_TZ OFF)
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-#   ./build.sh {MATTER DIR} {BUILD METHOD} {OUTPUT DIR} {APP_NAME}
+#   ./build.sh {MATTER DIR} {BUILD METHOD} {OUTPUT DIR} {APP_NAME} {APP_NAME} {rpc (optional)}
 
 BUILD_FILE_DIR=`test -d ${0%/*} && cd ${0%/*}; pwd`
 CMAKE_ROOT=$BUILD_FILE_DIR/project_hp
@@ -35,10 +35,16 @@ if [ "$4" == "all-clusters-app" ]; then
     export MATTER_EXAMPLE_PATH=${AMEBA_MATTER}/examples/all-clusters-app/ameba
 elif [ "$4" == "lighting-app" ]; then
     export MATTER_EXAMPLE_PATH=${AMEBA_MATTER}/examples/lighting-app/ameba
+elif [ "$4" == "pigweed-app" ]; then
+    export MATTER_EXAMPLE_PATH=${AMEBA_MATTER}/examples/pigweed-app/ameba
 else
     export MATTER_EXAMPLE_PATH=${AMEBA_MATTER}/examples/all-clusters-app/ameba
 fi
 echo "MATTER_EXAMPLE_PATH at: ${MATTER_EXAMPLE_PATH}"
+
+if [ "$5" == "rpc" ]; then
+    export MATTER_ENABLE_RPC=1
+fi
 
 
 ## Check output directory

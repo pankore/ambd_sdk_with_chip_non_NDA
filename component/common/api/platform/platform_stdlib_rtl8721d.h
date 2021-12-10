@@ -113,7 +113,7 @@ extern void *pvPortCalloc(size_t xWantedCnt, size_t xWantedSize);
 #include <sys/time.h>
 #include <assert.h>
 
-extern char * _strtok_r(register char *s , register const char *delim , char **lasts);
+extern char * _strtok_r(char *s , const char *delim , char **lasts);
 extern int _nanosleep( const struct timespec * rqtp, struct timespec * rmtp );
 extern int _vTaskDelay( const TickType_t xTicksToDelay );
 extern time_t _time( time_t * tloc );
@@ -180,6 +180,26 @@ extern time_t _time( time_t * tloc );
 
 #ifdef vsnprintf
 	#undef vsnprintf
+#endif
+
+#ifdef memcpy
+		#undef memcpy
+#endif
+
+#ifdef memset
+		#undef memset
+#endif
+
+#ifdef strcmp
+		#undef strcmp
+#endif
+
+#ifdef strncpy
+		#undef strncpy
+#endif
+
+#ifdef strlen
+		#undef strlen
 #endif
 
 #endif //CHIP_PROJECT
