@@ -50,6 +50,7 @@ endif
 	make -C ble_peripheral all
 	make -C ble_central all
 	make -C ble_scatternet all
+	make -C bt_matter_adapter all
 endif
 
 #*****************************************************************************#
@@ -90,6 +91,7 @@ endif
 	make -C ble_peripheral clean
 	make -C ble_central clean
 	make -C ble_scatternet clean
+	make -C bt_matter_adapter clean
 endif
 
 -include $(DEPS)

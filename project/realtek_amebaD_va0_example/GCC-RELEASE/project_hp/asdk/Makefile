@@ -141,8 +141,10 @@ image2_ns:LINK_APP_LIB += $(ROOTDIR)/lib/application/lib_wlan.a $(ROOTDIR)/lib/a
 mp_image2_ns:LINK_APP_LIB += $(ROOTDIR)/lib/application/lib_wlan_mp.a $(ROOTDIR)/lib/application/lib_wps.a
 endif
 
-LINK_APP_LIB += $(ROOTDIR)/lib/application/lib_main.a
-LINK_APP_LIB += $(ROOTDIR)/lib/application/libCHIP.a
+#LINK_APP_LIB += $(ROOTDIR)/lib/application/lib_main.a
+#LINK_APP_LIB += $(ROOTDIR)/lib/application/libCHIP.a
+LINK_APP_LIB_MATTER += -Wl,--start-group $(ROOTDIR)/lib/application/lib_main.a $(ROOTDIR)/lib/application/libCHIP.a -Wl,--end-group
+
 
 ifeq ($(CONFIG_LINKKIT_AWSS), y)
 LINK_APP_LIB += $(ROOTDIR)/lib/application/lib_aliiot.a
@@ -366,7 +368,7 @@ linker_image2:
 
 linker_image2_ns:
 	@echo "========= linker img2_ns start ========="
-	$(LD) $(LD_ARG) target_img2.axf $(RAM_OBJS_LIST) $(LINK_ROM_LIB_NS) $(LINK_APP_LIB)  -lm -lstdc++
+	$(LD) $(LD_ARG) target_img2.axf $(RAM_OBJS_LIST) $(LINK_ROM_LIB_NS) $(LINK_APP_LIB) $(LINK_APP_LIB_MATTER) -lm -lstdc++
 
 	$(MOVE) text.map $(IMAGE_TARGET_FOLDER)/text_image2_ns.map
 	$(MOVE) target_img2.axf $(IMAGE_TARGET_FOLDER)
