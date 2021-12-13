@@ -936,4 +936,8 @@ example_hilink();
 	example_sw_pta();
 #endif
 
+#if defined(CONFIG_EXAMPLE_MATTER) && CONFIG_EXAMPLE_MATTER
+    example_matter_task();
+#endif
+
 }

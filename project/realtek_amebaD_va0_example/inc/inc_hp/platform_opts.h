@@ -123,7 +123,7 @@
 //#define CONFIG_BAIDU_DUER	1
 #define CONFIG_DMIC_SEL	0
 /* For WPS and P2P */
-#define CONFIG_ENABLE_WPS		1
+#define CONFIG_ENABLE_WPS		0
 #define CONFIG_ENABLE_P2P		0//on/off p2p cmd in log_service or interactive mode
 #if CONFIG_ENABLE_WPS
 #define CONFIG_ENABLE_WPS_DISCOVERY	1
@@ -152,7 +152,7 @@
 #define CONFIG_INCLUDE_SIMPLE_CONFIG		1
 
 /*For fast reconnection*/
-#define CONFIG_EXAMPLE_WLAN_FAST_CONNECT	0
+#define CONFIG_EXAMPLE_WLAN_FAST_CONNECT	1
 
 /*For wowlan service settings*/
 #define CONFIG_WOWLAN_SERVICE           			0

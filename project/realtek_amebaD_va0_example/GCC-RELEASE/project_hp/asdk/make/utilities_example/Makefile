@@ -191,6 +191,8 @@ ifeq ($(CONFIG_LINKKIT_AWSS), y)
 #CSRC += $(DIR)/linkkit/linkkit_awss_example.c
 endif
 
+CSRC += $(DIR)/matter_task/example_matter.c
+
 #*****************************************************************************#
 #                               Object FILE LIST                              #
 #*****************************************************************************#
