@@ -47,7 +47,7 @@ list(
     ${dir}/httpd/example_httpd.c
     ${dir}/httpc/example_httpc.c
     ${dir}/ota_http/example_ota_http.c
-    ${dir}/ota_https/example_ota_https.c
+    #${dir}/ota_https/example_ota_https.c
     ${dir}/ota_sdcard/example_ota_sdcard.c
     ${dir}/dct/example_dct.c
     #${dir}/wifi_manager/example_wifi_manager.c

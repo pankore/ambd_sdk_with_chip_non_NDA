@@ -200,11 +200,11 @@ static void cmd_wifi_sta_and_ap(int argc, char **argv)
 	wext_get_mode(WLAN0_NAME, &mode);
 
 	switch(mode) {
-		case IW_MODE_MASTER:	//In AP mode
+		case RTW_MODE_MASTER:	//In AP mode
 			cmd_wifi_off(0, NULL);
 			cmd_wifi_on(0, NULL);
 			break;
-		case IW_MODE_INFRA:		//In STA mode
+		case RTW_MODE_INFRA:		//In STA mode
 			if(wext_get_ssid(WLAN0_NAME, ssid) > 0)
 				cmd_wifi_disconnect(0, NULL);
 	}
@@ -342,11 +342,11 @@ static void cmd_wifi_ap(int argc, char **argv)
 	wext_get_mode(WLAN0_NAME, &mode);
 
 	switch(mode) {
-		case IW_MODE_MASTER:	//In AP mode
+		case RTW_MODE_MASTER:	//In AP mode
 			wifi_off();
 			wifi_on(1);
 			break;
-		case IW_MODE_INFRA:		//In STA mode
+		case RTW_MODE_INFRA:		//In STA mode
 			if(wext_get_ssid(WLAN0_NAME, ssid) > 0)
 				cmd_wifi_disconnect(0, NULL);
 	}
@@ -479,7 +479,7 @@ static void cmd_wifi_connect(int argc, char **argv)
 	//Check if in AP mode
 	wext_get_mode(WLAN0_NAME, &mode);
 
-	if(mode == IW_MODE_MASTER) {
+	if(mode == RTW_MODE_MASTER) {
 #if CONFIG_LWIP_LAYER
 #if defined(CONFIG_PLATFOMR_CUSTOMER_RTOS)
 		//TODO
@@ -582,7 +582,7 @@ static void cmd_wifi_connect_bssid(int argc, char **argv)
 	//Check if in AP mode
 	wext_get_mode(WLAN0_NAME, &mode);
 
-	if(mode == IW_MODE_MASTER) {
+	if(mode == RTW_MODE_MASTER) {
 #if CONFIG_LWIP_LAYER
 #if defined(CONFIG_PLATFOMR_CUSTOMER_RTOS)
 		//TODO
@@ -866,26 +866,30 @@ static void cmd_wifi_off(int argc, char **argv)
 
 static void print_scan_result( rtw_scan_result_t* record )
 {
-    RTW_API_INFO( "%s\t ", ( record->bss_type == RTW_BSS_TYPE_ADHOC ) ? "Adhoc" : "Infra" );
-    RTW_API_INFO( MAC_FMT, MAC_ARG(record->BSSID.octet) );
-    RTW_API_INFO( " %d\t ", record->signal_strength );
-    RTW_API_INFO( " %d\t  ", record->channel );
-    RTW_API_INFO( " %d\t  ", record->wps_type );
-    RTW_API_INFO( "%s\t\t ", ( record->security == RTW_SECURITY_OPEN ) ? "Open" :
-                                 ( record->security == RTW_SECURITY_WEP_PSK ) ? "WEP" :
-                                 ( record->security == RTW_SECURITY_WPA_TKIP_PSK ) ? "WPA TKIP" :
-                                 ( record->security == RTW_SECURITY_WPA_AES_PSK ) ? "WPA AES" :
-                                 ( record->security == RTW_SECURITY_WPA2_AES_PSK ) ? "WPA2 AES" :
-                                 ( record->security == RTW_SECURITY_WPA2_TKIP_PSK ) ? "WPA2 TKIP" :
-                                 ( record->security == RTW_SECURITY_WPA2_MIXED_PSK ) ? "WPA2 Mixed" :
-                                 ( record->security == RTW_SECURITY_WPA_WPA2_MIXED ) ? "WPA/WPA2 AES" :
+	RTW_API_INFO( "%s\t ", ( record->bss_type == RTW_BSS_TYPE_ADHOC ) ? "Adhoc" : "Infra" );
+	RTW_API_INFO( MAC_FMT, MAC_ARG(record->BSSID.octet) );
+	RTW_API_INFO( " %d\t ", record->signal_strength );
+	RTW_API_INFO( " %d\t  ", record->channel );
+	RTW_API_INFO( " %d\t  ", record->wps_type );
+	RTW_API_INFO( "%s\t\t ", ( record->security == RTW_SECURITY_OPEN ) ? "Open" :
+								 ( record->security == RTW_SECURITY_WEP_PSK ) ? "WEP" :
+								 ( record->security == RTW_SECURITY_WPA_TKIP_PSK ) ? "WPA TKIP" :
+								 ( record->security == RTW_SECURITY_WPA_AES_PSK ) ? "WPA AES" :
+								 ( record->security == RTW_SECURITY_WPA_MIXED_PSK ) ? "WPA Mixed" :
+								 ( record->security == RTW_SECURITY_WPA2_AES_PSK ) ? "WPA2 AES" :
+								 ( record->security == RTW_SECURITY_WPA2_TKIP_PSK ) ? "WPA2 TKIP" :
+								 ( record->security == RTW_SECURITY_WPA2_MIXED_PSK ) ? "WPA2 Mixed" :
+								 ( record->security == RTW_SECURITY_WPA_WPA2_TKIP_PSK) ? "WPA/WPA2 TKIP" :
+								 ( record->security == RTW_SECURITY_WPA_WPA2_AES_PSK) ? "WPA/WPA2 AES" :
+								 ( record->security == RTW_SECURITY_WPA_WPA2_MIXED_PSK) ? "WPA/WPA2 Mixed" :
 #ifdef CONFIG_SAE_SUPPORT
-								 ( record->security == RTW_SECURITY_WPA3_AES_PSK) ? "WP3-SAE AES" :	
-#endif								 
-                                 "Unknown" );
+								 ( record->security == RTW_SECURITY_WPA3_AES_PSK) ? "WP3-SAE AES" :
+								 ( record->security == RTW_SECURITY_WPA2_WPA3_MIXED) ? "WPA2/WPA3-SAE AES" :
+#endif
+								 "Unknown" );
 
-    RTW_API_INFO( " %s ", record->SSID.val );
-    RTW_API_INFO( "\r\n" );
+	RTW_API_INFO( " %s ", record->SSID.val );
+	RTW_API_INFO( "\r\n" );
 }
 
 static rtw_result_t app_scan_result_handler( rtw_scan_handler_result_t* malloced_scan_result )
@@ -1149,9 +1153,13 @@ static void cmd_debug(int argc, char **argv)
 													( sec == RTW_SECURITY_WEP_PSK )        ? "WEP" :
 													( sec == RTW_SECURITY_WPA_TKIP_PSK )   ? "WPA TKIP" :
 													( sec == RTW_SECURITY_WPA_AES_PSK )    ? "WPA AES" :
+													( sec == RTW_SECURITY_WPA_MIXED_PSK )  ? "WPA Mixed" :
 													( sec == RTW_SECURITY_WPA2_AES_PSK )   ? "WPA2 AES" :
 													( sec == RTW_SECURITY_WPA2_TKIP_PSK )  ? "WPA2 TKIP" :
 													( sec == RTW_SECURITY_WPA2_MIXED_PSK ) ? "WPA2 Mixed" :
+													( sec == RTW_SECURITY_WPA_WPA2_TKIP_PSK) ? "WPA/WPA2 TKIP" :
+													( sec == RTW_SECURITY_WPA_WPA2_AES_PSK) ? "WPA/WPA2 AES" :
+													( sec == RTW_SECURITY_WPA_WPA2_MIXED_PSK) ? "WPA/WPA2 Mixed" :
 													"Unknown" );
 		}
 	} else if(strcmp(argv[1], "reg_mc") == 0) {

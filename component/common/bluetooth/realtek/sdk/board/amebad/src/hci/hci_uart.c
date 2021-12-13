@@ -47,6 +47,7 @@ typedef struct
 
 //===========
 T_HCI_UART *hci_uart_obj;
+extern uint8_t flag_for_hci_trx;
 
 #define TX_TRASMIT_COUNT 16
 #define hci_board_debug DBG_8195A
@@ -98,7 +99,7 @@ void set_hci_uart_out(bool flag)
     }
     else
     {
-       hci_board_debug("set_hci_uart_out: hci_uart_obj is NULL");
+       hci_board_debug("set_hci_uart_out: hci_uart_obj is NULL\r\n");
     }
 }
 
@@ -133,8 +134,7 @@ uint16_t hci_rx_space_len()
 
 void hci_uart_set_baudrate(uint32_t baudrate)
 {
-    HCI_PRINT_INFO1("Set baudrate to %u", baudrate);
-    //hci_board_debug("Set baudrate to %d\n", baudrate);
+    hci_board_debug("Set baudrate to %d\r\n", baudrate);
     UART_SetBaud(HCI_UART_DEV, baudrate);
 }
 
@@ -143,14 +143,14 @@ void hci_uart_rx_disable(T_HCI_UART *hci_adapter)
     /* We disable received data available and rx timeout interrupt, then
      * the rx data will stay in UART FIFO, and RTS will be pulled high if
      * the watermark is higher than rx trigger level. */
-    HCI_PRINT_INFO0("hci_uart_rx_disable");
+    hci_board_debug("hci_uart_rx_disable\r\n");
     UART_INTConfig(HCI_UART_DEV, RUART_IER_ERBI | RUART_IER_ETOI, DISABLE);
     hci_adapter->rx_disabled = true;
 }
 
 void hci_uart_rx_enable(T_HCI_UART *hci_adapter)
 {
-    HCI_PRINT_INFO0("comuart_rx_enable");
+    hci_board_debug("hci_uart_rx_enable\r\n");
     UART_INTConfig(HCI_UART_DEV, RUART_IER_ERBI | RUART_IER_ETOI, ENABLE);
     hci_adapter->rx_disabled = false;
 }
@@ -171,7 +171,7 @@ static inline void transmit_chars(T_HCI_UART *hci_adapter)
 
     if(hci_adapter == NULL)
     {
-        hci_board_debug(" %s:hci_adapter is NULL !!!,\r\n", __FUNCTION__);
+        hci_board_debug("transmit_chars: hci_adapter is NULL\r\n");
         return;
     }
 
@@ -201,8 +201,7 @@ static inline void uart_insert_char(T_HCI_UART *hci_adapter, uint8_t ch)
     /* Should neve happen */
     if (hci_rx_space_len()==0)
     {
-        HCI_PRINT_ERROR0("uart_insert_char: rx buffer full");
-        hci_board_debug("uart_insert_char: rx buffer full");
+        hci_board_debug("uart_insert_char: rx buffer full\r\n");
         return;
     }
 
@@ -220,7 +219,7 @@ static inline void uart_insert_char(T_HCI_UART *hci_adapter, uint8_t ch)
 
     if (hci_rx_data_len() >= HCI_UART_RX_DISABLE_COUNT && hci_adapter->rx_disabled == false)
     {
-        hci_board_debug("uart_insert_char: rx disable, data len %d", hci_rx_data_len());
+        hci_board_debug("uart_insert_char: rx disable, data len %d\r\n", hci_rx_data_len());
         hci_uart_rx_disable(hci_adapter);
     }
 }
@@ -233,7 +232,7 @@ static inline void receive_chars(T_HCI_UART *hci_adapter, int ind)
     if(hci_adapter == NULL)
     {
         UART_CharGet(HCI_UART_DEV, &byte);
-        hci_board_debug(" %s:hci_adapter is NULL !!!, %x,data: %x\r\n",__FUNCTION__,ind, byte);
+        hci_board_debug("receive_chars: hci_adapter is NULL, ind:%x, data:%x\r\n", ind, byte);
         return;
     }
     /* start timer*/
@@ -253,10 +252,11 @@ static inline void receive_chars(T_HCI_UART *hci_adapter, int ind)
 
     /* HCI_PRINT_INFO1("receive_chars: rx_len %u", hci_adapter->rx_len); */
     /* FIXME: There is too many rx indication events ? */
-    if (ind && hci_adapter->rx_ind)
-    {
-        hci_adapter->rx_ind();
-
+    if (flag_for_hci_trx == 0) {
+        if (ind && hci_adapter->rx_ind)
+        {
+            hci_adapter->rx_ind();
+        }
     }
 }
 
@@ -285,7 +285,7 @@ u32 hciuart_irq(void *data)
          * } else {
          *     DUart1MonitorDone = 1;
          * } */
-        hci_board_debug("hciuart_irq: monitor done");
+        hci_board_debug("hciuart_irq: monitor done\r\n");
         break;
     case RUART_MODEM_STATUS:
         reg_val = UART_ModemStatusGet(HCI_UART_DEV);
@@ -301,25 +301,25 @@ u32 hciuart_irq(void *data)
         break;
     case RUART_RECEIVE_LINE_STATUS:
         reg_val = (UART_LineStatusGet(HCI_UART_DEV));
-        hci_board_debug("hciuart_irq: LSR %08x interrupt", reg_val);
+        hci_board_debug("hciuart_irq: LSR %08x interrupt\r\n", reg_val);
         if (reg_val & RUART_LINE_STATUS_ERR_OVERRUN)
         {
-            hci_board_debug("hciuart_irq: LSR over run interrupt");
+            hci_board_debug("hciuart_irq: LSR over run interrupt\r\n");
         }
 
         if (reg_val & RUART_LINE_STATUS_ERR_PARITY)
         {
-            hci_board_debug("hciuart_irq: LSR parity error interrupt");
+            hci_board_debug("hciuart_irq: LSR parity error interrupt\r\n");
         }
 
         if (reg_val & RUART_LINE_STATUS_ERR_FRAMING)
         {
-            hci_board_debug("hciuart_irq: LSR frame error(stop bit error) interrupt");
+            hci_board_debug("hciuart_irq: LSR frame error(stop bit error) interrupt\r\n");
         }
 
         if (reg_val & RUART_LINE_STATUS_ERR_BREAK)
         {
-            hci_board_debug("hciuart_irq: LSR break error interrupt");
+            hci_board_debug("hciuart_irq: LSR break error interrupt\r\n");
         }
 
         /* if (reg_val & RUART_LINE_STATUS_REG_THRE)
@@ -328,7 +328,7 @@ u32 hciuart_irq(void *data)
         break;
 
     default:
-        hci_board_debug("hciuart_irq: Unknown interrupt type %u", int_id);
+        hci_board_debug("hciuart_irq: Unknown interrupt type %u\r\n", int_id);
         break;
     }
 
@@ -361,7 +361,7 @@ bool hci_uart_tx(uint8_t *p_buf, uint16_t len, P_UART_TX_CB tx_cb)
     }
     else
     {
-        hci_board_debug("!!!Transmitter FIFO empty interrupt has been enabled");
+        hci_board_debug("hci_uart_tx: Transmitter FIFO empty interrupt has been enabled\r\n");
         return false;
     }
 #endif
@@ -376,7 +376,7 @@ bool hci_uart_malloc(void)
 
         if(!hci_uart_obj)
         {
-            hci_board_debug("%s:need %d, left %d\n", __FUNCTION__ ,sizeof(T_HCI_UART),os_mem_peek(RAM_TYPE_DATA_ON));
+            hci_board_debug("hci_uart_malloc: need %d, left %d\r\n", sizeof(T_HCI_UART), os_mem_peek(RAM_TYPE_DATA_ON));
             return false;
         }
         else
@@ -386,7 +386,7 @@ bool hci_uart_malloc(void)
     }
     else
     {
-        hci_board_debug("%s:rx_buffer not free\n",__FUNCTION__);
+        hci_board_debug("hci_uart_malloc: rx_buffer not free\r\n");
         return false;
     }
     return true;
@@ -396,7 +396,7 @@ bool hci_uart_free(void)
 {
     if(hci_uart_obj == NULL)
     {
-        hci_board_debug("%s: hci_uart_obj = NULL, no need free\r\n",__FUNCTION__);
+        hci_board_debug("hci_uart_free: hci_uart_obj = NULL, no need free\r\n");
         return true;
     }
     else
@@ -482,16 +482,15 @@ uint16_t hci_uart_recv(uint8_t *p_buf, uint16_t size)
     uint16_t rx_len;
     
     T_HCI_UART *p_uart_obj = hci_uart_obj;
-    //hci_board_debug("hci_uart_recv: write:%d, read:%d,rx_len:%d,need:%d space_len:%d, count:%d\r\n",p_uart_obj->rx_write_idx, p_uart_obj->rx_read_idx, hci_rx_data_len(),size, hci_rx_space_len(), hci_irq_count);
+    //hci_board_debug("hci_uart_recv: write:%d, read:%d, rx_len:%d, need:%d, space_len:%d\r\n", p_uart_obj->rx_write_idx, p_uart_obj->rx_read_idx, hci_rx_data_len(), size, hci_rx_space_len());
     
     if(p_uart_obj == NULL)
     {
-        hci_board_debug(" %s:the p_uart_obj is NULL !!!!! \r\n", __FUNCTION__);
+        hci_board_debug("hci_uart_recv: the p_uart_obj is NULL\r\n");
         return 0;
     }
     if(hci_rx_empty())
     {
-
          //rx empty
          return 0;
     }
@@ -518,6 +517,7 @@ uint16_t hci_uart_recv(uint8_t *p_buf, uint16_t size)
         {
             if (hci_rx_data_len() < HCI_UART_RX_ENABLE_COUNT)
             {
+                hci_board_debug("hci_uart_recv: rx enable, data len %d\r\n", hci_rx_data_len());
                 hci_uart_rx_enable(p_uart_obj);
             }
         }

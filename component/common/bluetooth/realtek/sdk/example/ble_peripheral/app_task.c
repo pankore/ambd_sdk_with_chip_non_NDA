@@ -104,14 +104,14 @@ void app_task_init(void)
 
 void app_task_deinit(void)
 {
+	if (app_task_handle) {
+		os_task_delete(app_task_handle);
+	}
 	if (io_queue_handle) {
 		os_msg_queue_delete(io_queue_handle);
 	}
 	if (evt_queue_handle) {
 		os_msg_queue_delete(evt_queue_handle);
-	}
-	if (app_task_handle) {
-		os_task_delete(app_task_handle);
 	}
 	io_queue_handle = NULL;
 	evt_queue_handle = NULL;

@@ -30,6 +30,7 @@ static const PinMap PinMap_ADC[] = {
 	{PB_2,			ADC_CH5,		0},
 	{PB_3,			ADC_CH6,		0},
 	{VBAT_MEAS,		ADC_CH7,		0},
+	{INTER_MEAS, 	ADC_CH10,		0},
 	{NC,			NC,				0}
 };
 
@@ -143,6 +144,19 @@ void  analogin_deinit(analogin_t *obj)
 	/* Disable ADC  */
 	ADC_Cmd(DISABLE);
 }
+
+/**
+  * @brief  Read resistor value
+  * @retval -1: invalid value
+            0: efuse not program
+            others: resistor value
+  */
+extern int rtw_resistor_read();
+int analogin_resistor_read()
+{
+	return rtw_resistor_read();
+}
+
 /** 
   * @}
   */

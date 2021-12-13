@@ -50,7 +50,7 @@
 #define CMB_OS_PLATFORM_FREERTOS       3
 
 #define CMB_PRINT_LANGUAGE_ENGLISH     0
-#define CMB_PRINT_LANUUAGE_CHINESE     1
+#define CMB_PRINT_LANGUAGE_CHINESE     1
 
 /* name max length, default size: 32 */
 #ifndef CMB_NAME_MAX
@@ -309,7 +309,7 @@ if (!(EXPR))                                                                   \
 #elif defined(__ICCARM__)
     #define CMB_ELF_FILE_EXTENSION_NAME          ".axf"
 #elif defined(__GNUC__)
-    #define CMB_ELF_FILE_EXTENSION_NAME          ".elf"
+    #define CMB_ELF_FILE_EXTENSION_NAME          ".axf"
 #else
     #error "not supported compiler"
 #endif

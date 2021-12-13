@@ -35,6 +35,7 @@ debug:
 
 xip: CORE_TARGETS
 	make -C asdk lib_all
+	makd -C asdk light
 	make -C asdk image3_s
 	make -C asdk bootloader
 	make -C asdk image2_ns

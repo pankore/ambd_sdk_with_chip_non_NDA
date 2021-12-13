@@ -17,8 +17,6 @@ vpath %.c $(DIR) $(CFGDIR) $(DIR_RAM_LP) $(DIR_COM)
 #*****************************************************************************#
 #                               Source FILE LIST                              #
 #*****************************************************************************#
-#CSRC = $(DIR)/boot_ram_lp.c \
-	$(DIR)/boot_flash_lp.c
 
 CSRC = $(CFGDIR)/rtl8721d_bootcfg.c
 

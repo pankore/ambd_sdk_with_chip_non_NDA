@@ -156,8 +156,8 @@ static const char *print_info[] = {
         [PRINT_UFSR_INVSTATE]         = "Usage fault is caused by attempts to switch to an invalid state (e.g., ARM)",
         [PRINT_UFSR_INVPC]            = "Usage fault is caused by attempts to do an exception with a bad value in the EXC_RETURN number",
         [PRINT_UFSR_NOCP]             = "Usage fault is caused by attempts to execute a coprocessor instruction",
-        [PRINT_UFSR_UNALIGNED]        = "Usage fault is caused by indicates that an unaligned access fault has taken place",
-        [PRINT_UFSR_DIVBYZERO]        = "Usage fault is caused by Indicates a divide by zero has taken place (can be set only if DIV_0_TRP is set)",
+        [PRINT_UFSR_UNALIGNED]        = "Usage fault is caused by an unaligned address access(can be set only if UNALIGN_TRP is set)",
+        [PRINT_UFSR_DIVBYZERO]        = "Usage fault is caused by a division by zero has taken place(can be set only if DIV_0_TRP is set)",
         [PRINT_DFSR_HALTED]           = "Debug fault is caused by halt requested in NVIC",
         [PRINT_DFSR_BKPT]             = "Debug fault is caused by BKPT instruction executed",
         [PRINT_DFSR_DWTTRAP]          = "Debug fault is caused by DWT match occurred",
@@ -174,7 +174,7 @@ static const char *print_info[] = {
         [PRINT_SFSR_INVIS]            = "Secure fault is caused by invalid integrity signature",
         [PRINT_SFSR_INVEP]            = "Secure falut is caused by invalid entry point",
         #endif
-#elif (CMB_PRINT_LANGUAGE == CMB_PRINT_LANUUAGE_CHINESE)
+#elif (CMB_PRINT_LANGUAGE == CMB_PRINT_LANGUAGE_CHINESE)
         [PRINT_FIRMWARE_INFO]         = "固件名称：%s，硬件版本号：%s，软件版本号：%s",
         [PRINT_ASSERT_ON_THREAD]      = "在线程(%s)中发生断言",
         [PRINT_ASSERT_ON_HANDLER]     = "在中断或裸机环境下发生断言",

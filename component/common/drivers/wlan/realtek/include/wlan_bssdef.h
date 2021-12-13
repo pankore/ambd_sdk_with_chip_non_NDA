@@ -584,6 +584,11 @@ typedef struct _WLAN_PHY_INFO
   	u8	SignalQuality;		//(in percentage)
   	u8	Optimum_antenna;  	//for Antenna diversity
   	u8  	Reserved_0;
+#ifdef CONFIG_IEEE80211K
+	u8	is_cck_rate;	/* 1:cck_rate */
+	s8	rx_snr[4];
+	u32	free_cnt; 	/* freerun counter */
+#endif
 }
 #ifdef __CC_ARM	
 __attribute__((packed))

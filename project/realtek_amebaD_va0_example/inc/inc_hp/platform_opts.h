@@ -50,20 +50,31 @@
 /**
 * For common flash usage
 */
-#define AP_SETTING_SECTOR		0x000FE000
-#define UART_SETTING_SECTOR		0x000FC000
-#define SPI_SETTING_SECTOR		0x000FC000
-#if defined(CONFIG_BAIDU_DUER) && CONFIG_BAIDU_DUER
-#define FAST_RECONNECT_DATA 	0x1FF000
+#if (defined(CONFIG_BAIDU_DUER) && CONFIG_BAIDU_DUER) || (defined(CONFIG_BT_MESH_PROVISIONER) && CONFIG_BT_MESH_PROVISIONER)	\
+	|| (defined(CONFIG_BT_MESH_PROVISIONER_MULTIPLE_PROFILE) && CONFIG_BT_MESH_PROVISIONER_MULTIPLE_PROFILE)	\
+	|| (defined(CONFIG_BT_MESH_DEVICE) && CONFIG_BT_MESH_DEVICE)	\
+	|| (defined(CONFIG_BT_MESH_DEVICE_MULTIPLE_PROFILE) && CONFIG_BT_MESH_DEVICE_MULTIPLE_PROFILE)
+#define UART_SETTING_SECTOR		0x001FA000
+#define AP_SETTING_SECTOR		0x001FB000
+#define FTL_PHY_PAGE_START_ADDR	0x001FC000
+#define FAST_RECONNECT_DATA 	0x001FF000
 #else
-#define FAST_RECONNECT_DATA 	0x1D7000
+#define UART_SETTING_SECTOR		0x000FC000
+#define AP_SETTING_SECTOR		0x000FE000
+#define FTL_PHY_PAGE_START_ADDR	0x001DC000
+#define FAST_RECONNECT_DATA 	0x001DF000
 #endif
 #define CONFIG_ENABLE_RDP		0
 
 //IF Support MATTER
+#undef UART_SETTING_SECTOR
+#undef AP_SETTING_SECTOR
 #undef FTL_PHY_PAGE_START_ADDR
 #undef FAST_RECONNECT_DATA
-#define FTL_PHY_PAGE_START_ADDR         0x001D8000  // 3K
+
+#define UART_SETTING_SECTOR             0x001E5000
+#define AP_SETTING_SECTOR               0x001E7000
+#define FTL_PHY_PAGE_START_ADDR         0x001E8000  // 3K
 #define FAST_RECONNECT_DATA             0x001EB000  // 1K
 
 // DCT size : module size is 4k, module number is 4, the total module number is 4 + 0*4 = 4, the size is 4*4 = 16k,
@@ -114,7 +125,9 @@
 /* For WPS and P2P */
 #define CONFIG_ENABLE_WPS		1
 #define CONFIG_ENABLE_P2P		0//on/off p2p cmd in log_service or interactive mode
-#define CONFIG_ENABLE_WPS_DISCOVERY	0
+#if CONFIG_ENABLE_WPS
+#define CONFIG_ENABLE_WPS_DISCOVERY	1
+#endif
 #if CONFIG_ENABLE_P2P
 #define CONFIG_ENABLE_WPS_AP		1
 #undef CONFIG_WIFI_IND_USE_THREAD
@@ -157,7 +170,7 @@
 /*For MIMO pkt decode*/
 #define CONFIG_UNSUPPORT_PLCPHDR_RPT	0
 
-#define CONFIG_EXAMPLE_CM_BACKTRACE 1
+#define CONFIG_EXAMPLE_CM_BACKTRACE 0
 
 #endif //end of #if CONFIG_WLAN
 /*******************************************************************************/
@@ -203,6 +216,23 @@
 #endif
 #endif
 /******************End of iNIC configurations*******************/
+
+/* For Azure Examples */
+#define CONFIG_USE_AZURE_EMBEDDED_C        1
+#if CONFIG_USE_AZURE_EMBEDDED_C
+/* For Azure embedded iot examples*/
+#define CONFIG_EXAMPLE_AZURE   0
+#if CONFIG_EXAMPLE_AZURE
+#undef WAIT_FOR_ACK
+#define WAIT_FOR_ACK
+#endif
+#else
+/* For Azure iot hub telemetry example*/
+#define CONFIG_EXAMPLE_AZURE_IOTHUB_TELEMETRY      0
+/* For Azure iot hub x509 example*/
+#define CONFIG_EXAMPLE_AZURE_IOTHUB_X509     0
+#endif
+
 /* For Amazon FreeRTOS SDK example */
 #define CONFIG_EXAMPLE_AMAZON_FREERTOS   0
 
@@ -327,6 +357,9 @@
 /*For wifi roaming plus example*/
 #define CONFIG_EXAMPLE_WIFI_ROAMING_PLUS		0
 
+/* For tickless wifi roaming examples */
+#define CONFIG_EXAMPLE_TICKLESS_WIFI_ROAMING 	0
+
 /*For wifi connection priority example*/
 #define CONFIG_EXAMPLE_CONN_PRI_COND			0
 
@@ -405,6 +438,11 @@
 #define FATFS_DISK_SD	1
 #endif
 
+#define CONFIG_EXAMPLE_AUDIO_OPUS 0
+#if CONFIG_EXAMPLE_AUDIO_OPUS
+#define FATFS_DISK_SD	1
+#endif
+
 /* For UART Module AT command example */
 #define CONFIG_EXAMPLE_UART_ATCMD	0
 #if CONFIG_EXAMPLE_UART_ATCMD
@@ -477,12 +515,14 @@
 #define CONFIG_ENABLE_PEAP	0
 #define CONFIG_ENABLE_TLS	0
 #define CONFIG_ENABLE_TTLS	0
+#define CONFIG_ENABLE_FAST	0
 
 // optional feature: whether to verify the cert of radius server
 #define ENABLE_EAP_SSL_VERIFY_SERVER	0
 
-#if CONFIG_ENABLE_PEAP || CONFIG_ENABLE_TLS || CONFIG_ENABLE_TTLS
+#if CONFIG_ENABLE_PEAP || CONFIG_ENABLE_TLS || CONFIG_ENABLE_TTLS || CONFIG_ENABLE_FAST
 #define CONFIG_ENABLE_EAP
+#undef CONFIG_EXAMPLE_WLAN_FAST_CONNECT
 #define CONFIG_EXAMPLE_WLAN_FAST_CONNECT 0
 #endif
 
@@ -601,6 +641,10 @@ in lwip_opt.h for support uart adapter*/
 //#define CONFIG_EXAMPLE_COMPETITIVE_HEADPHONES_DONGLE	1
 #endif
 
+#if defined(CONFIG_USBD_HID)
+#define CONFIG_EXAMPLE_USBD_HID         1
+#endif
+
 #if defined(CONFIG_USBD_MSC)
 #define CONFIG_EXAMPLE_USBD_MSC         1
 #endif
@@ -610,6 +654,10 @@ in lwip_opt.h for support uart adapter*/
 #define CONFIG_EXAMPLE_USBD_CDC_ACM_TP     1
 #elif defined(CONFIG_USBD_CDC_ACM_RP)
 #define CONFIG_EXAMPLE_USBD_CDC_ACM_RP     1
+#elif defined(CONFIG_USBD_CDC_ACM_TP_NEW)
+#define CONFIG_EXAMPLE_USBD_CDC_ACM_TP_NEW     1
+#elif defined(CONFIG_USBD_CDC_ACM_RP_NEW)
+#define CONFIG_EXAMPLE_USBD_CDC_ACM_RP_NEW     1
 #else
 #define CONFIG_EXAMPLE_USBD_CDC_ACM     1
 #endif
@@ -675,6 +723,8 @@ in lwip_opt.h for support uart adapter*/
 #define CONFIG_EXAMPLE_WLAN_REPEATER    0
 #if CONFIG_EXAMPLE_WLAN_REPEATER
 #define CONFIG_BRIDGE                   1
+#undef CONFIG_EXAMPLE_WLAN_FAST_CONNECT
+#define CONFIG_EXAMPLE_WLAN_FAST_CONNECT 1
 #else
 #define CONFIG_BRIDGE                   0
 #endif

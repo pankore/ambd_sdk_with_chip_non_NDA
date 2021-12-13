@@ -21,9 +21,7 @@
 #include "rtl8721d_soc_ps.h"
 #include "diag.h"
 #include "shell.h"
-#ifndef __cplusplus
 #include "rand.h"
-#endif
 #include "monitor_rom.h"
 #include "rtl8721d_syscfg.h"
 #include "rtl8721d_pmc.h"
@@ -41,6 +39,9 @@
 #include "rtl8721dhp_sysreg.h"
 #include "rtl8721dlp_sysreg.h"
 #include "rtl8721d_pinmux.h"
+#if (defined(CONFIG_USB_NEW_STACK_EN))
+#include "rtl8721d_usb.h"
+#endif
 #ifndef CONFIG_BUILD_ROM
 #include "rtl8721d_ipc_api.h"
 #endif

@@ -116,6 +116,44 @@ void sys_cpu_reset(void);
 ///@}
 #endif //CONFIG_PLATFORM_8711B
 
+/**
+  * @brief read chip package type
+  * @retval 0: efuse not program
+            1: PACKAGE_QFN48
+            2: PACKAGE_QFN68
+            3: PACKAGE_QFN88
+            4: PACKAGE_QFN56
+            -1: UNKNOWN
+  */
+int sys_chip_package_read(void);
+
+/**
+  * @brief check chip MCM PSRAM existance
+  * @retval 0: efuse not program
+            1: not exist
+            2: exist
+            -1: unknown
+  */
+int sys_chip_psram_check(void);
+
+/**
+  * @brief check chip MCM FLASH existance
+  * @retval 0: efuse not program
+            1: not exist
+            2: exist
+            -1: unknown
+  */
+int sys_chip_flash_check(void);
+
+/**
+  * @brief check chip band type
+  * @retval 0: efuse not program
+            1: single band
+            2: dual band
+            -1: unknown
+  */
+int sys_chip_band_type_check(void);
+
 /*\@}*/
 
 #ifdef __cplusplus

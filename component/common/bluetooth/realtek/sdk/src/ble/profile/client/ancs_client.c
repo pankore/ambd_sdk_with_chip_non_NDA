@@ -567,5 +567,13 @@ T_CLIENT_ID ancs_add_client(P_FUN_GENERAL_APP_CB app_cb, uint8_t link_num)
 
     return ancs_client_id;
 }
+
+void ancs_delete_client(void)
+{
+    if (ancs_table != NULL) {
+        os_mem_free(ancs_table);
+        ancs_table = NULL;
+    }
+}
 #endif
 

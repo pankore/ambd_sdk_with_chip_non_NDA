@@ -499,5 +499,13 @@ T_CLIENT_ID gaps_add_client(P_FUN_GENERAL_APP_CB app_cb, uint8_t link_num)
 
     return gaps_client;
 }
+
+void gaps_delete_client(void)
+{
+    if (gaps_table != NULL) {
+        os_mem_free(gaps_table);
+        gaps_table = NULL;
+    }
+}
 #endif
 

@@ -18,7 +18,7 @@
 #include "flash_api.h"
 #include "device_lock.h"
 #endif
-
+   
 #if defined(CONFIG_EXAMPLE_MDNS) && CONFIG_EXAMPLE_MDNS
 #include <mdns/example_mdns.h>
 #endif
@@ -88,21 +88,21 @@
 #include <pppoe/example_pppoe.h>
 #endif
 
-#if defined(CONFIG_EXAMPLE_AZURE_IOT_HUB) && CONFIG_EXAMPLE_AZURE_IOT_HUB
-#include <azure_iot_hub/example_azure_iot_hub.h>
+#if defined(CONFIG_EXAMPLE_AZURE) && CONFIG_EXAMPLE_AZURE 
+#include <azure/example_azure_iot_entry.h>
 #endif
 
 #if defined(CONFIG_EXAMPLE_GOOGLE_NEST) && CONFIG_EXAMPLE_GOOGLE_NEST
-#include <googlenest/example_google.h>
+#include <googlenest/example_google.h>  
 #define FromDevice            1
-#define ToDevice     		2
-#define BOTH     		3
+#define ToDevice     		2 
+#define BOTH     		3 
 #define TYPE         "ToDevice"
-#endif
+#endif   
 
 #if defined(CONFIG_EXAMPLE_GOOGLE_CLOUD_IOT) && CONFIG_EXAMPLE_GOOGLE_CLOUD_IOT
-#include <google_cloud_iot/example_google_cloud_iot.h>
-#endif
+#include <google_cloud_iot/example_google_cloud_iot.h>  
+#endif  
 
 #if defined(CONFIG_EXAMPLE_MJPEG_CAPTURE) && CONFIG_EXAMPLE_MJPEG_CAPTURE
 #include <mjpeg_capture/example_mjpeg.h>
@@ -127,7 +127,7 @@
 #if CONFIG_EXAMPLE_FATFS
 #include <fatfs/example_fatfs.h>
 #endif
-
+   
 #if defined(CONFIG_EXAMPLE_STD_FILE) && (CONFIG_EXAMPLE_STD_FILE)
 #include <std_file/example_std_file.h>
 #endif
@@ -154,11 +154,11 @@
 
 #if defined(CONFIG_EXAMPLE_AJ_BASIC) && CONFIG_EXAMPLE_AJ_BASIC
 #include <alljoyn/example_aj_basic.h>
-#endif
+#endif 
 
 #if defined(CONFIG_EXAMPLE_AJ_AMEBA_LED) && CONFIG_EXAMPLE_AJ_AMEBA_LED
 #include <alljoyn/example_aj_ameba_led.h>
-#endif
+#endif 
 
 #if defined(CONFIG_EXAMPLE_COAP) && CONFIG_EXAMPLE_COAP
 #include <coap/example_coap.h>
@@ -284,6 +284,10 @@
 #include <wifi_roaming_plus/example_wifi_roaming_plus.h>
 #endif
 
+#if defined(CONFIG_EXAMPLE_TICKLESS_WIFI_ROAMING) && CONFIG_EXAMPLE_TICKLESS_WIFI_ROAMING
+#include <tickless_wifi_roaming/example_tickless_wifi_roaming.h>
+#endif
+
 #if defined(CONFIG_EXAMPLE_CONN_PRI_COND) && CONFIG_EXAMPLE_CONN_PRI_COND
 #include "wifi_connection_priority/example_wifi_conn_pri_cond.h"
 #endif
@@ -295,7 +299,7 @@
 #if defined(CONFIG_EXAMPLE_CJSON) && CONFIG_EXAMPLE_CJSON
 #include <cJSON/example_cJSON.h>
 #endif
-
+	
 #if defined(CONFIG_MEDIA_H264_TO_SDCARD) && CONFIG_MEDIA_H264_TO_SDCARD
 #include <media_h264_to_sdcard/example_media_h264_to_sdcard.h>
 #endif
@@ -364,6 +368,10 @@
 #include <usbd_vendor/example_usbd_vendor.h>
 #endif
 
+#if defined(CONFIG_EXAMPLE_USBD_HID) && CONFIG_EXAMPLE_USBD_HID
+#include <usbd_hid_mouse/example_usbd_hid_mouse.h>
+#endif
+
 #if defined(CONFIG_EXAMPLE_USBH_MSC) && CONFIG_EXAMPLE_USBH_MSC
 #include <usbh_msc/example_usbh_msc.h>
 #endif
@@ -384,10 +392,6 @@
 #include <amazon_freertos/example_amazon_freertos.h>
 #endif
 
-#if defined(CONFIG_EXAMPLE_MATTER) && CONFIG_EXAMPLE_MATTER
-#include <matter_task/example_matter.h>
-#endif
-
 /*
 	Preprocessor of example
 */
@@ -395,7 +399,7 @@ void pre_example_entry(void)
 {
 
 #if defined(CONFIG_EXAMPLE_CM_BACKTRACE) && CONFIG_EXAMPLE_CM_BACKTRACE
-	cm_backtrace_init("application", "HW v1.0", "SW v1.0");
+	cm_backtrace_init("target_img2", "HW v1.0", "SW v1.0");
 #endif
 
 #if ATCMD_VER == ATVER_2
@@ -427,6 +431,9 @@ void pre_example_entry(void)
 #if defined(CONFIG_EXAMPLE_WIFI_ROAMING_PLUS) && CONFIG_EXAMPLE_WIFI_ROAMING_PLUS
 	example_wifi_roaming_plus_init();
 #endif
+#if defined(CONFIG_EXAMPLE_TICKLESS_WIFI_ROAMING) && CONFIG_EXAMPLE_TICKLESS_WIFI_ROAMING
+	example_tickless_wifi_roaming_init();
+#endif
 
 #if defined(FREERTOS_PMU_TICKLESS_PLL_RESERVED) && (FREERTOS_PMU_TICKLESS_PLL_RESERVED==1)
     pmu_set_pll_reserved(1);
@@ -455,12 +462,12 @@ extern void example_bt_mesh(void);
    	The configuration is enabled in platform_opts.h
 */
 void example_entry(void)
-{
+{	
 #if defined(CONFIG_LINKKIT_AWSS) && CONFIG_LINKKIT_AWSS
 	example_ali_awss();
 #endif
 
-#if (CONFIG_EXAMPLE_MDNS && !CONFIG_EXAMPLE_UART_ADAPTER)
+#if (CONFIG_EXAMPLE_MDNS && !CONFIG_EXAMPLE_UART_ADAPTER) 
 	example_mdns();
 #endif
 
@@ -488,7 +495,7 @@ void example_entry(void)
 #if defined(CONFIG_EXAMPLE_SMTP) && CONFIG_EXAMPLE_SMTP
 	example_smtp();
 #endif
-
+        
 #if CONFIG_EXAMPLE_SSL_DOWNLOAD
 	example_ssl_download();
 #endif
@@ -531,11 +538,11 @@ void example_entry(void)
 
 #if defined(CONFIG_UART_UPDATE) && CONFIG_UART_UPDATE
 	example_uart_update();
-#endif
+#endif  
 
 #if defined(CONFIG_EXAMPLE_WIGADGET) && CONFIG_EXAMPLE_WIGADGET
     /*To ensure the application has enough heap size, please goto FreeRTOSConfig.h to change configTOTAL_HEAP_SIZE at least to 115*1024 */
-    example_wigadget();
+    example_wigadget();         
 #endif
 
 #if CONFIG_EXAMPLE_MQTT
@@ -562,10 +569,10 @@ void example_entry(void)
 	example_wifi_manager();
 #endif
 
-#if CONFIG_EXAMPLE_HTTP_CLIENT
+#if CONFIG_EXAMPLE_HTTP_CLIENT        
         example_http_client();
 #endif
-
+        
 #if defined(CONFIG_JOINLINK) && CONFIG_JOINLINK
 	example_joinlink();
 #endif
@@ -577,10 +584,10 @@ void example_entry(void)
 #if CONFIG_EXAMPLE_FATFS
 	example_fatfs();
 #endif
-
+        
 #if defined (CONFIG_EXAMPLE_STD_FILE) && (CONFIG_EXAMPLE_STD_FILE)
         example_std_file();
-#endif
+#endif        
 
 
 #if defined(CONFIG_EXAMPLE_DCT) && CONFIG_EXAMPLE_DCT
@@ -593,8 +600,8 @@ void example_entry(void)
 
 #if defined(CONFIG_EXAMPLE_INIC_GSPI_HOST) && CONFIG_EXAMPLE_INIC_GSPI_HOST
 	example_inic_gspi();
-#endif
-
+#endif       
+        
 #if (defined(CONFIG_EXAMPLE_UART_ATCMD) && CONFIG_EXAMPLE_UART_ATCMD)
 	example_uart_atcmd();
 #endif
@@ -619,11 +626,11 @@ void example_entry(void)
 #if defined(CONFIG_EXAMPLE_AJ_BASIC) && CONFIG_EXAMPLE_AJ_BASIC
     example_aj_basic();
 #endif
-
+           
 #if defined(CONFIG_EXAMPLE_AJ_AMEBA_LED) && CONFIG_EXAMPLE_AJ_AMEBA_LED
     example_aj_ameba_led();
 #endif
-
+        
 #if defined(CONFIG_EXAMPLE_COAP) && CONFIG_EXAMPLE_COAP
     example_coap();
 #endif
@@ -639,7 +646,7 @@ void example_entry(void)
 #if defined(CONFIG_EXAMPLE_WEBSOCKET_CLIENT) && CONFIG_EXAMPLE_WEBSOCKET_CLIENT
     example_wsclient();
 #endif
-
+    
 #if defined(CONFIG_EXAMPLE_WEBSOCKET_SERVER) && CONFIG_EXAMPLE_WEBSOCKET_SERVER
     example_wsserver();
 #endif
@@ -649,7 +656,7 @@ void example_entry(void)
 	// Para: S/ A/ M1/ M2/ M3/ M4/ M5/ M6/ M7/ S1/ S2/ S3/ S4/ S5/ S6
 	example_wlan_scenario("S");
 #endif
-
+	
 #if defined(CONFIG_EXAMPLE_WLAN_REPEATER) && CONFIG_EXAMPLE_WLAN_REPEATER
 	example_wlan_repeater();
 #endif
@@ -665,25 +672,29 @@ void example_entry(void)
 #if defined(CONFIG_EXAMPLE_AUDIO_MP3) && CONFIG_EXAMPLE_AUDIO_MP3
 /*To ensure the application has enough heap size, please goto FreeRTOSConfig.h to change configTOTAL_HEAP_SIZE at least to 60*1024 */
 	example_audio_mp3();
-#endif
+#endif     
 
 #if defined(CONFIG_EXAMPLE_AUDIO_AC3) && CONFIG_EXAMPLE_AUDIO_AC3
 	example_audio_ac3();
-#endif
+#endif     
 
 #if defined(CONFIG_EXAMPLE_AUDIO_M4A) && CONFIG_EXAMPLE_AUDIO_M4A
 /*To ensure the application has enough heap size, please goto FreeRTOSConfig.h to change configTOTAL_HEAP_SIZE at least to 270*1024 and ENABLE WIFI*/
 	example_audio_m4a();
-#endif
-
+#endif  
+        
 #if defined(CONFIG_EXAMPLE_AUDIO_M4A_SELFPARSE) && CONFIG_EXAMPLE_AUDIO_M4A_SELFPARSE
 /*To ensure the application has enough heap size, please goto FreeRTOSConfig.h to change configTOTAL_HEAP_SIZE at least to 270*1024 and ENABLE WIFI*/
 	example_audio_m4a_selfparse();
+#endif 
+
+#if defined(CONFIG_EXAMPLE_AUDIO_OPUS) && CONFIG_EXAMPLE_AUDIO_OPUS
+	example_audio_opus();
 #endif
 
 #if defined(CONFIG_EXAMPLE_AUDIO_M4A_MP3) && CONFIG_EXAMPLE_AUDIO_M4A_MP3
 	example_audio_m4a_mp3();
-#endif
+#endif  
 
 #if defined(CONFIG_EXAMPLE_AUDIO_AMR) && CONFIG_EXAMPLE_AUDIO_AMR
 	example_audio_amr();
@@ -713,11 +724,11 @@ void example_entry(void)
 	example_audio_flac();
 #endif
 
-#if defined(CONFIG_EXAMPLE_AUDIO_TTS) && CONFIG_EXAMPLE_AUDIO_TTS
+#if defined(CONFIG_EXAMPLE_AUDIO_TTS) && CONFIG_EXAMPLE_AUDIO_TTS 
 	example_audio_tts();
 #endif
 
-#if defined(CONFIG_EXAMPLE_EKHO) && CONFIG_EXAMPLE_EKHO
+#if defined(CONFIG_EXAMPLE_EKHO) && CONFIG_EXAMPLE_EKHO 
 	example_audio_ekho();
 #endif
 
@@ -740,19 +751,19 @@ void example_entry(void)
 
 #if defined(CONFIG_EXAMPLE_RARP) && CONFIG_EXAMPLE_RARP
 	example_rarp();
-#endif
+#endif 
 
 #if CONFIG_EXAMPLE_SSL_SERVER
 	example_ssl_server();
-#endif
-
+#endif  
+        
 #if defined(CONFIG_EXAMPLE_TIMELAPSE) && CONFIG_EXAMPLE_TIMELAPSE
         example_media_tl();
 #endif
 
 #if defined(CONFIG_EXAMPLE_OTA_HTTP) && CONFIG_EXAMPLE_OTA_HTTP
 	example_ota_http();
-#endif
+#endif 
 
 #if defined(CONFIG_EXAMPLE_OTA_HTTPS) && CONFIG_EXAMPLE_OTA_HTTPS
 	example_ota_https();
@@ -761,15 +772,15 @@ void example_entry(void)
 #if defined(CONFIG_EXAMPLE_OTA_SDCARD) && CONFIG_EXAMPLE_OTA_SDCARD
 	example_ota_sdcard();
 #endif
-
+	
 #if defined(CONFIG_EXAMPLE_AMAZON_AWS_IOT) && CONFIG_EXAMPLE_AMAZON_AWS_IOT
     example_amazon_awsiot();
 #endif
 
-#if defined(CONFIG_EXAMPLE_AZURE_IOT_HUB) && CONFIG_EXAMPLE_AZURE_IOT_HUB
-    example_iot_hub();
+#if defined(CONFIG_EXAMPLE_AZURE) && CONFIG_EXAMPLE_AZURE 
+    example_azure();
 #endif
-
+    
 #if CONFIG_ALINK
 	example_alink();
 #endif
@@ -781,10 +792,10 @@ example_hilink();
 #if defined(CONFIG_EXAMPLE_ALC_DSP_FW_UPGRADE) && CONFIG_EXAMPLE_ALC_DSP_FW_UPGRADE
         example_alc_dsp_fw_upgrade();
 #endif
-
+        
 #if defined(CONFIG_EXAMPLE_AUDIO_PCM_UPLOAD) && CONFIG_EXAMPLE_AUDIO_PCM_UPLOAD
         example_audio_pcm_upload();
-#endif
+#endif 
 
 #if defined(CONFIG_EXAMPLE_WIFI_ROAMING) && CONFIG_EXAMPLE_WIFI_ROAMING
 	example_wifi_roaming();
@@ -792,6 +803,10 @@ example_hilink();
 
 #if defined(CONFIG_EXAMPLE_WIFI_ROAMING_PLUS) && CONFIG_EXAMPLE_WIFI_ROAMING_PLUS
 	example_wifi_roaming_plus();
+#endif
+
+#if defined(CONFIG_EXAMPLE_TICKLESS_WIFI_ROAMING) && CONFIG_EXAMPLE_TICKLESS_WIFI_ROAMING
+	example_tickless_wifi_roaming();
 #endif
 
 #if defined(CONFIG_EXAMPLE_CONN_PRI_COND) && CONFIG_EXAMPLE_CONN_PRI_COND
@@ -809,7 +824,7 @@ example_hilink();
 #if defined(CONFIG_MEDIA_AMEBACAM_APP_BROADCAST) && CONFIG_MEDIA_AMEBACAM_APP_BROADCAST
 	media_amebacam_broadcast();
 #endif
-
+	
 #if defined(CONFIG_MEDIA_H264_TO_SDCARD) && CONFIG_MEDIA_H264_TO_SDCARD
 	example_media_h264_to_sdcard();
 #endif
@@ -838,30 +853,23 @@ example_hilink();
         example_duer();
 #endif
 
-#if defined(CONFIG_BT) && CONFIG_BT
-	// do not start example if defined BT MP or WIFI MP
-	#if !(defined(CONFIG_MP_INCLUDED))
-	bt_example_init();
-	#endif
-#endif
-
 #if defined(CONFIG_EXAMPLE_USB_MASS_STORAGE) && CONFIG_EXAMPLE_USB_MASS_STORAGE
 	example_mass_storage();
 #endif
 
-#if defined(CONFIG_EXAMPLE_USB_ISOC_DEVICE) && CONFIG_EXAMPLE_USB_ISOC_DEVICE
+#if defined(CONFIG_EXAMPLE_USB_ISOC_DEVICE) && CONFIG_EXAMPLE_USB_ISOC_DEVICE        
     example_isoc_device();
 #endif
 
 #if defined(CONFIG_EXAMPLE_USB_VENDOR_SPECIFIC) && CONFIG_EXAMPLE_USB_VENDOR_SPECIFIC
 	example_vendor_specific();
-#endif
+#endif 
 
-#if defined(CONFIG_EXAMPLE_USBD_AUDIO) && CONFIG_EXAMPLE_USBD_AUDIO
+#if defined(CONFIG_EXAMPLE_USBD_AUDIO) && CONFIG_EXAMPLE_USBD_AUDIO	        
 	example_usbd_audio();
 #endif
 
-#if defined(CONFIG_EXAMPLE_USBD_MSC) && CONFIG_EXAMPLE_USBD_MSC
+#if defined(CONFIG_EXAMPLE_USBD_MSC) && CONFIG_EXAMPLE_USBD_MSC	        
 	example_usbd_msc();
 #endif
 
@@ -869,19 +877,23 @@ example_hilink();
 	example_usbd_cdc_acm();
 #endif
 
+#if defined(CONFIG_EXAMPLE_USBD_HID) && CONFIG_EXAMPLE_USBD_HID
+	example_usbd_hid_mouse();
+#endif
+
 #if defined(CONFIG_EXAMPLE_USBD_VENDOR) && CONFIG_EXAMPLE_USBD_VENDOR
 	example_usbd_vendor();
 #endif
 
-#if defined(CONFIG_EXAMPLE_USBH_MSC) && CONFIG_EXAMPLE_USBH_MSC
+#if defined(CONFIG_EXAMPLE_USBH_MSC) && CONFIG_EXAMPLE_USBH_MSC	        
 	example_usbh_msc();
 #endif
 
-#if defined(CONFIG_EXAMPLE_USBH_UVC) && CONFIG_EXAMPLE_USBH_UVC
+#if defined(CONFIG_EXAMPLE_USBH_UVC) && CONFIG_EXAMPLE_USBH_UVC	        
 	example_usbh_uvc();
 #endif
 
-#if defined(CONFIG_EXAMPLE_USBH_VENDOR) && CONFIG_EXAMPLE_USBH_VENDOR
+#if defined(CONFIG_EXAMPLE_USBH_VENDOR) && CONFIG_EXAMPLE_USBH_VENDOR	        
 	example_usbh_vendor();
 #endif
 
@@ -922,10 +934,6 @@ example_hilink();
 
 #if defined(CONFIG_EXAMPLE_SW_PTA) && CONFIG_EXAMPLE_SW_PTA
 	example_sw_pta();
-#endif
-
-#if defined(CONFIG_EXAMPLE_MATTER) && CONFIG_EXAMPLE_MATTER
-    example_matter_task();
 #endif
 
 }

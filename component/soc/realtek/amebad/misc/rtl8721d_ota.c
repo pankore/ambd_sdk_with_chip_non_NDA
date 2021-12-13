@@ -126,6 +126,8 @@ void ota_platform_reset(void)
 	rtc_backup_timeinfo();
 #endif
 
+	BKUP_Set(BKUP_REG0, BIT_KM4SYS_RESET_HAPPEN);
+
 	WDG_Scalar(50, &CountProcess, &DivFacProcess);
 	WDG_InitStruct.CountProcess = CountProcess;
 	WDG_InitStruct.DivFacProcess = DivFacProcess;

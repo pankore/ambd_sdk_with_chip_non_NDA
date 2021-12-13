@@ -724,4 +724,12 @@ T_CLIENT_ID simp_ble_add_client(P_FUN_GENERAL_APP_CB app_cb, uint8_t link_num)
 
     return simp_client;
 }
+
+void simp_ble_delete_client(void)
+{
+    if (simp_table != NULL) {
+        os_mem_free(simp_table);
+        simp_table = NULL;
+    }
+}
 #endif

@@ -235,7 +235,7 @@ void* log_handler(char *cmd)
 	param = strtok(NULL, "\0");
 #endif
 	if(token && (strlen(token) <= 4))
-		strcpy(tok, token);
+		strncpy(tok, token, sizeof(tok));
 	else{
 		//printf("\n\rAT Cmd format error!\n");
 		return NULL;
@@ -265,7 +265,7 @@ int parse_param(char *buf, char **argv)
 
 	if(buf == NULL)
 		goto exit;
-	strcpy(temp_buf, buf);
+	strncpy(temp_buf, buf, sizeof(temp_buf));
 	
 	while((argc < MAX_ARGC) && (*buf_pos != '\0')) {
 		while((*buf_pos == ',') || (*buf_pos == '[') || (*buf_pos == ']')){
@@ -464,7 +464,7 @@ void log_service(void *param)
 	}
 }
 
-#define STACKSIZE               4096
+#define STACKSIZE               1280
 void start_log_service(void)
 {
 	xTaskHandle CreatedTask;

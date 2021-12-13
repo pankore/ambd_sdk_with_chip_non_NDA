@@ -7,6 +7,7 @@ include ../amebad_bsp/Makefile
 SDK_DIR = $(BASEDIR)/component/common/bluetooth/realtek/sdk
 MESH_DIR = $(SDK_DIR)/example/bt_mesh
 MESH_USER_API_DIR = $(MESH_DIR)/api
+MESH_TEST_DIR = $(SDK_DIR)/example/bt_mesh_test
 MESH_PROV_RTK_DEMO_DIR = $(SDK_DIR)/example/bt_mesh_provisioner_rtk_demo
 
 #*****************************************************************************#
@@ -32,6 +33,7 @@ MODULE_IFLAGS += \
    -I$(MESH_USER_API_DIR)/device \
    -I$(MESH_USER_API_DIR) \
    -I$(MESH_PROV_RTK_DEMO_DIR)/inc \
+   -I$(MESH_TEST_DIR) \
 
 #*****************************************************************************#
 #                        DEVICE APP FILES                                     #
@@ -42,6 +44,10 @@ CSRC += \
     $(MESH_DIR)/lib/profile/datatrans_service.c \
     $(MESH_DIR)/lib/profile/datatrans_client.c \
     $(MESH_DIR)/lib/model/configuration_client.c \
+	$(MESH_DIR)/lib/model/blob_transfer_client.c \
+	$(MESH_DIR)/lib/model/firmware_distribution_client.c \
+	$(MESH_DIR)/lib/model/firmware_update_client.c \
+	$(MESH_DIR)/lib/model/private_beacon_client.c \
     $(MESH_DIR)/lib/model/health_client.c \
     $(MESH_DIR)/lib/model/realtek/ping_control.c \
     $(MESH_DIR)/lib/model/realtek/tp_control.c \
@@ -59,6 +65,7 @@ CSRC += \
     $(MESH_DIR)/lib/model/generic_power_level_client.c \
     $(MESH_DIR)/lib/model/generic_battery_client.c \
     $(MESH_DIR)/lib/model/light_ctl_client.c \
+	$(MESH_DIR)/lib/model/light_lc_client.c \
     $(MESH_DIR)/lib/model/time_client.c \
     $(MESH_DIR)/lib/model/scene_client.c \
     $(MESH_DIR)/lib/model/sensor_client.c \
@@ -69,7 +76,11 @@ CSRC += \
     $(MESH_DIR)/lib/common/ping_app.c \
     $(MESH_DIR)/lib/common/generic_client_app.c \
     $(MESH_DIR)/lib/common/light_client_app.c \
+	$(MESH_DIR)/lib/common/rmt_prov_client_app.c \
     $(MESH_DIR)/lib/common/datatrans_app.c \
+	$(MESH_DIR)/lib/common/customer_dfu_service.c \
+	$(MESH_DIR)/lib/common/dfudep_service.c \
+	$(MESH_DIR)/lib/common/dfu_distributor_app.c \
     $(MESH_DIR)/lib/cmd/mesh_cmd.c \
     $(MESH_DIR)/lib/cmd/client_cmd.c \
     $(MESH_DIR)/lib/cmd/test_cmd.c \
