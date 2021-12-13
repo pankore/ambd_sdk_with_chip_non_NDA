@@ -33,6 +33,7 @@
 #include "wifi_constants.h"
 #include "wifi_conf.h"
 #include "lwip_netconf.h"
+#include "os_sched.h"
 
 extern bool bt_trace_uninit(void);
 extern void wifi_btcoex_set_bt_on(void);
@@ -257,7 +258,7 @@ int bt_config_app_init(void)
 	
 	/*Wait BT init complete*/
 	do {
-		vTaskDelay(100 / portTICK_RATE_MS);
+		os_delay(100);
 		le_get_gap_param(GAP_PARAM_DEV_STATE , &new_state);
 	} while (new_state.gap_init_state != GAP_INIT_STATE_STACK_READY);
 	

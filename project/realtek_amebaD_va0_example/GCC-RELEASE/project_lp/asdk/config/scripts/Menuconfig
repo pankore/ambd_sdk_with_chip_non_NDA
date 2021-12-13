@@ -727,6 +727,7 @@ function parser(ifile,menu) {
 				 menu_no, $0) >newmenu
 
 			parser(ifile, newmenu)
+			close(newmenu)
 		}
 		else if ($0 ~ /^#|\$MAKE|mainmenu_name/) {
 			printf("") >>menu

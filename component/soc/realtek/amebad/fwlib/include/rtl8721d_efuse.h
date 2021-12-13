@@ -271,7 +271,7 @@ __STATIC_INLINE u32 EFUSE_RemainLength(void)
 					if (WordEn & BIT0) {
 						Idx = Idx + 2;
 					}
-					WordEn = WordEn/2;
+					WordEn = WordEn>>1;
 				}
 			}
 			else {
@@ -280,7 +280,7 @@ __STATIC_INLINE u32 EFUSE_RemainLength(void)
 					if (WordEn & BIT0) {
 						Idx = Idx + 2;
 					}
-					WordEn = WordEn/2;
+					WordEn = WordEn>>1;
 				}
 			}
 		}

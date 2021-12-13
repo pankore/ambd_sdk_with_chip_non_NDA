@@ -36,9 +36,7 @@
 #include "app_flags.h"
 #include <stdio.h>
 #include "wifi_constants.h"
-#include "FreeRTOS.h"
 #include <wifi/wifi_conf.h>
-#include "task.h"
 #include "rtk_coex.h"
 
 
@@ -168,6 +166,14 @@ void app_le_gap_init(void)
 
     /* register gap message callback */
     le_register_app_cb(app_gap_callback);
+#if F_BT_LE_5_0_SET_PHY_SUPPORT
+	uint8_t phys_prefer = GAP_PHYS_PREFER_ALL;
+	uint8_t tx_phys_prefer = GAP_PHYS_PREFER_1M_BIT | GAP_PHYS_PREFER_2M_BIT;
+	uint8_t rx_phys_prefer = GAP_PHYS_PREFER_1M_BIT | GAP_PHYS_PREFER_2M_BIT;
+	le_set_gap_param(GAP_PARAM_DEFAULT_PHYS_PREFER, sizeof(phys_prefer), &phys_prefer);
+	le_set_gap_param(GAP_PARAM_DEFAULT_TX_PHYS_PREFER, sizeof(tx_phys_prefer), &tx_phys_prefer);
+	le_set_gap_param(GAP_PARAM_DEFAULT_RX_PHYS_PREFER, sizeof(rx_phys_prefer), &rx_phys_prefer);
+#endif
 }
 
 /**
@@ -252,7 +258,7 @@ int ble_app_init(void)
 	
 	/*Wait WIFI init complete*/
 	while(!(wifi_is_up(RTW_STA_INTERFACE) || wifi_is_up(RTW_AP_INTERFACE))) {
-		vTaskDelay(1000 / portTICK_RATE_MS);
+		os_delay(1000);
 	}
 
 	//judge BLE central is already on
@@ -269,7 +275,7 @@ int ble_app_init(void)
 
 	/*Wait BT init complete*/
 	do {
-		vTaskDelay(100 / portTICK_RATE_MS);
+		os_delay(100);
 		le_get_gap_param(GAP_PARAM_DEV_STATE , &new_state);
 	}while(new_state.gap_init_state != GAP_INIT_STATE_STACK_READY);
 

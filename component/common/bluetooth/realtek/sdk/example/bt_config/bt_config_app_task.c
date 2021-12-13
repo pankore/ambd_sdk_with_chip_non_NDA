@@ -108,14 +108,14 @@ void bt_config_app_task_init()
 void bt_config_app_task_deinit()
 {
 	//gap_stop_bt_stack
+	if (app_task_handle) {
+		os_task_delete(app_task_handle);
+	}
 	if (io_queue_handle) {
 		os_msg_queue_delete(io_queue_handle);
 	}
 	if (evt_queue_handle) {
 		os_msg_queue_delete(evt_queue_handle);
-	}
-	if (app_task_handle) {
-		os_task_delete(app_task_handle);
 	}
 	io_queue_handle = NULL;
 	evt_queue_handle = NULL;

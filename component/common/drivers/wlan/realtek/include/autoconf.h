@@ -79,7 +79,7 @@
 #endif
 #define CONFIG_LITTLE_ENDIAN
 #define CONFIG_80211N_HT
-//#define CONFIG_RECV_REORDERING_CTRL
+#define CONFIG_RECV_REORDERING_CTRL
 #define RTW_NOTCH_FILTER 0
 #define CONFIG_EMBEDDED_FWIMG
 #define CONFIG_PHY_SETTING_WITH_ODM
@@ -136,19 +136,10 @@
 
 #define BAD_MIC_COUNTERMEASURE 1
 #define DEFRAGMENTATION 1
+#define RX_AGGREGATION 1
+#define RX_AMSDU 1
 
 #define WIFI_LOGO_CERTIFICATION 0
-#if WIFI_LOGO_CERTIFICATION
-    #define RX_AGGREGATION 1
-	#define RX_AMSDU 1
-#else
-	#ifdef CONFIG_HIGH_TP_TEST
-    		#define RX_AGGREGATION 1
-	#else
-		#define RX_AGGREGATION 0
-	#endif
-	#define RX_AMSDU 0
-#endif
 
 #if defined(CONFIG_PLATFORM_8711B)
 	#define CONFIG_FW_C2H_PKT
@@ -201,7 +192,7 @@
 #define NOT_SUPPORT_RF_MULTIPATH
 #endif
 #define NOT_SUPPORT_VHT
-#define NOT_SUPPORT_40M
+//#define NOT_SUPPORT_40M
 #define NOT_SUPPORT_80M
 #if defined(CONFIG_PLATFORM_8195A)
 #define NOT_SUPPORT_BBSWING
@@ -243,6 +234,11 @@
 #endif
 
 
+/* For repeater mode */
+#define CONFIG_REPEATER		0
+#if defined(CONFIG_REPEATER) && CONFIG_REPEATER
+#define NOT_SUPPORT_40M
+#endif
 
 /* For promiscuous mode */
 #define CONFIG_PROMISC
@@ -261,6 +257,8 @@
 /* For multicast */
 #define CONFIG_MULTICAST
 #endif
+
+#define CONFIG_RX_PACKET_APPEND_FCS
 
 /* For STA+AP Concurrent MODE */
 #define CONFIG_CONCURRENT_MODE
@@ -283,6 +281,7 @@
 #define CONFIG_TLS	1
 #define CONFIG_PEAP	1
 #define CONFIG_TTLS	1
+#define CONFIG_FAST	1
 
 // DO NOT change the below config of EAP
 #ifdef PRE_CONFIG_EAP
@@ -292,15 +291,17 @@
 #define CONFIG_PEAP	1
 #undef CONFIG_TTLS
 #define CONFIG_TTLS	1
+#undef CONFIG_FAST
+#define CONFIG_FAST	1
 #endif
 
 // enable 1X code in lib_wlan as default (increase 380 bytes)
 #define CONFIG_EAP
 
-#if CONFIG_TLS || CONFIG_PEAP || CONFIG_TTLS
+#if CONFIG_TLS || CONFIG_PEAP || CONFIG_TTLS || CONFIG_FAST
 #define EAP_REMOVE_UNUSED_CODE 1
-#endif	     
-	     
+#endif
+
 #define EAP_SSL_VERIFY_SERVER
 
 #if CONFIG_TLS
@@ -861,5 +862,13 @@ extern unsigned int g_ap_sta_num;
 #define WLAN_WRAPPER_VERSION 1
 
 #define TIME_THRES	20
+
+/* 80211 - K V R */
+#define CONFIG_IEEE80211K
+#define CONFIG_LAYER2_ROAMING
+#ifdef CONFIG_LAYER2_ROAMING
+    #define CONFIG_RTW_WNM
+    #define CONFIG_IEEE80211R
+#endif
 
 #endif //WLANCONFIG_H

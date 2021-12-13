@@ -2,6 +2,35 @@
 /*
  * Release Note
  */
+	v1.0.1.162
+	2021/09/18
+	1. Fix a bug for H4 when receive error data.
+	
+	v1.0.1.158
+	2021/07/23
+	1. Fix a bug for bte_deinit.
+	
+	v1.0.1.157
+	2021/07/22
+	1. Fix a bug for le_get_conn_info.
+
+  	v1.0.1.155
+	2021/07/15
+	1. Open F_BT_LE_4_0_DTM_SUPPORT. Open BT4.0 DTM APIs.
+	
+	v1.0.1.147
+	2021/05/10
+	1. le_disconnect() will check the device disconnecting state. Application can't disconnect two BLE links at the same time.
+	
+	v1.0.1.130
+	2021/02/04
+	1. Open secure context.
+	
+	v1.0.1.114
+	2020/11/24
+	GCID de656b864581c204, PGCID fb86dce1907a0251
+	1. Fix a bug of pairing distrbution check.
+	
 	v1.0.1.96
 	2020/08/27
 	GCID b41ecd11f85d38ba, PGCID facb7c3890b577aa

@@ -47,6 +47,10 @@ extern u32 _ntohl(u32 n);
 #define SC_SOFTAP_EN      0 // disable softAP mode for iNIC applications
 #endif
 
+#if SC_SOFTAP_EN
+#define SOFTAP_SSID_LEN		33
+#endif
+
 #if CONFIG_WLAN
 #if (CONFIG_INCLUDE_SIMPLE_CONFIG)
 #include "wifi/wifi_conf.h"
@@ -186,7 +190,7 @@ static void set_device_name(char *device_name)
 	memcpy(device_name, "ameba_", 6);
 	for(int i = 0; i < 3; i++)
 	{
-		sprintf(device_name + 6 + pos, "%02x", xnetif[0].hwaddr[i + 3]);
+		snprintf(device_name + 6 + pos, 64-6-pos, "%02x", xnetif[0].hwaddr[i + 3]);
 		pos += 2;
 		if(i != 2)
 			device_name[6 + pos++] = ':';
@@ -458,11 +462,11 @@ static int SC_softAP_find_ap_from_scan_buf(char*buf, int buflen, char *target_ss
 			pwifi->channel = *(buf + plen + 13);
 			// security_mode offset = 11
 			security_mode = (u8)*(buf + plen + 11);
-			if(security_mode == IW_ENCODE_ALG_NONE)
+			if(security_mode == RTW_ENCODE_ALG_NONE)
 				pwifi->security_type = RTW_SECURITY_OPEN;
-			else if(security_mode == IW_ENCODE_ALG_WEP)
+			else if(security_mode == RTW_ENCODE_ALG_WEP)
 				pwifi->security_type = RTW_SECURITY_WEP_PSK;
-			else if(security_mode == IW_ENCODE_ALG_CCMP)
+			else if(security_mode == RTW_ENCODE_ALG_CCMP)
 				pwifi->security_type = RTW_SECURITY_WPA2_AES_PSK;
 			break;
 		}
@@ -687,13 +691,13 @@ rtw_security_t	SC_translate_iw_security_mode(u8 security_type) {
 
 
 	switch (security_type) {
-	case IW_ENCODE_ALG_NONE:
+	case RTW_ENCODE_ALG_NONE:
 		security_mode = RTW_SECURITY_OPEN;
 	break;
-	case IW_ENCODE_ALG_WEP:
+	case RTW_ENCODE_ALG_WEP:
 		security_mode = RTW_SECURITY_WEP_PSK;
 	break;
-	case IW_ENCODE_ALG_CCMP:
+	case RTW_ENCODE_ALG_CCMP:
 		security_mode = RTW_SECURITY_WPA2_AES_PSK;
 	break;
 	default:
@@ -1291,10 +1295,10 @@ static void simpleConfig_get_softAP_profile(unsigned char *SimpleConfig_SSID, un
     
     MAC_sum_complement = -(mac_addr[3] + mac_addr[4] + mac_addr[5]);
 	if(strlen((char const*)softap_prefix) > 0)
-    	sprintf((char*)SimpleConfig_SSID, "%s-%02X%02X%02X00%02X",
+    	snprintf((char*)SimpleConfig_SSID, SOFTAP_SSID_LEN, "%s-%02X%02X%02X00%02X",
             softap_prefix, mac_addr[3], mac_addr[4], mac_addr[5], (MAC_sum_complement & 0xff));
 	else	
-		sprintf((char*)SimpleConfig_SSID, "@RSC-%02X%02X%02X00%02X",
+		snprintf((char*)SimpleConfig_SSID, SOFTAP_SSID_LEN, "@RSC-%02X%02X%02X00%02X",
 			mac_addr[3], mac_addr[4], mac_addr[5], (MAC_sum_complement & 0xff));
 
     memcpy(SimpleConfig_password, "12345678", 8);
@@ -1409,7 +1413,7 @@ static int simple_config_softap_config(void)
                         char softAP_ack_content[17];
                         //printf("softAP mode simpleConfig success, send response\n");
                     	// ack content: MAC address in string mode
-                    	sprintf(softAP_ack_content, "%02x:%02x:%02x:%02x:%02x:%02x",
+                    	snprintf(softAP_ack_content, sizeof(softAP_ack_content), "%02x:%02x:%02x:%02x:%02x:%02x",
                     	        mac_addr[0], mac_addr[1], mac_addr[2], 
                     	        mac_addr[3], mac_addr[4], mac_addr[5]);
 
@@ -1725,8 +1729,8 @@ static void simple_config_channel_control(void *para)
 #if SC_SOFTAP_EN
 #if defined(CONFIG_BT_CONFIG) && CONFIG_BT_CONFIG
 	int mode;
-	wext_get_mode(WLAN0_NAME, &mode); // mode is equal to IW_MODE_INFRA if breaked by BT Config  
-	if(mode != IW_MODE_INFRA)
+	wext_get_mode(WLAN0_NAME, &mode); // mode is equal to RTW_MODE_INFRA if breaked by BT Config  
+	if(mode != RTW_MODE_INFRA)
     	simple_config_kick_STA();
 #else
 	simple_config_kick_STA();

@@ -31,3 +31,5 @@ This amr example is used to play amr files from the SDCARD. In order to run the 
 	to make sure that ram allocated is enough to run this example.
 	
 	3. In IAR, you need to include lib_amr.a under "km4_application/lib" and example_audio_amr.c file in this folder under "km4_application/utilities/example"
+	
+	4. Since SD card is needed, in component\soc\realtek\amebad\fwlib\usrcfg\rtl8721dhp_intfcfg.c, set both sdioh_cd_pin and sdioh_wp_pin to _PNC

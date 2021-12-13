@@ -867,7 +867,7 @@ SD_RESULT SD_GetEXTCSD(u8 *pbuf)
 		if (ret != HAL_OK)
 			DBG_PRINTF(MODULE_SDIO, LEVEL_ERROR, "Stop transmission error !!\r\n");
 
-		return HAL_ERR_UNKNOWN;
+		return SD_ERROR;
 	}
 
 	DCache_Invalidate((u32)pbuf, SD_BLOCK_SIZE);
@@ -1371,8 +1371,8 @@ u32 SD_GetSDStatus(u8 *buf_32align)
 				 }
 			 }
 		 } else {
-			 DBG_PRINTF(MODULE_SDIO, LEVEL_WARN, "This card doesn't support the specified speed mode !!\r\n");
-			 return HAL_ERR_HW;
+			 DBG_PRINTF(MODULE_SDIO, LEVEL_WARN, "This card doesn't support the specified speed mode, use current speed mode !!\r\n");
+			 return HAL_OK;
 		 }
 	 } else {
 		 DBG_PRINTF(MODULE_SDIO, LEVEL_WARN,"This card doesn't support CMD6 and can't switch the bus speed !!\r\n");

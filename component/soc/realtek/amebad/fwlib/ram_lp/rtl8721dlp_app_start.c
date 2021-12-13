@@ -294,7 +294,8 @@ void app_dslp_wake_check(void)
 
 static void app_gen_random_seed(void)
 {
-	u16 value, data;
+	u16 value;
+	u32 data;
 	int i = 0, j = 0;
 	u8 random[4], tmp;
 
@@ -304,6 +305,9 @@ static void app_gen_random_seed(void)
 	RegData = (u32)CapTouch->CT_ADC_REG1X_LPAD;
 	RegTemp = RegData | (BIT(6) | BIT(7));
 	CapTouch->CT_ADC_REG1X_LPAD = RegTemp;
+
+	RCC_PeriphClockCmd(APBPeriph_ADC, APBPeriph_ADC_CLOCK, DISABLE);
+	RCC_PeriphClockCmd(APBPeriph_ADC, APBPeriph_ADC_CLOCK, ENABLE);
 
 	ADC_Cmd(DISABLE);
 
@@ -411,6 +415,9 @@ void app_start(void)
 		
 		SDM32K_RTCCalEnable(ps_config.km0_rtc_calibration); /* 0.3ms */
 
+		Temp = HAL_READ32(SYSTEM_CTRL_BASE_LP, REG_AON_BOOT_REASON1);
+		Temp &= ~BIT_DSLP_RETENTION_RAM_PATCH;
+		HAL_WRITE32(SYSTEM_CTRL_BASE_LP, REG_AON_BOOT_REASON1, Temp);
 		// Retention Ram reset
 		_memset((void*)RETENTION_RAM_BASE,0,1024);
 		assert_param(sizeof(RRAM_TypeDef) <= 0xB0);

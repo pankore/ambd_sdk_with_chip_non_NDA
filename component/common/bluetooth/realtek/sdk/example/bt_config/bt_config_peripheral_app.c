@@ -25,7 +25,6 @@
 #include <gap_le.h>
 #include <gap_msg.h>
 #include <app_msg.h>
-#include "FreeRTOS.h"
 #include "wifi_conf.h"
 #include "wifi_util.h"
 #include "wifi_structures.h"

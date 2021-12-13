@@ -68,26 +68,23 @@ else
 LINK_APP_LIB =
 endif
 
-LINK_APP_LIB += $(ROOTDIR)/lib/application/lib_application_hp.a
-
 ifeq ($(CONFIG_AUDIO_EN),y)
-LINK_APP_LIB += $(ROOTDIR)/lib/application/lib_ac3.a
+#LINK_APP_LIB += $(ROOTDIR)/lib/application/lib_ac3.a
 LINK_APP_LIB += $(ROOTDIR)/lib/application/lib_amr.a
-LINK_APP_LIB += $(ROOTDIR)/lib/application/lib_haac.a
+#LINK_APP_LIB += $(ROOTDIR)/lib/application/lib_haac.a
 #LINK_APP_LIB += $(ROOTDIR)/lib/application/lib_hls.a
-LINK_APP_LIB += $(ROOTDIR)/lib/application/lib_hmp3.a
+#LINK_APP_LIB += $(ROOTDIR)/lib/application/lib_hmp3.a
 #LINK_APP_LIB += $(ROOTDIR)/lib/application/lib_m4a.a
-LINK_APP_LIB += $(ROOTDIR)/lib/application/lib_m4a_self.a
-LINK_APP_LIB += $(ROOTDIR)/lib/application/lib_mp3.a
-LINK_APP_LIB += $(ROOTDIR)/lib/application/lib_flac.a
-LINK_APP_LIB += $(ROOTDIR)/lib/application/lib_ekho.a
-LINK_APP_LIB += $(ROOTDIR)/lib/application/lib_gsm610.a
-#for cyberon tts
-#LINK_APP_LIB += $(ROOTDIR)/lib/application/LIBtts2.a
-LINK_APP_LIB += $(ROOTDIR)/lib/application/lib_libogg.a
-LINK_APP_LIB += $(ROOTDIR)/lib/application/lib_opusfile.a
+#LINK_APP_LIB += $(ROOTDIR)/lib/application/lib_m4a_self.a
+#LINK_APP_LIB += $(ROOTDIR)/lib/application/lib_mp3.a
+#LINK_APP_LIB += $(ROOTDIR)/lib/application/lib_flac.a
+#LINK_APP_LIB += $(ROOTDIR)/lib/application/lib_ekho.a
+#LINK_APP_LIB += $(ROOTDIR)/lib/application/lib_gsm610.a
+#LINK_APP_LIB += $(ROOTDIR)/lib/application/lib_libogg.a
+#LINK_APP_LIB += $(ROOTDIR)/lib/application/lib_opusfile.a
 LINK_APP_LIB += $(ROOTDIR)/lib/application/lib_opus.a
-LINK_APP_LIB += $(ROOTDIR)/lib/application/lib_opusenc.a
+#LINK_APP_LIB += $(ROOTDIR)/lib/application/lib_opusenc.a
+LINK_APP_LIB += $(ROOTDIR)/lib/application/lib_resample.a
 endif
 
 ifeq ($(CONFIG_BT_EN), y) 
@@ -117,6 +114,8 @@ endif
 # LINK_APP_LIB += $(ROOTDIR)/lib/application/lib_haac.a
 # LINK_APP_LIB += $(ROOTDIR)/lib/application/lib_faac.a
 LINK_APP_LIB += $(ROOTDIR)/lib/application/lib_cmsis_dsp.a
+LINK_APP_LIB += $(ROOTDIR)/lib/application/lib_application_hp.a
+
 
 ifeq ($(CONFIG_TRUSTZONE), y)
 LINK_APP_LIB += $(IMAGE_TARGET_FOLDER)/cmse_implib.lib
@@ -132,8 +131,8 @@ LINK_APP_LIB += $(ROOTDIR)/lib/application/lib_mdns.a
 LINK_APP_LIB += $(ROOTDIR)/lib/application/lib_websocket.a
 LINK_APP_LIB += $(ROOTDIR)/lib/application/lib_tftp.a
 LINK_APP_LIB += $(ROOTDIR)/lib/application/lib_dct.a
-#LINK_APP_LIB += $(ROOTDIR)/lib/application/lib_coap.a
-#LINK_APP_LIB += $(ROOTDIR)/lib/application/lib_eap.a
+LINK_APP_LIB += $(ROOTDIR)/lib/application/lib_coap.a
+LINK_APP_LIB += $(ROOTDIR)/lib/application/lib_eap.a
 #LINK_APP_LIB += $(ROOTDIR)/lib/application/lib_http2.a
 #LINK_APP_LIB += $(ROOTDIR)/lib/application/lib_rt_airkiss_algo.a
 #LINK_APP_LIB += $(BASEDIR)/component/common/application/airkiss/2.0.0-26515/lib/libairkiss.a
@@ -142,20 +141,8 @@ image2_ns:LINK_APP_LIB += $(ROOTDIR)/lib/application/lib_wlan.a $(ROOTDIR)/lib/a
 mp_image2_ns:LINK_APP_LIB += $(ROOTDIR)/lib/application/lib_wlan_mp.a $(ROOTDIR)/lib/application/lib_wps.a
 endif
 
-#LINK_APP_LIB += $(ROOTDIR)/lib/application/libRawTransportTests.a
-#LINK_APP_LIB += $(ROOTDIR)/lib/application/libTransportLayerTests.a
-#LINK_APP_LIB += $(ROOTDIR)/lib/application/libNetworkTestHelpers.a
-#LINK_APP_LIB += $(ROOTDIR)/lib/application/libCoreTests.a
-#LINK_APP_LIB += $(ROOTDIR)/lib/application/libInetLayerTests.a
-#LINK_APP_LIB += $(ROOTDIR)/lib/application/libInetTestHelpers.a
-#LINK_APP_LIB += $(ROOTDIR)/lib/application/libMessagingLayerTests.a
-#LINK_APP_LIB += $(ROOTDIR)/lib/application/libSupportTests.a
-#LINK_APP_LIB += $(ROOTDIR)/lib/application/libSystemLayerTests.a
-#LINK_APP_LIB += $(ROOTDIR)/lib/application/libChipCryptoTests.a
-#LINK_APP_LIB += $(ROOTDIR)/lib/application/libnlunit-test.a
 LINK_APP_LIB += $(ROOTDIR)/lib/application/lib_main.a
 LINK_APP_LIB += $(ROOTDIR)/lib/application/libCHIP.a
-
 
 ifeq ($(CONFIG_LINKKIT_AWSS), y)
 LINK_APP_LIB += $(ROOTDIR)/lib/application/lib_aliiot.a
@@ -166,6 +153,9 @@ LINK_APP_LIB += $(ROOTDIR)/lib/application/lib_usbh.a
 endif
 ifeq ($(findstring y, $(CONFIG_USB_DEVICE_EN) $(CONFIG_USBD_VERIFY)), y)
 LINK_APP_LIB += $(ROOTDIR)/lib/application/lib_usbd.a
+endif
+ifeq ($(CONFIG_USB_DEVICE_NEW_EN), y)
+#LINK_APP_LIB += $(ROOTDIR)/lib/application/lib_usbd_new.a
 endif
 ifeq ($(CONFIG_V4L2_EN),y)
 LINK_APP_LIB += $(ROOTDIR)/lib/application/lib_v4l2.a
@@ -182,7 +172,8 @@ mp_image2_ns:build_target_folder copy_ld_img2 check_toolchain build_info.h make_
 image3_s: build_target_folder copy_ld_img3 check_toolchain build_info.h make_subdirs_secure linker_image3 
 mp_image3_s: build_target_folder copy_ld_img3 check_toolchain build_info.h make_subdirs_secure linker_image3
 bootloader: build_target_folder copy_ld_img1 check_toolchain build_info.h make_subdirs_bootloader linker_loader gen_rom_symbol
-lib_all: build_target_folder copy_ld_img2 check_toolchain build_info.h make_subdirs_lib  
+lib_all: build_target_folder copy_ld_img2 check_toolchain build_info.h make_subdirs_lib
+light: build_target_folder copy_ld_img2 check_toolchain build_info.h make_subdirs_lib_light
 
 #*****************************************************************************#
 #                      RULES TO CREATE DIRECTORY                              #
@@ -236,6 +227,11 @@ make_subdirs_bootloader:
 	@ rm -f $(RAM_OBJS_LIST)
 	@make -C make/bootloader all
 
+make_subdirs_lib_light:
+	@ rm -f $(RAM_OBJS_LIST)
+	make -C make/chip/lighting_app all
+	make -C make/chip_main/lighting_app all
+
 make_subdirs_lib:
 	@ rm -f $(RAM_OBJS_LIST)
 	#@make -C make/wlan lib
@@ -253,10 +249,8 @@ make_subdirs_lib:
 	#@make -C make/network/tftp all
 	#@make -C make/file_system/dct all
 	#@make -C make/network/libcoap all
-	#make -C make/nonnda_bootloader lib
-	#make -C make/nonnda_application lib
-	make -C make/chip all
-	make -C make/chip_main all
+	make -C make/chip/all_cluster_app all
+	make -C make/chip_main/all_cluster_app all
 #	MMF LIBRARY
 # 	@make -C make/audio/g711 all
 # 	@make -C make/audio/faac all
@@ -268,6 +262,7 @@ make_subdirs_lib:
 #	@make -C make/video/v4l2 all
 #	@make -C make/target/usb_otg/device/lib all
 #	@make -C make/target/usb_otg/host/lib all
+#	@make -C make/target/usb_otg/device_new/lib all
 #	@make -C make/ui/emwin/emWinLibrary/GUI lib
 
 #*****************************************************************************#
@@ -428,11 +423,15 @@ endif
 		$(MOVE) $(IMAGE_TARGET_FOLDER)/km0_km4_image2.bin $(IMAGE_TARGET_FOLDER)/km0_km4_image2_mp.bin; \
 	fi
 
+	#@if [ -f $(IMAGE_TARGET_FOLDER)/km0_km4_image2.bin ]; then \
+		#$(OTAPREPENDTOOL) $(IMAGE_TARGET_FOLDER)/km0_km4_image2.bin $(KM0_BUILDDIR)/asdk/image; \
+	#fi
+
 	@echo "========== Image manipulating end =========="
 
 linker_loader:
 	@echo "========= linker loader start ========="
-	$(LD) $(LD_ARG) target_loader.axf $(RAM_OBJS_LIST) $(LINK_ROM_LIB) -Wl,--whole-archive -l_bootloader_hp -Wl,--no-whole-archive
+	$(LD) $(LD_ARG) target_loader.axf $(RAM_OBJS_LIST) $(LINK_ROM_LIB)  -Wl,--whole-archive -lbootloader_hp -Wl,--no-whole-archive
 
 	$(MOVE) text.map $(IMAGE_TARGET_FOLDER)/text_loader.map
 	$(MOVE) target_loader.axf $(IMAGE_TARGET_FOLDER)
@@ -476,7 +475,8 @@ linker_loader:
 #*****************************************************************************#
 
 menuconfig:
-	cp $(CONFIGDIR)/config.in $(CONFIGDIR)/config.in.old -f
+
+	cp -f $(CONFIGDIR)/config.in $(CONFIGDIR)/config.in.old
 ifeq ($(COMPILEOS_CYGWIN),Cygwin)
 	@cp $(LXDIALOG_CYGWIN_STATIC) $(SCRIPTSDIR)/lxdialog/lxdialog.exe
 else
@@ -613,6 +613,7 @@ clean:
 	@make -C make_secure clean
 	# make -C config clean
 	make -C $(SCRIPTSDIR)/lxdialog clean
+
 	make -C make/chip clean
 	make -C make/chip_main clean
 

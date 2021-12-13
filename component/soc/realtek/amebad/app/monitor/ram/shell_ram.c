@@ -189,7 +189,7 @@ VOID shell_init_ram(VOID)
 	vSemaphoreCreateBinary(shell_sema);
 	xSemaphoreTake(shell_sema, 1/portTICK_RATE_MS);
 
-	if (pdTRUE != xTaskCreate( shell_task_ram, "LOGUART_TASK", 1024*2, 
+	if (pdTRUE != xTaskCreate( shell_task_ram, "LOGUART_TASK", 1024, 
 		NULL, tskIDLE_PRIORITY + 5 , NULL))
 	{
 		DiagPrintf("Create Log UART Task Err!!\n");

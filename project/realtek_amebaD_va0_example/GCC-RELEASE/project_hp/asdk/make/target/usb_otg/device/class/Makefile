@@ -14,6 +14,9 @@ endif
 ifeq ($(CONFIG_USBD_CDC_ACM),y)
 DIR = $(DIR_CLASS)/cdc_acm/src
 endif
+ifeq ($(CONFIG_USBD_HID),y)
+DIR = $(DIR_CLASS)/hid/src
+endif
 ifeq ($(CONFIG_USBD_MSC),y)
 DIR = $(DIR_CLASS)/msc/src
 IFLAGS += -I$(BASEDIR)/component/common/drivers/sdio/realtek/sdio_host/inc
@@ -34,6 +37,9 @@ CSRC = $(DIR)/usb_f_uac1.c
 endif
 ifeq ($(CONFIG_USBD_CDC_ACM),y)
 CSRC = $(DIR)/usbd_cdc_acm.c
+endif
+ifeq ($(CONFIG_USBD_HID),y)
+CSRC = $(DIR)/usbd_hid.c
 endif
 ifeq ($(CONFIG_USBD_MSC),y)
 CSRC = $(DIR)/usbd_msc.c \

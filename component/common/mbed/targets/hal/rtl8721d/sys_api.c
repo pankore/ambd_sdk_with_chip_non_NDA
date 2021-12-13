@@ -97,9 +97,9 @@ void sys_recover_ota_signature(void)
 {
 	u32 AddrStart, Offset, IsMinus, PhyAddr;
 	u8 Ota2Use = _FALSE;
-	u32 DstAddr, CurAddr;
+	u32 DstAddr;
 	u32 sig[2]={0x35393138,0x31313738};
-	u8 *buf;
+
 
 	RSIP_REG_TypeDef* RSIP = ((RSIP_REG_TypeDef *) RSIP_REG_BASE);
 	u32 CtrlTemp = RSIP->FLASH_MMU[0].MMU_ENTRYx_CTRL;
@@ -122,10 +122,10 @@ void sys_recover_ota_signature(void)
 	}
 
 	if(Ota2Use) {
-		CurAddr = LS_IMG2_OTA2_ADDR;
+//		CurAddr = LS_IMG2_OTA2_ADDR;
 		DstAddr = LS_IMG2_OTA1_ADDR;
 	} else {
-		CurAddr = LS_IMG2_OTA1_ADDR;
+//		CurAddr = LS_IMG2_OTA1_ADDR;
 		DstAddr = LS_IMG2_OTA2_ADDR;
 	}
 	FLASH_EreaseDwordsXIP(DstAddr-SPI_FLASH_BASE, 2);
@@ -236,7 +236,62 @@ void sys_cpu_reset(void)
 	while(1);
 #endif
 }
+
+/**
+  * @brief read chip package type
+  * @retval 0: efuse not program
+            1: PACKAGE_QFN48
+            2: PACKAGE_QFN68
+            3: PACKAGE_QFN88
+            4: PACKAGE_QFN56
+            -1: UNKNOWN
+  */
+extern int rtw_chip_package_read(void);
+int sys_chip_package_read(void)
+{
+	return rtw_chip_package_read();
+}
+
+/**
+  * @brief check chip MCM PSRAM existance
+  * @retval 0: efuse not program
+            1: not exist
+            2: exist
+            -1: unknown
+  */
+extern int rtw_chip_psram_check(void);
+int sys_chip_psram_check(void)
+{
+	return rtw_chip_psram_check();
+}
+
+/**
+  * @brief check chip MCM FLASH existance
+  * @retval 0: efuse not program
+            1: not exist
+            2: exist
+            -1: unknown
+  */
+extern int rtw_chip_flash_check(void);
+int sys_chip_flash_check(void)
+{
+	return rtw_chip_flash_check();
+}
+
 /** 
+  * @brief check chip band type
+  * @retval 0: efuse not program
+            1: single band
+            2: dual band
+            -1: unknown
+  */
+extern int rtw_chip_band_type_check(void);
+int sys_chip_band_type_check(void)
+{
+	return rtw_chip_band_type_check();
+}
+
+/**
   * @}
   */
 

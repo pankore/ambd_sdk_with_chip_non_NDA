@@ -49,10 +49,6 @@
 #include "lwip/pbuf.h"
 #include "lwip/stats.h"
 
-#if LWIP_IPV6_ROUTE_TABLE_SUPPORT
-#include "lwip/ip6_route_table.h"
-#endif /* LWIP_IPV6_ROUTE_TABLE_SUPPORT */
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -349,7 +345,9 @@ struct netif {
 #endif /* LWIP_LOOPBACK_MAX_PBUFS */
 #endif /* ENABLE_LOOPBACK */
 };
-
+/* Interface indexes always start at 1 per RFC 3493, section 4, num starts at 0 (internal index is 0..254)*/
+#define netif_get_index(netif)      ((u8_t)((netif)->num + 1))
+#define NETIF_NO_INDEX              (0)
 #if LWIP_CHECKSUM_CTRL_PER_NETIF
 #define NETIF_SET_CHECKSUM_CTRL(netif, chksumflags) do { \
   (netif)->chksum_flags = chksumflags; } while(0)
@@ -472,26 +470,7 @@ void netif_ip6_addr_set_state(struct netif* netif, s8_t addr_idx, u8_t state);
 s8_t netif_get_ip6_addr_match(struct netif *netif, const ip6_addr_t *ip6addr);
 void netif_create_ip6_linklocal_address(struct netif *netif, u8_t from_mac_48bit);
 err_t netif_add_ip6_address(struct netif *netif, const ip6_addr_t *ip6addr, s8_t *chosen_idx);
-err_t netif_add_ip6_address_with_route(struct netif *netif, ip6_addr_t *ip6addr, 
-                                       u8_t prefix_len, s8_t *chosen_idx);
-err_t netif_remove_ip6_address(struct netif *netif, ip6_addr_t *ip6addr);
-err_t netif_remove_ip6_address_with_route(struct netif *netif, ip6_addr_t *ip6addr, 
-                                          u8_t prefix_len);
 #define netif_set_ip6_autoconfig_enabled(netif, action) do { if(netif) { (netif)->ip6_autoconfig_enabled = (action); }}while(0)
-#if LWIP_IPV6_ADDRESS_LIFETIMES
-#define netif_ip6_addr_valid_life(netif, i)  \
-    (((netif) != NULL) ? ((netif)->ip6_addr_valid_life[i]) : IP6_ADDR_LIFE_STATIC)
-#define netif_ip6_addr_set_valid_life(netif, i, secs) \
-    do { if (netif != NULL) { (netif)->ip6_addr_valid_life[i] = (secs); }} while (0)
-#define netif_ip6_addr_pref_life(netif, i)  \
-    (((netif) != NULL) ? ((netif)->ip6_addr_pref_life[i]) : IP6_ADDR_LIFE_STATIC)
-#define netif_ip6_addr_set_pref_life(netif, i, secs) \
-    do { if (netif != NULL) { (netif)->ip6_addr_pref_life[i] = (secs); }} while (0)
-#define netif_ip6_addr_isstatic(netif, i)  \
-    (netif_ip6_addr_valid_life((netif), (i)) == IP6_ADDR_LIFE_STATIC)
-#else /* !LWIP_IPV6_ADDRESS_LIFETIMES */
-#define netif_ip6_addr_isstatic(netif, i)  (1) /* all addresses are static */
-#endif /* !LWIP_IPV6_ADDRESS_LIFETIMES */
 #endif /* LWIP_IPV6 */
 
 #if LWIP_NETIF_HWADDRHINT
@@ -499,14 +478,6 @@ err_t netif_remove_ip6_address_with_route(struct netif *netif, ip6_addr_t *ip6ad
 #else /* LWIP_NETIF_HWADDRHINT */
 #define NETIF_SET_HWADDRHINT(netif, hint)
 #endif /* LWIP_NETIF_HWADDRHINT */
-
-u8_t netif_name_to_index(const char *name);
-char * netif_index_to_name(u8_t idx, char *name);
-struct netif* netif_get_by_index(u8_t index);
-
-/* Interface indexes always start at 1 per RFC 3493, section 4, num starts at 0 */
-#define netif_get_index(netif)      ((netif)->num + 1)
-#define NETIF_NO_INDEX              (0)
 
 #ifdef __cplusplus
 }

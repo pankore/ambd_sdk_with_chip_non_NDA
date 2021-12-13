@@ -22,7 +22,7 @@
 		{ ucHeap, sizeof(ucHeap) }, 		// Defines a block from ucHeap
 	#if 0
 		{ (uint8_t*)0x301b5000, 300*1024 }, // SDRAM heap
-	#endif
+	#endif        
 		{ NULL, 0 } 							// Terminates the array.
 	};
 
@@ -33,9 +33,9 @@
 	{
 		{ 0, 0},	// Image1 reserved ,length will be corrected in pvPortMalloc()
 		{ ucHeap, sizeof(ucHeap) }, 	// Defines a block from ucHeap
-	#if (CONFIG_ENABLE_RDP == 0)
+	#if (CONFIG_ENABLE_RDP == 0)	
 		{ (uint8_t*)0x1003f000, 0x1000},	// RDP reserved
-	#endif
+	#endif	
 		{ NULL, 0 } 					// Terminates the array.
 	};
 #elif (defined CONFIG_PLATFORM_8710C)
@@ -52,7 +52,7 @@
 		extern uint8_t EramEnd[];
 		extern uint8_t ERAM_BSS$$Limit[];
 
-		#undef configTOTAL_HEAP_SIZE
+		#undef configTOTAL_HEAP_SIZE 
 		#undef configTOTAL_HEAP_ext_SIZE
 
 		#define configTOTAL_HEAP0_SIZE ((uint32_t)RAM_STACK$$Base - ((uint32_t)RAM_BSS$$Limit))
@@ -63,7 +63,7 @@
 
 		#elif defined(__GNUC__)
 
-		#undef configTOTAL_HEAP_SIZE
+		#undef configTOTAL_HEAP_SIZE 
 		#undef configTOTAL_HEAP_ext_SIZE
 
 		extern uint8_t __sram_end__[];
@@ -91,15 +91,15 @@
 #if CONFIG_DYNAMIC_HEAP_SIZE
 
 #if defined(__ICCARM__)
-#undef configTOTAL_HEAP_SIZE
+#undef configTOTAL_HEAP_SIZE 
 #undef configTOTAL_HEAP_ext_SIZE
-
+        
         extern uint8_t __sram_end__[];
         extern uint8_t RAMBSSHEAP$$Limit[];
-
+        
 #define configTOTAL_HEAP0_SIZE ((uint32_t)__sram_end__ - ((uint32_t)RAMBSSHEAP$$Limit))
 #define HEAP0_START (uint8_t*)RAMBSSHEAP$$Limit
-
+        
     HeapRegion_t xHeapRegions[] =
     {
 #if defined (ARM_CORE_CM0)
@@ -109,15 +109,15 @@
         { NULL, 0 }                     // Terminates the array.
     };
 #elif defined(__GNUC__)
-#undef configTOTAL_HEAP_SIZE
+#undef configTOTAL_HEAP_SIZE 
 #undef configTOTAL_HEAP_ext_SIZE
-
+        
         extern uint8_t __sram_end__[];
         extern uint8_t __bfsram_end__[];
-
+        
 #define configTOTAL_HEAP0_SIZE ((uint32_t)__sram_end__ - ((uint32_t)__bfsram_end__))
 #define HEAP0_START (uint8_t*)__bfsram_end__
-
+        
     HeapRegion_t xHeapRegions[] =
     {
 #if defined (ARM_CORE_CM0)
@@ -182,12 +182,12 @@ NS_ENTRY void secure_heap_init( void )
 			}
 		}
 #endif
-		vPortDefineHeapRegions( xHeapRegions );
+		vPortDefineHeapRegions( xHeapRegions );	
 }
-#endif
+#endif	
 #if defined(configENABLE_TRUSTZONE) && (configENABLE_TRUSTZONE == 1)
 NS_ENTRY void secure_heap_init( void );
-#endif
+#endif	
 void os_heap_init(void)
 {
 #if (defined CONFIG_PLATFORM_8711B)

@@ -891,36 +891,6 @@ void fATSM(void *arg)
 }
 #endif
 
-
-extern uint16_t _ZN4chip12Base64DecodeEPKctPh(const char * in, uint16_t inLen, uint8_t * out);
-extern uint16_t _ZN4chip12Base64EncodeEPKhtPc(const uint8_t * in, uint16_t inLen, char * out);
-
-void TestBase64(const char * test)
-{
-    uint8_t buf[256];
-    char buf2[256];
-    uint16_t len;
-
-    strcpy((char *) buf, test);
-
-    len = _ZN4chip12Base64DecodeEPKctPh((char *) buf, strlen((char *) buf), buf);
-    printf("%s: ", test);
-    if (len != UINT16_MAX)
-    {
-        printf("(%d) ", len);
-        for (uint16_t i = 0; i < len; i++)
-            printf("%c", buf[i]);
-
-        len = _ZN4chip12Base64EncodeEPKhtPc(buf, len, buf2);
-        printf(" (%d) ", len);
-        for (uint16_t i = 0; i < len; i++)
-            printf("%c", buf2[i]);
-    }
-    else
-        printf("ERROR");
-    printf("\n");
-}
-
 //extern void ChipTest(void);
 extern int32_t deinitPref(void);
 //void chipapp(void *param)
@@ -1118,7 +1088,7 @@ void fATSx(void *arg)
 	AT_PRINTK("[ATS?]: _AT_SYSTEM_HELP_");
 	AT_PRINTK("[ATS?]: COMPILE TIME: %s", RTL_FW_COMPILE_TIME);
 //	wifi_get_drv_ability(&ability);
-	strcpy(buf, "v");
+	strncpy(buf, "v", sizeof(buf));
 //	if(ability & 0x1)
 //		strcat(buf, "m");
 #if defined(CONFIG_PLATFORM_8710C)
@@ -1200,10 +1170,10 @@ void fATSV(void *arg){
 	char fw_buf[32];
 
 	// get at version
-	strcpy(at_buf, ATCMD_VERSION"."ATCMD_SUBVERSION"."ATCMD_REVISION);
+	strncpy(at_buf, ATCMD_VERSION"."ATCMD_SUBVERSION"."ATCMD_REVISION, sizeof(at_buf));
 
 	// get fw version
-	strcpy(fw_buf, SDK_VERSION);
+	strncpy(fw_buf, SDK_VERSION, sizeof(fw_buf));
 #if defined CONFIG_PLATFORM_8195A
 	at_printf("\r\n[ATSV] OK:%s,%s(%s)",at_buf,fw_buf,RTL8195BFW_COMPILE_TIME);
 #elif defined CONFIG_PLATFORM_8710C
@@ -1503,7 +1473,11 @@ void fATSG(void *arg)
 	port = argv[2][1];
 	num = strtoul(&argv[2][3], NULL, 0);
 	port -= 'A';
+#if defined(CONFIG_PLATFORM_8195A)
 	pin = (port << 4 | num);
+#else
+	pin = (port << 5 | num);
+#endif
 	AT_DBG_MSG(AT_FLAG_GPIO, AT_DBG_ALWAYS, "PORT: %s[%d]", argv[2], pin);
 
 	if(gpio_set(pin) == 0xff)
@@ -1513,7 +1487,7 @@ void fATSG(void *arg)
 		goto exit;
 	}
 
-	if(port != 0 || port != 1){
+	if(port != 0 && port != 1){
 		AT_DBG_MSG(AT_FLAG_GPIO, AT_DBG_ALWAYS, "[ATSG]: Invalid Port");
 		error_no = 3;
 		goto exit;

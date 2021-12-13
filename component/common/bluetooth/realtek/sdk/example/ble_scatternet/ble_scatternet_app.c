@@ -38,17 +38,6 @@
 #include "ble_central_at_cmd.h"
 #include "ble_peripheral_at_cmd.h"
 
-#if defined (CONFIG_BT_CENTRAL_CONFIG) && (CONFIG_BT_CENTRAL_CONFIG)
-#include <wifi_conf.h>
-#include <wifi_util.h>
-#include <bt_config_wifi.h>
-extern T_SERVER_ID bt_config_srv_id; 
-extern T_GAP_CONN_STATE bt_config_gap_conn_state;
-extern uint8_t bt_config_conn_id;
-extern void bt_config_app_set_adv_data(void);
-extern void set_bt_config_state(uint8_t state);
-#endif
-
 /** @defgroup  CENTRAL_CLIENT_APP Central Client Application
     * @brief This file handles BLE central client application routines.
     * @{
@@ -154,18 +143,9 @@ void ble_scatternet_app_handle_dev_state_evt(T_GAP_DEV_STATE new_state, uint16_t
                             bt_addr[2],
                             bt_addr[1],
                             bt_addr[0]);
-#if defined (CONFIG_BT_CENTRAL_CONFIG) && (CONFIG_BT_CENTRAL_CONFIG)
-			bt_config_app_set_adv_data();
-            ret = le_adv_start();
-			if(ret == GAP_CAUSE_SUCCESS)
-				BC_printf("ADV started\n\r");
-			set_bt_config_state(BC_DEV_IDLE); // BT Config Ready
-			BC_printf("BT Config Wifi ready\n\r");
-#else
 			ret = le_adv_start();
 			if(ret == GAP_CAUSE_SUCCESS)
 				data_uart_print("\n\rSTART ADV!!\n");
-#endif
         }
     }
 
@@ -242,29 +222,18 @@ void ble_scatternet_app_handle_conn_state_evt(uint8_t conn_id, T_GAP_CONN_STATE 
                                  disc_cause);
             }
 
-            data_uart_print("Disconnect conn_id %d\r\n", conn_id);
+            data_uart_print("Disconnect conn_id %d, cause 0x%x\r\n", conn_id, disc_cause);
 ///judge the type of disconnect is central or peripheral,if peripheral,start ADV	
-			if (ble_scatternet_app_link_table[conn_id].role == 2){
-#if defined (CONFIG_BT_CENTRAL_CONFIG) && (CONFIG_BT_CENTRAL_CONFIG)
-				BC_printf("Bluetooth Connection Disconnected\n\r");
-				if (wifi_is_ready_to_transceive(RTW_STA_INTERFACE) != RTW_SUCCESS) {
-					bt_config_app_set_adv_data();
-					ret = le_adv_start();
-					if(ret == GAP_CAUSE_SUCCESS)
-						BC_printf("START ADV!!\n\r");
-					set_bt_config_state(BC_DEV_IDLE); // BT Config Ready
-				}
-#else
+			if (ble_scatternet_app_link_table[conn_id].role == GAP_LINK_ROLE_SLAVE){
 				data_uart_print("As peripheral,recieve disconncect,please start ADV\r\n");
 				ret = le_adv_start();
 				if(ret == GAP_CAUSE_SUCCESS)
 					data_uart_print("\n\rSTART ADV!!\n");
-#endif
 			}
 				
-			if (ble_scatternet_app_link_table[conn_id].role == 1)
+			if (ble_scatternet_app_link_table[conn_id].role == GAP_LINK_ROLE_MASTER)
 				ble_scatternet_central_app_max_links --;
-			else
+			else if (ble_scatternet_app_link_table[conn_id].role == GAP_LINK_ROLE_SLAVE)
 				ble_scatternet_peripheral_app_max_links --;
 
             memset(&ble_scatternet_app_link_table[conn_id], 0, sizeof(T_APP_LINK));
@@ -278,53 +247,11 @@ void ble_scatternet_app_handle_conn_state_evt(uint8_t conn_id, T_GAP_CONN_STATE 
             //get device role
             if (le_get_conn_info(conn_id, &conn_info)){
 				ble_scatternet_app_link_table[conn_id].role = conn_info.role;
-				if (ble_scatternet_app_link_table[conn_id].role == 1)
+				if (ble_scatternet_app_link_table[conn_id].role == GAP_LINK_ROLE_MASTER)
 					ble_scatternet_central_app_max_links ++;
-				else
+				else if (ble_scatternet_app_link_table[conn_id].role == GAP_LINK_ROLE_SLAVE)
 					ble_scatternet_peripheral_app_max_links ++;
             }
-#if defined (CONFIG_BT_CENTRAL_CONFIG) && (CONFIG_BT_CENTRAL_CONFIG)
-			uint16_t conn_interval;
-           	uint16_t conn_latency;
-         	uint16_t conn_supervision_timeout;
-           	uint8_t  remote_bd[6];
-          	T_GAP_REMOTE_ADDR_TYPE remote_bd_type;
-			
-           	T_GAP_CAUSE cause; 
-				
-           	uint16_t conn_interval_min = 12; // 15ms
-         	uint16_t conn_interval_max = 24; // 30ms
-           	uint16_t supervision_timeout = 500; 
-           	uint16_t ce_length_min = 2 * (conn_interval_min - 1); 
-          	uint16_t ce_length_max = 2 * (conn_interval_max - 1); 
-
-           	le_get_conn_param(GAP_PARAM_CONN_INTERVAL, &conn_interval, conn_id);
-          	le_get_conn_param(GAP_PARAM_CONN_LATENCY, &conn_latency, conn_id);
-           	le_get_conn_param(GAP_PARAM_CONN_TIMEOUT, &conn_supervision_timeout, conn_id);
-           	le_get_conn_addr(conn_id, remote_bd,  (void *)&remote_bd_type);
-			
-           	conn_latency = 0;
-          	cause = le_update_conn_param(conn_id, 
-                                 	conn_interval_min, 
-                                   	conn_interval_max, 
-                                  	conn_latency, 
-                                   	supervision_timeout, 
-                                  	ce_length_min, 
-                                   	ce_length_max 
-                                 	); 
-            if (cause == GAP_CAUSE_NON_CONN) {
-              	BC_printf("No Bluetooth Connection\n\r");
-               	break;
-            	}
-			//update_connection_time
-           	APP_PRINT_INFO5("GAP_CONN_STATE_CONNECTED:remote_bd %s, remote_addr_type %d, conn_interval 0x%x, conn_latency 0x%x, conn_supervision_timeout 0x%x",
-                          	TRACE_BDADDR(remote_bd), remote_bd_type,
-                           	conn_interval, conn_latency, conn_supervision_timeout);
-
-			BC_printf("Bluetooth Connection Established\n\r");
-			bt_config_conn_id = conn_id;
-			set_bt_config_state(BC_DEV_BT_CONNECTED); // BT Config Bluetooth Connected
-#else				
 	        data_uart_print("Connected success conn_id %d\r\n", conn_id);
 		////print bt address type
 			uint8_t local_bd_type;
@@ -336,7 +263,6 @@ void ble_scatternet_app_handle_conn_state_evt(uint8_t conn_id, T_GAP_CONN_STATE 
                             conn_id, local_bd_type, remote_bd_type);
 			data_uart_print("GAP_CONN_STATE_CONNECTED: conn_id %d, local_bd_type %d, remote_bd_type %d\n",
                             conn_id, local_bd_type, remote_bd_type);
-#endif
 #if F_BT_LE_5_0_SET_PHY_SUPPORT
 			{
 			uint8_t tx_phy;
@@ -356,10 +282,7 @@ void ble_scatternet_app_handle_conn_state_evt(uint8_t conn_id, T_GAP_CONN_STATE 
         break;
 
     }
-
-#if defined (CONFIG_BT_CENTRAL_CONFIG) && (CONFIG_BT_CENTRAL_CONFIG)
-	bt_config_gap_conn_state = new_state;
-#endif
+    
 }
 
 /**
@@ -1287,7 +1210,7 @@ T_APP_RESULT ble_scatternet_gcs_client_callback(T_CLIENT_ID client_id, uint8_t c
                 APP_PRINT_INFO1("READ VALUE: %b",
                                 TRACE_BINARY(p_gcs_cb_data->cb_content.read_result.value_size,
                                              p_gcs_cb_data->cb_content.read_result.p_value));
-                data_uart_print("REAR VALUE: ");
+                data_uart_print("READ VALUE: ");
                 for(int i=0; i< p_gcs_cb_data->cb_content.read_result.value_size; i++)
                     data_uart_print("0x%2x ", *(p_gcs_cb_data->cb_content.read_result.p_value + i));
                 data_uart_print("\n\r");
@@ -1310,8 +1233,16 @@ T_APP_RESULT ble_scatternet_gcs_client_callback(T_CLIENT_ID client_id, uint8_t c
                                 p_gcs_cb_data->cb_content.notif_ind.handle,
                                 p_gcs_cb_data->cb_content.notif_ind.value_size);
                 APP_PRINT_INFO1("INDICATION VALUE: %b",
-                                TRACE_BINARY(p_gcs_cb_data->cb_content.read_result.value_size,
-                                             p_gcs_cb_data->cb_content.read_result.p_value));
+                                TRACE_BINARY(p_gcs_cb_data->cb_content.notif_ind.value_size,
+                                             p_gcs_cb_data->cb_content.notif_ind.p_value));
+                data_uart_print("INDICATION: handle 0x%x, value_size %d\r\n",
+                                p_gcs_cb_data->cb_content.notif_ind.handle,
+                                p_gcs_cb_data->cb_content.notif_ind.value_size);
+                data_uart_print("INDICATION VALUE: ");
+                for (int i = 0; i < p_gcs_cb_data->cb_content.notif_ind.value_size; i++) {
+                    data_uart_print("0x%2x ", *(p_gcs_cb_data->cb_content.notif_ind.p_value+ i));
+                }
+                data_uart_print("\n\r");
             }
             else
             {
@@ -1321,6 +1252,14 @@ T_APP_RESULT ble_scatternet_gcs_client_callback(T_CLIENT_ID client_id, uint8_t c
                 APP_PRINT_INFO1("NOTIFICATION VALUE: %b",
                                 TRACE_BINARY(p_gcs_cb_data->cb_content.notif_ind.value_size,
                                              p_gcs_cb_data->cb_content.notif_ind.p_value));
+                data_uart_print("NOTIFICATION: handle 0x%x, value_size %d\r\n",
+                                p_gcs_cb_data->cb_content.notif_ind.handle,
+                                p_gcs_cb_data->cb_content.notif_ind.value_size);
+                data_uart_print("NOTIFICATION VALUE: ");
+                for (int i = 0; i < p_gcs_cb_data->cb_content.notif_ind.value_size; i++) {
+                    data_uart_print("0x%2x ", *(p_gcs_cb_data->cb_content.notif_ind.p_value+ i));
+                }
+                data_uart_print("\n\r");
             }
             break;
         default:

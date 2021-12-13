@@ -398,6 +398,14 @@ struct net_device_stats {
 	unsigned long   rx_bytes;               /* total bytes received         */
 	unsigned long   tx_bytes;               /* total bytes transmitted      */
 	unsigned long   rx_overflow;            /* rx fifo overflow count       */
+	unsigned long   rx_reorder_drop_cnt;
+	unsigned long   rx_reorder_timeout_cnt;
+	unsigned long	tx_unicast_packets;
+	unsigned long	tx_broadcast_packets;
+	unsigned long	tx_multicast_packets;
+	unsigned long	rx_unicast_packets;
+	unsigned long	rx_broadcast_packets;
+	unsigned long	rx_multicast_packets;
 };
 
 struct net_device {
@@ -408,7 +416,7 @@ struct net_device {
 	int (*open)(struct net_device *dev);
 	int (*stop)(struct net_device *dev);
 	int (*hard_start_xmit)(struct sk_buff *skb, struct net_device *dev);
-	int (*do_ioctl)(struct net_device *dev, struct iwreq *ifr, int cmd);
+	int (*do_ioctl)(struct net_device *dev, struct rtwreq *ifr, int cmd);
 	struct net_device_stats* (*get_stats)(struct net_device *dev);
 };
 

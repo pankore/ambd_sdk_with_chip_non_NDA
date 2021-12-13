@@ -43,14 +43,13 @@ ifeq ($(CONFIG_BT_MESH_DEVICE_RTK_DEMO),y)
 	make -C bt_mesh_device_rtk_demo all
 endif
 endif
-	#make -C bt_beacon all
-	#make -C bt_config all
-	#make -C bt_airsync_config all
-	#make -C bt_breeze all
+#	make -C bt_beacon all
+	make -C bt_config all
+#	make -C bt_airsync_config all
+#	make -C bt_breeze all
 	make -C ble_peripheral all
-	#make -C ble_central all
-	#make -C ble_scatternet all
-	make -C bt_matter_adapter all
+	make -C ble_central all
+	make -C ble_scatternet all
 endif
 
 #*****************************************************************************#
@@ -84,14 +83,13 @@ ifeq ($(CONFIG_BT_MESH_DEVICE_RTK_DEMO),y)
 	make -C bt_mesh_device_rtk_demo clean
 endif
 endif
-	#make -C bt_beacon clean
-	#make -C bt_config clean
-	#make -C bt_airsync_config clean
-	#make -C bt_breeze clean
+#	make -C bt_beacon clean
+	make -C bt_config clean
+#	make -C bt_airsync_config clean
+#	make -C bt_breeze clean
 	make -C ble_peripheral clean
-	#make -C ble_central clean
-	#make -C ble_scatternet clean
-	make -C bt_matter_adapter clean
+	make -C ble_central clean
+	make -C ble_scatternet clean
 endif
 
 -include $(DEPS)

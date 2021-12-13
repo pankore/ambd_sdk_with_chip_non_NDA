@@ -14,7 +14,9 @@
 #include "atcmd_bt.h"
 #include "ble_central_at_cmd.h"
 #include "os_msg.h"
-#include <platform/platform_stdlib.h>
+#include <platform_stdlib.h>
+#include "os_sched.h"
+#include "os_mem.h"
 
 #if defined(CONFIG_BT_CENTRAL) && CONFIG_BT_CENTRAL
 #include "ble_central_app_flags.h"
@@ -206,8 +208,8 @@ int ble_central_at_cmd_connect(int argc, char **argv)
 	hex_str_to_bd_addr(strlen(argv[2]), ( s8 *)argv[2], (u8*)DestAddr);
 	//mtu = (argc==4)? atoi((const char *)(argv[3])): 256;
 
-    conn_req_param.scan_interval = 0x40;	//40ms
-    conn_req_param.scan_window = 0x30;		//30ms
+    conn_req_param.scan_interval = 0xA0;	//100ms
+    conn_req_param.scan_window = 0x80;		//80ms
     conn_req_param.conn_interval_min = 0x60;	//120ms
     conn_req_param.conn_interval_max = 0x60;	//120ms
     conn_req_param.conn_latency = 0;
@@ -516,7 +518,7 @@ int ble_central_at_cmd_scan(int argc, char **argv)
 
 				ble_central_at_cmd_send_msg(2);
 				do {
-					vTaskDelay(1);
+					os_delay(1);
 					le_get_gap_param(GAP_PARAM_DEV_STATE , &new_state);
 				} while (new_state.gap_scan_state != GAP_SCAN_STATE_IDLE);
 
@@ -525,7 +527,7 @@ int ble_central_at_cmd_scan(int argc, char **argv)
 
 				ble_central_at_cmd_send_msg(3);
 				do {
-					vTaskDelay(1);
+					os_delay(1);
 					le_get_gap_param(GAP_PARAM_DEV_STATE , &new_state);
 				} while (new_state.gap_scan_state != GAP_SCAN_STATE_SCANNING);
 
@@ -537,7 +539,7 @@ int ble_central_at_cmd_scan(int argc, char **argv)
 
 				ble_central_at_cmd_send_msg(2);
 				do {
-					vTaskDelay(1);
+					os_delay(1);
 					le_get_gap_param(GAP_PARAM_DEV_STATE , &new_state);
 				} while (new_state.gap_scan_state != GAP_SCAN_STATE_IDLE);
 			
@@ -546,7 +548,7 @@ int ble_central_at_cmd_scan(int argc, char **argv)
 
 				ble_central_at_cmd_send_msg(3);
 				do {
-					vTaskDelay(1);
+					os_delay(1);
 					le_get_gap_param(GAP_PARAM_DEV_STATE , &new_state);
 				} while (new_state.gap_scan_state != GAP_SCAN_STATE_SCANNING);
 
@@ -723,27 +725,28 @@ int ble_central_at_cmd_write(int argc, char **argv)
 	u8 conn_id;
 	u8 write_type;
 	u16 handle;
-	u16 length;
-	u8 data[512] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+	int length;
 
 	conn_id = atoi(argv[1]);
 	write_type = atoi(argv[2]);
 	handle = hex_str_to_int(strlen(argv[3]), (s8 *)argv[3]);
 	length = hex_str_to_int(strlen(argv[4]), (s8 *)argv[4]);
 
-	//if(argc == 6){	
-		//hex_str_to_bd_addr(strlen(argv[5]), argv[5], data);
-	//}
-	if(argc > 5)
-	{
-        for (uint8_t i = 0; i < argc - 5; ++i)
-        {
-            data[i] = hex_str_to_int(strlen(argv[i + 5]), (s8 *)argv[i + 5]);
-        }
+	if(length == -1){
+		printf("\n\rError:value length should be hexadecimal and start with '0X' or '0x'\r\n");
+		return -1;
+	}
+	u8 *data = (u8 *)os_mem_alloc(0,length * sizeof(u8));
+
+	for(u8 i = 0; i < length; ++ i){
+		data[i] = hex_str_to_int(strlen(argv[i + 5]), (s8 *)argv[i + 5]);
 	}
 	
-     T_GAP_CAUSE ret = gcs_attr_write(conn_id, (T_GATT_WRITE_TYPE)write_type, handle,
-                                     length, data);
+	T_GAP_CAUSE ret = gcs_attr_write(conn_id, (T_GATT_WRITE_TYPE)write_type, handle,
+									 length, data);
+
+	if(data != NULL)
+		os_mem_free(data);
 	(void) ret;
 	return 0;
 }
@@ -771,17 +774,17 @@ int ble_central_at_cmd_set_scan_param(int argc, char **argv)
 #if F_BT_LE_5_0_SET_PHY_SUPPORT
 int ble_central_at_cmd_set_phy(int argc, char **argv)
 {
-	(void) argc;
+    (void) argc;
     uint8_t conn_id;
-	uint8_t phys;
+    uint8_t phys;
     uint8_t all_phys;
     uint8_t tx_phys;
     uint8_t rx_phys;
     T_GAP_PHYS_OPTIONS phy_options = GAP_PHYS_OPTIONS_CODED_PREFER_S8;
     T_GAP_CAUSE cause;
-	conn_id = atoi(argv[1]);
-	phys = atoi(argv[2]);
-	if (phys == 0)//set PHY tx/rx support 1M
+    conn_id = atoi(argv[1]);
+    phys = atoi(argv[2]);
+    if (phys == 0) //set PHY tx/rx support 1M
     {
         all_phys = GAP_PHYS_PREFER_ALL;
         tx_phys = GAP_PHYS_PREFER_1M_BIT;
@@ -793,26 +796,38 @@ int ble_central_at_cmd_set_phy(int argc, char **argv)
         tx_phys = GAP_PHYS_PREFER_2M_BIT;
         rx_phys = GAP_PHYS_PREFER_2M_BIT;
     }
-    else if (phys == 2)//set PHY tx/rx support CODRD_S8
+    else if (phys == 2) //set PHY tx support 2M, rx support 1M
     {
         all_phys = GAP_PHYS_PREFER_ALL;
-        tx_phys = GAP_PHYS_PREFER_CODED_BIT;
-        rx_phys = GAP_PHYS_PREFER_CODED_BIT;
-        phy_options = GAP_PHYS_OPTIONS_CODED_PREFER_S8;
+        tx_phys = GAP_PHYS_PREFER_2M_BIT;
+        rx_phys = GAP_PHYS_PREFER_1M_BIT;
     }
-    else if (phys == 3)//set PHY tx/rx support CODRD_S2
+    else if (phys == 3) //set PHY tx support 1M, rx support 2M
+    {
+        all_phys = GAP_PHYS_PREFER_ALL;
+        tx_phys = GAP_PHYS_PREFER_1M_BIT;
+        rx_phys = GAP_PHYS_PREFER_2M_BIT;
+    }
+    else if (phys == 4) //set PHY tx/rx support CODED_S2
     {
         all_phys = GAP_PHYS_PREFER_ALL;
         tx_phys = GAP_PHYS_PREFER_CODED_BIT;
         rx_phys = GAP_PHYS_PREFER_CODED_BIT;
         phy_options = GAP_PHYS_OPTIONS_CODED_PREFER_S2;
     }
-    else //set PHY tx support 2M,rx support 1M
+    else if (phys == 5) //set PHY tx/rx support CODED_S8
     {
-        all_phys = GAP_PHYS_NO_PREFER_TX_BIT;
-        tx_phys = GAP_PHYS_PREFER_2M_BIT;
-        rx_phys = GAP_PHYS_PREFER_1M_BIT;
+        all_phys = GAP_PHYS_PREFER_ALL;
+        tx_phys = GAP_PHYS_PREFER_CODED_BIT;
+        rx_phys = GAP_PHYS_PREFER_CODED_BIT;
+        phy_options = GAP_PHYS_OPTIONS_CODED_PREFER_S8;
     }
+    else
+    {
+        printf("Error parameter!\r\n");
+        return -1;
+    }
+
     cause = le_set_phy(conn_id, all_phys, tx_phys, rx_phys, phy_options);
 
     return cause;

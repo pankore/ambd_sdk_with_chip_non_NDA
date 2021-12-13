@@ -42,10 +42,15 @@ CMSISMATHLIBDIR  = $(BASEDIR)/component/soc/realtek/8711b/fwlib/test/ft_test/cms
 PHERIEXAMPLE	= $(ROOTDIR)/../example/demo_peripheral
 # -----------------------------------------------------------------------------
 PREPENDTOOL		= $(UTILITYDIR)/prepend_header.sh
+OTAPREPENDTOOL  = $(UTILITYDIR)/prepend_ota_header.sh
 LXDIALOG_CYGWIN_STATIC 	= $(UTILITYDIR)/lxdialog_prebuilt/lxdialog_cygwin_x86_static.exe
+LINUX_OS		= GNU/Linux
+DARWIN_OS		= Darwin
+COMPILEOS		= $(shell uname)
+ifneq ($(COMPILEOS),$(DARWIN_OS))
 COMPILEOS		= $(shell uname -o)
 COMPILEOS_CYGWIN	= $(shell uname -o | cut -c 1-6)
-LINUX_OS		= GNU/Linux
+endif
 HOSTCC			= cc
 MAKE			= make
 
@@ -68,13 +73,14 @@ BUILD_TARGET_ROM_FOLDER = $(ROOTDIR)/build/rom
 IMAGE_TARGET_FOLDER     = $(ROOTDIR)/image
 
 ifeq ($(COMPILEOS),$(LINUX_OS))
-#ASDK_TOOLCHAIN = $(TOOLCHAINDIR)/linux/asdk-6.4.1/linux/newlib
-#ASDK_TOOLCHAIN_R = ../toolchain/linux/asdk-6.4.1/linux/newlib
 ASDK_TOOLCHAIN = $(TOOLCHAINDIR)/linux/asdk-9.3.0/linux/newlib
 ASDK_TOOLCHAIN_R = ../toolchain/linux/asdk-9.3.0/linux/newlib
-else
+else ifeq ($(COMPILEOS_CYGWIN),Cygwin)
 ASDK_TOOLCHAIN = $(TOOLCHAINDIR)/cygwin/asdk-6.4.1/cygwin/newlib
 ASDK_TOOLCHAIN_R = ../toolchain/cygwin/asdk-6.4.1/cygwin/newlib
+else ifeq ($(COMPILEOS),$(DARWIN_OS))
+ASDK_TOOLCHAIN = $(TOOLCHAINDIR)/darwin/asdk-6.5.0-darwin-newlib-build-999+-10.13/darwin/newlib
+ASDK_TOOLCHAIN_R = ../toolchain/darwin/asdk-6.5.0-darwin-newlib-build-999+-10.13/darwin/newlib
 endif
 
 tool_dir = $(ASDK_TOOLCHAIN)/bin
@@ -218,7 +224,7 @@ endif
 #*****************************************************************************#
 #                           ARM COMPILATION FLAGS
 #*****************************************************************************#
-GLOBAL_CFLAGS += -O2 -g 
+GLOBAL_CFLAGS += -Os -g 
 #GLOBAL_CFLAGS += -specs nosys.specs 
 GLOBAL_CFLAGS += -march=armv8-m.base 
 GLOBAL_CFLAGS += -mthumb 
@@ -240,7 +246,7 @@ GLOBAL_CFLAGS += -Wno-write-strings
 GLOBAL_CFLAGS += -Wno-maybe-uninitialized
 GLOBAL_CFLAGS += --save-temps
 GLOBAL_CFLAGS += -c
-GLOBAL_CFLAGS += -MMD
+GLOBAL_CFLAGS += -MMD -MP
 GLOBAL_CFLAGS += -fno-jump-tables #For link _thumb1_case_uqi issue
 
 #GLOBAL_CFLAGS += -fno-short-enums
@@ -274,7 +280,7 @@ LD_ARG += -L$(ROOTDIR)/lib/application
 LD_ARG += -T$(BUILD_TARGET_FOLDER)/rlx8721d.ld 
 
 #LD_ARG += -u _printf_float -u _scanf_float 
-LD_ARG += -O2  
+LD_ARG += -Os  
 LD_ARG += -march=armv8-m.base 
 LD_ARG += -mthumb 
 #LD_ARG += -mcmse 
@@ -308,7 +314,7 @@ COPY_RAM_OBJS:
 	$(CC_SIZE) -t $(OBJS) >> $(ROOTDIR)/ram_size.txt;\
 	for i in  $(OBJS) $(ASM_OBJS); do \
 		echo $$i >> $(ROOTDIR)/obj_list.txt;\
-		 $(COPY)  $$i $(BUILD_TARGET_RAM_FOLDER) -f;\
+		 $(COPY) -f  $$i $(BUILD_TARGET_RAM_FOLDER);\
 		done \
 
 #*****************************************************************************#
@@ -330,7 +336,7 @@ COPY_ROM_OBJS:
 	       >> $(ROOTDIR)/rom_size.txt;\
 	$(CC_SIZE) -t $(OBJS) $(ASM_OBJS) >> $(ROOTDIR)/rom_size.txt;\
 	for i in  $(OBJS) $(ASM_OBJS); do \
-		 $(COPY)  $$i $(BUILD_TARGET_ROM_FOLDER) -f;\
+		 $(COPY) -f  $$i $(BUILD_TARGET_ROM_FOLDER);\
 		done \
 
 #	@-$(COPY) *.o $(BUILD_TARGET_ROM_FOLDER) -f
@@ -352,6 +358,7 @@ RENAME_LOADER_OBJS:
 	OBJ_LIST=$(ls *.o)
 	for obj_file in $(OBJS) $(ASM_OBJS); do \
 		$(FROMELF) --rename-section .rodata.str1.4=.boot.rodata.str1.4 $$obj_file $$obj_file; \
+		$(FROMELF) --rename-section .rodata.str1.1=.boot.rodata.str1.1 $$obj_file $$obj_file; \
 	done \
 #*****************************************************************************#
 #              RULES TO GENERATE OBJECT FILE FROM .C FILE                     #

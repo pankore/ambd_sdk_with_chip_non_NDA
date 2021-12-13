@@ -38,6 +38,9 @@ extern "C" {
 
 ///@name Ameba Common 
 ///@{
+	
+#define INTER_MEAS      (0x3<<5|2)
+#define AD_10           INTER_MEAS
 
 typedef struct analogin_s analogin_t;
 
@@ -70,6 +73,14 @@ float analogin_read(analogin_t *obj);
   * @retval : 16bit adc channel data(int)
   */
 uint16_t analogin_read_u16(analogin_t *obj);
+
+/**
+  * @brief  Read resistor value
+  * @retval -1: invalid value
+            0: efuse not program
+            others: resistor value
+  */
+int analogin_resistor_read();
 
 ///@}
 /*\@}*/

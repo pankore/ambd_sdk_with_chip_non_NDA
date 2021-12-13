@@ -53,7 +53,9 @@ extern "C" {
 #define WPA3_SECURITY		0x00800000
 #define WPS_ENABLED     0x10000000
 
-#define RTW_MAX_PSK_LEN		(64)
+#define RTW_WPA2_MAX_PSK_LEN		(64)
+#define RTW_WPA3_MAX_PSK_LEN		(128)
+#define RTW_MAX_PSK_LEN		RTW_WPA3_MAX_PSK_LEN
 #define RTW_MIN_PSK_LEN		(8)
 
 #define MCSSET_LEN			16
@@ -134,18 +136,32 @@ enum {
     RTW_SECURITY_WEP_SHARED     = ( WEP_ENABLED | SHARED_ENABLED ),                 /**< WEP Security with shared authentication */
     RTW_SECURITY_WPA_TKIP_PSK   = ( WPA_SECURITY  | TKIP_ENABLED ),                 /**< WPA Security with TKIP                  */
     RTW_SECURITY_WPA_AES_PSK    = ( WPA_SECURITY  | AES_ENABLED ),                  /**< WPA Security with AES                   */
+    RTW_SECURITY_WPA_MIXED_PSK  = ( WPA_SECURITY | AES_ENABLED | TKIP_ENABLED ),    /**< WPA Security with AES & TKIP            */
     RTW_SECURITY_WPA2_AES_PSK   = ( WPA2_SECURITY | AES_ENABLED ),                  /**< WPA2 Security with AES                  */
     RTW_SECURITY_WPA2_TKIP_PSK  = ( WPA2_SECURITY | TKIP_ENABLED ),                 /**< WPA2 Security with TKIP                 */
     RTW_SECURITY_WPA2_MIXED_PSK = ( WPA2_SECURITY | AES_ENABLED | TKIP_ENABLED ),   /**< WPA2 Security with AES & TKIP           */
-    RTW_SECURITY_WPA_WPA2_MIXED = ( WPA_SECURITY  | WPA2_SECURITY ),                /**< WPA/WPA2 Security                       */
-    RTW_SECURITY_WPA2_AES_CMAC = ( WPA2_SECURITY | AES_CMAC_ENABLED),                /**< WPA2 Security with AES and Management Frame Protection                 */
-    RTW_SECURITY_WPA2_ENTERPRISE = ( WPA2_SECURITY | ENTERPRISE_ENABLED ),				/**< WPA2 Security with 802.1X authentication>*/
-    RTW_SECURITY_WPA_WPA2_ENTERPRISE = ( WPA_SECURITY | WPA2_SECURITY | ENTERPRISE_ENABLED),	/**<WPA/WPA2 Security with 802.1X authentication>*/
+    RTW_SECURITY_WPA_WPA2_TKIP_PSK = ( WPA_SECURITY  | WPA2_SECURITY | TKIP_ENABLED), /**< WPA/WPA2 Security with TKIP           */
+    RTW_SECURITY_WPA_WPA2_AES_PSK = ( WPA_SECURITY  | WPA2_SECURITY | AES_ENABLED),   /**< WPA/WPA2 Security with AES            */
+    RTW_SECURITY_WPA_WPA2_MIXED_PSK = ( WPA_SECURITY  | WPA2_SECURITY | TKIP_ENABLED | AES_ENABLED), /**< WPA/WPA2 Security with AES & TKIP      */
+    RTW_SECURITY_WPA2_AES_CMAC = ( WPA2_SECURITY | AES_CMAC_ENABLED),                /**< WPA2 Security with AES and Management Frame Protection */
+	RTW_SECURITY_WPA_TKIP_ENTERPRISE	   = ( WPA_SECURITY | TKIP_ENABLED | ENTERPRISE_ENABLED ),								 /**< WPA Security with TKIP via 802.1X authentication			  */
+	RTW_SECURITY_WPA_AES_ENTERPRISE 	   = ( WPA_SECURITY | AES_ENABLED | ENTERPRISE_ENABLED ),								 /**< WPA Security with AES via 802.1X authentication			  */
+	RTW_SECURITY_WPA_MIXED_ENTERPRISE	   = ( WPA_SECURITY | AES_ENABLED | TKIP_ENABLED | ENTERPRISE_ENABLED ),				 /**< WPA Security with AES & TKIP via 802.1X authentication	  */
+	RTW_SECURITY_WPA2_TKIP_ENTERPRISE	   = ( WPA2_SECURITY | TKIP_ENABLED | ENTERPRISE_ENABLED ), 							 /**< WPA2 Security with TKI via 802.1X authenticationP 		  */
+	RTW_SECURITY_WPA2_AES_ENTERPRISE	   = ( WPA2_SECURITY | AES_ENABLED | ENTERPRISE_ENABLED ),								 /**< WPA2 Security with AES via 802.1X authentication			  */
+	RTW_SECURITY_WPA2_MIXED_ENTERPRISE	   = ( WPA2_SECURITY | AES_ENABLED | TKIP_ENABLED | ENTERPRISE_ENABLED ),				 /**< WPA2 Security with AES & TKIP via 802.1X authentication	  */
+	RTW_SECURITY_WPA_WPA2_TKIP_ENTERPRISE  = ( WPA_SECURITY | WPA2_SECURITY | TKIP_ENABLED | ENTERPRISE_ENABLED ),				 /**< WPA/WPA2 Security with TKIP via 802.1X authentication 	  */
+	RTW_SECURITY_WPA_WPA2_AES_ENTERPRISE   = ( WPA_SECURITY | WPA2_SECURITY | AES_ENABLED | ENTERPRISE_ENABLED ),				 /**< WPA/WPA2 Security with AES via 802.1X authentication		  */
+	RTW_SECURITY_WPA_WPA2_MIXED_ENTERPRISE = ( WPA_SECURITY | WPA2_SECURITY | AES_ENABLED | TKIP_ENABLED | ENTERPRISE_ENABLED ), /**< WPA/WPA2 Security with AES & TKIP via 802.1X authentication */
 
-    RTW_SECURITY_WPS_OPEN       = WPS_ENABLED,                                      /**< WPS with open security                  */
-    RTW_SECURITY_WPS_SECURE     = (WPS_ENABLED | AES_ENABLED),                      /**< WPS with AES security                   */
+    RTW_SECURITY_WPS_OPEN       = ( WPS_ENABLED ),                                      /**< WPS with open security                  */
+    RTW_SECURITY_WPS_SECURE     = ( WPS_ENABLED | AES_ENABLED ),                      /**< WPS with AES security                   */
 
-    RTW_SECURITY_WPA3_AES_PSK 	= (WPA3_SECURITY | AES_ENABLED),						/**< WPA3-AES with AES security  */
+    RTW_SECURITY_WPA3_AES_PSK 	           = ( WPA3_SECURITY | AES_ENABLED ),                                                    /**< WPA3-SAE with AES security                                  */
+    RTW_SECURITY_WPA2_WPA3_MIXED           = ( WPA2_SECURITY | WPA3_SECURITY | AES_ENABLED ),                                    /**< WPA3-SAE/WPA2 with AES security                             */
+
+//For Matter
+    RTW_SECURITY_WPA_WPA2_MIXED = ( WPA_SECURITY  | WPA2_SECURITY | TKIP_ENABLED | AES_ENABLED), /**< WPA/WPA2 Security with AES & TKIP      */
 
     RTW_SECURITY_UNKNOWN        = -1,                                               /**< May be returned by scan function if security is unknown. Do not pass this to the join function! */
 
@@ -401,7 +417,8 @@ typedef unsigned long rtw_adaptivity_mode_t;
 enum {
 	RTW_TRP_TIS_DISABLE = 0,
 	RTW_TRP_TIS_NORMAL,
-	RTW_TRP_TIS_DYNAMIC				// enable dynamic mechanism
+	RTW_TRP_TIS_DYNAMIC,				// enable dynamic mechanism
+	RTW_TRP_TIS_FIX_ACK_RATE,			// fix ack rate to 6M
 };
 typedef unsigned long rtw_trp_tis_mode_t;
 

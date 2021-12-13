@@ -15,6 +15,9 @@ list(
     ${dir_crypto}/rtl8721dhp_sha.c
 	${dir_crypto}/rtl8721dhp_md5.c
 	${dir_crypto}/rtl8721dhp_chacha_poly1305.c
+	${dir_crypto}/rtl8721dhp_aes_ram.c
+	${dir_crypto}/rtl8721dhp_des_ram.c
+	${dir_crypto}/rtl8721dhp_crypto_ram.c
 
     # fwlib
     ${dir_fwlib}/rtl8721dhp_startup.c

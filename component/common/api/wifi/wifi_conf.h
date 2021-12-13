@@ -86,6 +86,7 @@ typedef enum _WL_BAND_TYPE{
 	WL_BAND_2_4G = 0,		
 	WL_BAND_5G,
 	WL_BAND_2_4G_5G_BOTH,
+	WL_BAND_NOT_MATCH,
 	WL_BANDMAX
 }WL_BAND_TYPE,*PWL_BAND_TYPE;
 
@@ -358,6 +359,14 @@ int wifi_get_sta_max_data_rate(__u8 * inidata_rate);
  * @return  RTW_ERROR: If the RSSI is not retrieved.
  */
 int wifi_get_rssi(int *pRSSI);
+
+/**
+ * @brief  Retrieve the latest average beacon RSSI value.
+ * @param[out]  pRSSI: Points to the integer to store the RSSI value gotten from driver.
+ * @return  RTW_SUCCESS: If the RSSI is succesfully retrieved.
+ * @return  RTW_ERROR: If the RSSI is not retrieved.
+ */
+int wifi_get_bcn_rssi(int *pRSSI);
 
 /**
  * @brief  Set the listening channel for promiscuous mode.
@@ -708,6 +717,20 @@ int wifi_scan_networks_mcc(rtw_scan_result_handler_t results_handler, void* user
  *			Those variables must remain valid until the scan is completed.
  */
 int wifi_scan_networks_with_ssid(int (results_handler)(char*, int, char *, void *), void* user_data, int scan_buflen, char* ssid, int ssid_len);
+
+/**
+ * @brief  Initiate a scan to search for 802.11 networks with specified SSID.
+ * @param[in]  results_handler: The callback function which will receive and process the result data.
+ * @param[in]  user_data: User specified data that will be passed directly to the callback function.
+ * @param[in]  scan_buflen: The length of the result storage structure.
+ * @param[in]  ssid: The SSID of target network.
+ * @param[in]  ssid_len: The length of the target network SSID.
+ * @return  RTW_SUCCESS or RTW_ERROR
+ * @note  Callback must not use blocking functions, since it is called from the context of the RTW thread. 
+ *			The callback, user_data variables will be referenced after the function returns. 
+ *			Those variables must remain valid until the scan is completed.
+ */
+int wifi_scan_networks_with_ssid_by_extended_security(int (results_handler)(char*, int, char *, void *), void* user_data, int scan_buflen, char* ssid, int ssid_len);
 
 /**
 * @brief  Set the channel used to be partial scanned.
@@ -1112,19 +1135,37 @@ extern uint32_t rtw_get_tsf(uint32_t Port);
 #endif
 
 /*
- * @brief get band
+ *@brief get WIFI band type
  *@retval  the support band type.
- * 	WL_BAND_2_4G: only support 2.4G
+ *	WL_BAND_2_4G: only support 2.4G
  *	WL_BAND_5G: only support 5G
- *      WL_BAND_2_4G_5G_BOTH: support both 2.4G and 5G
+ *	WL_BAND_2_4G_5G_BOTH: support both 2.4G and 5G
+ *	WL_BAND_NOT_MATCH: channel plan is not match with chip band type
  */
 WL_BAND_TYPE wifi_get_band_type(void);
 
 
 #ifdef LOW_POWER_WIFI_CONNECT
 int wifi_set_psk_eap_interval(uint16_t psk_interval, uint16_t eap_interval);
-int wifi_set_null1_param(uint8_t check_period, uint8_t limit, uint8_t interval);
+int wifi_set_null1_param(uint8_t check_period, uint8_t pkt_num, uint8_t limit, uint8_t interval);
 #endif
+
+/**
+ * @brief  Switch channel of softap and inform connected stations to keep wifi connection.
+ * @param[in]  new_channel: The channel number that softap will switch to.
+ * @return  RTW_SUCCESS: If switching channel is successful.
+ * @return  RTW_ERROR: If switching channel is failed.
+ */
+int wifi_ap_switch_chl_and_inform(unsigned char new_channel);
+
+/**
+ * @brief  Set initial gain index.
+ * @param[in]  igi: the new initial gain index value.
+ * @param[in]  enable: 1, fixed igi; 0, dynamic igi.
+ * @return 0: success.
+ * @return -1: fail.
+ */
+int wifi_set_igi(uint8_t igi, uint8_t enable);
 
 #ifdef __cplusplus
   }

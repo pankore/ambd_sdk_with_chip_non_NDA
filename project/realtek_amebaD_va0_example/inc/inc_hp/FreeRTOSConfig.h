@@ -44,10 +44,10 @@
  * http://www.freertos.org/a00110.html
  *----------------------------------------------------------*/
 
-#if defined(__ICCARM__) || defined(__CC_ARM) || defined(__GNUC__)
-#include <stdint.h>
-extern uint32_t SystemCoreClock;
-#endif
+#if defined(__ICCARM__) || defined(__CC_ARM) || defined(__GNUC__) 
+#include <stdint.h> 
+extern uint32_t SystemCoreClock; 
+#endif 
 #ifndef __IASMARM__
 #define __IASMARM__ 0 /* IAR */
 #endif
@@ -84,7 +84,7 @@ extern uint32_t SystemCoreClock;
 #ifdef CONFIG_WIFI_EN
 #define configTOTAL_HEAP_SIZE						( ( size_t ) ( 200 * 1024 ) ) //default
 #if (defined CONFIG_HIGH_TP_TEST)
-	#define configTOTAL_HEAP_SIZE					( ( size_t ) ( 100 * 1024 ) )
+	#define configTOTAL_HEAP_SIZE					( ( size_t ) ( 100 * 1024 ) )		
 #endif
 #else
 #define configTOTAL_HEAP_SIZE						( ( size_t ) ( 40 * 1024 ) )
@@ -119,7 +119,7 @@ extern uint32_t SystemCoreClock;
 /* Software timer definitions. */
 #define configUSE_TIMERS								1
 #define configTIMER_TASK_PRIORITY						1
-#define configTIMER_QUEUE_LENGTH						10
+#define configTIMER_QUEUE_LENGTH						( 10 + 64 )
 #define configTIMER_TASK_STACK_DEPTH					( 512  )
 
 /* Set the following definitions to 1 to include the API function, or zero
@@ -140,7 +140,7 @@ extern uint32_t SystemCoreClock;
 #define INCLUDE_xTaskResumeFromISR						0
 #define INCLUDE_xTaskGetCurrentTaskHandle				1
 #define INCLUDE_xTaskGetSchedulerState					0
-#define INCLUDE_xSemaphoreGetMutexHolder				0
+#define INCLUDE_xSemaphoreGetMutexHolder				1
 #define INCLUDE_xTimerPendFunctionCall					1
 
 /* This demo makes use of one or more example stats formatting functions.  These
@@ -231,7 +231,7 @@ extern int  freertos_ready_to_sleep(void);
 
 /* It's FreeRTOS related feature but it's not included in FreeRTOS design. */
 #define configUSE_WAKELOCK_PMU                  		1
-
+	
 #endif /* __IASMARM__ */
 
 #endif /* FREERTOS_CONFIG_H */

@@ -7,6 +7,7 @@ include ../amebad_bsp/Makefile
 SDK_DIR = $(BASEDIR)/component/common/bluetooth/realtek/sdk
 MESH_DIR = $(SDK_DIR)/example/bt_mesh
 MESH_USER_API_DIR = $(MESH_DIR)/api
+MESH_TEST_DIR = $(SDK_DIR)/example/bt_mesh_test
 MESH_DEV_RTK_DEMO_DIR = $(SDK_DIR)/example/bt_mesh_device_rtk_demo
 
 #*****************************************************************************#
@@ -28,7 +29,8 @@ MODULE_IFLAGS += \
    -I$(SDK_DIR)/board/amebad/src/vendor_cmd \
    -I$(MESH_USER_API_DIR)/provisioner \
    -I$(MESH_USER_API_DIR)/device \
-   -I$(MESH_USER_API_DIR)   
+   -I$(MESH_USER_API_DIR) \
+   -I$(MESH_TEST_DIR) \
 
 #*****************************************************************************#
 #                        DEVICE APP FILES                                     #
@@ -68,6 +70,9 @@ CSRC += \
     $(MESH_DIR)/device/device_app.c \
     $(MESH_DIR)/lib/common/ping_app.c \
     $(MESH_DIR)/lib/common/datatrans_app.c \
+	$(MESH_DIR)/lib/common/customer_dfu_service.c \
+	$(MESH_DIR)/lib/common/dfudep_service.c \
+	$(MESH_DIR)/lib/common/dfu_updater_app.c \
 	$(MESH_DIR)/lib/common/scene_server_app.c \
     $(MESH_DIR)/lib/common/scheduler_server_app.c \
 	$(MESH_DIR)/lib/common/time_server_app.c \
@@ -78,6 +83,7 @@ CSRC += \
     $(MESH_DIR)/device/bt_mesh_device_app_main.c \
     $(SDK_DIR)/board/amebad/src/vendor_cmd/vendor_cmd.c \
     $(MESH_USER_API_DIR)/device/bt_mesh_device_api.c \
+	$(MESH_USER_API_DIR)/device/device_idle_check.c \
     $(MESH_USER_API_DIR)/bt_mesh_user_api.c 
 
 OBJS = $(CSRC:.c=.o)

@@ -611,4 +611,12 @@ T_CLIENT_ID bas_add_client(P_FUN_GENERAL_APP_CB app_cb, uint8_t link_num)
 
     return bas_client;
 }
+
+void bas_delete_client(void)
+{
+    if (bas_table != NULL) {
+        os_mem_free(bas_table);
+        bas_table = NULL;
+    }
+}
 #endif

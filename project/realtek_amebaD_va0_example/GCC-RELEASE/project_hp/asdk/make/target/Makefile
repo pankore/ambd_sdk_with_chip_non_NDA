@@ -37,5 +37,5 @@ clean:
 	make -C crypto clean
 	make -C fwlib clean
 	make -C misc clean
-	#make -C usb_otg clean
+	make -C usb_otg clean
 	

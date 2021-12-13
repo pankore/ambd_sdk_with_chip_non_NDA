@@ -12,13 +12,10 @@
 #include "wifi_conf.h"
 #include "dhcp/dhcps.h"
 #include "bt_config_app_task.h"
-
-#if ((defined(CONFIG_BT_SCATTERNET) && CONFIG_BT_SCATTERNET) && \
-	(defined(CONFIG_BT_CENTRAL_CONFIG) && CONFIG_BT_CENTRAL_CONFIG))
-#include "ble_scatternet_app_task.h"
-extern T_GAP_DEV_STATE ble_scatternet_gap_dev_state;
-extern void set_bt_config_state(uint8_t state);
-#endif
+#include "os_mem.h"
+#include "os_sync.h"
+#include "os_task.h"
+#include "os_sched.h"
 
 extern void bt_config_app_deinit(void);
 extern T_GAP_CONN_STATE bt_config_gap_conn_state;
@@ -32,8 +29,8 @@ extern T_GAP_DEV_STATE bt_airsync_config_gap_dev_state;
 #endif
 
 // a temp variable for wifi scan
-static xSemaphoreHandle wifi_scan_sema = NULL;
-static xTaskHandle BC_status_monitor_task_hdl = NULL;
+static void *wifi_scan_sema = NULL;
+static void *BC_status_monitor_task_hdl = NULL;
 
 static uint8_t pscan_channel_2G[] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14};
 static uint8_t pscan_channel_5G[] = {36,40,44,48,52,56,60,64,100,104,108,112,116,120,124,128,132,136,140,149,153,157,161,165};
@@ -52,7 +49,7 @@ static rtw_result_t scan_result_handler(rtw_scan_handler_result_t* scan_result)
 			BC_scan_result->ap_num++;
 		}
 	} else{
-		xSemaphoreGive(wifi_scan_sema);
+		os_sem_give(wifi_scan_sema);
 	}
 	return RTW_SUCCESS;
 }
@@ -97,7 +94,7 @@ int BC_req_scan_hdl(BC_band_t band, struct BC_wifi_scan_result* BC_scan_result)
 		pscan_config_size = sizeof(pscan_channel_5G);
 	}
 	
-	pscan_config = (uint8_t*)malloc(pscan_config_size);
+	pscan_config = (uint8_t*)os_mem_alloc(RAM_TYPE_DATA_ON, pscan_config_size);
 	if(pscan_config == NULL) {
 		BC_printf("[%s] malloc pscan_config fail!\n\r",__FUNCTION__);
 		goto exit;
@@ -111,19 +108,19 @@ int BC_req_scan_hdl(BC_band_t band, struct BC_wifi_scan_result* BC_scan_result)
 	}
 	
 	BC_printf("Scan %s AP\r\n", (band == BC_BAND_2G)? "2.4G":"5G");
-	wifi_scan_sema = xSemaphoreCreateBinary();
+	os_sem_create(&wifi_scan_sema, 0, 1);
 	BC_scan_result->ap_num = 0;
 	ret = wifi_scan_networks(scan_result_handler,(void*) BC_scan_result);
 	if(ret != RTW_SUCCESS) {
 		BC_printf("wifi scan failed (%d)\n",ret);
 		ret = -1;
 	}
-	xSemaphoreTake(wifi_scan_sema, portMAX_DELAY);
-	vSemaphoreDelete(wifi_scan_sema);
+	os_sem_take(wifi_scan_sema, 0xFFFFFFFF);
+	os_sem_delete(wifi_scan_sema);
 
 exit:
 	if(pscan_config != NULL)
-		free(pscan_config);
+		os_mem_free(pscan_config);
 	return ret;
 }
 
@@ -156,7 +153,7 @@ int BC_req_connect_hdl(uint8_t *ssid, uint8_t *password, uint8_t *bssid, rtw_sec
 	wifi.security_type = security;
 	wifi.key_id = 0; // WEP key ID missed in BT Config, default WEP key ID 0
 	
-	tick1 = xTaskGetTickCount();
+	tick1 = rtw_get_current_time();
 
 	if (wifi.bssid.octet[0] != 0) {
 		assoc_by_bssid = 1;
@@ -168,7 +165,7 @@ int BC_req_connect_hdl(uint8_t *ssid, uint8_t *password, uint8_t *bssid, rtw_sec
 	
 	//Check if in AP mode
 	wext_get_mode(WLAN0_NAME, &mode);
-	if(mode != IW_MODE_INFRA) {
+	if(mode != RTW_MODE_INFRA) {
         wifi_set_mode(RTW_MODE_STA);
 	}
 
@@ -185,7 +182,7 @@ int BC_req_connect_hdl(uint8_t *ssid, uint8_t *password, uint8_t *bssid, rtw_sec
 		BC_printf("ERROR: Can't connect to AP\n\r");
 		return ret;
 	}
-	tick2 = xTaskGetTickCount();
+	tick2 = rtw_get_current_time();
 	BC_printf("Connected after %dms.\n\r", (tick2-tick1));
 	
 #if CONFIG_LWIP_LAYER
@@ -195,7 +192,7 @@ int BC_req_connect_hdl(uint8_t *ssid, uint8_t *password, uint8_t *bssid, rtw_sec
 	if ( DCHP_state != DHCP_ADDRESS_ASSIGNED) {
 		return -1;
 	}
-	tick3 = xTaskGetTickCount();
+	tick3 = rtw_get_current_time();
 	BC_printf("Got IP after %dms.\n\r", (tick3-tick1));
 #endif
 	
@@ -240,13 +237,14 @@ void BC_req_status_hdl(BC_status_t *status, uint8_t *SSID, uint8_t *BSSID, rtw_s
 	}
 }
 
-void BC_status_monitor(void)
+void BC_status_monitor(void *p_param)
 {
+	(void)p_param;
 	T_GAP_CONN_STATE gap_conn_state;
 
 	while (1)
 	{
-		rtw_msleep_os(500);
+		os_delay(500);
 		if ((wifi_is_ready_to_transceive(RTW_STA_INTERFACE) == RTW_SUCCESS)) {	// wifi connected
 #if defined(CONFIG_BT_AIRSYNC_CONFIG) && CONFIG_BT_AIRSYNC_CONFIG
 			if (airsync_specific) {
@@ -275,21 +273,10 @@ void BC_status_monitor(void)
 	} else
 #endif
 	{
-#if ((defined(CONFIG_BT_SCATTERNET) && CONFIG_BT_SCATTERNET) && \
-	(defined(CONFIG_BT_CENTRAL_CONFIG) && CONFIG_BT_CENTRAL_CONFIG))
-		if (bt_config_gap_dev_state.gap_init_state == 0)
-		{
-			set_bt_config_state(BC_DEV_DEINIT);
-			bt_config_wifi_deinit();
-			set_bt_config_state(BC_DEV_DISABLED); // BT Config off
-		} else {
-			bt_config_app_deinit();
-		}
-#else
 		bt_config_app_deinit();
-#endif
 	}
-	vTaskDelete(NULL);
+
+	os_task_delete(NULL);
 }
 
 void bt_config_wifi_init(void)
@@ -297,7 +284,7 @@ void bt_config_wifi_init(void)
 	BC_cmd_task_init();
 
 	if (BC_status_monitor_task_hdl == NULL) {
-		if(xTaskCreate((TaskFunction_t)BC_status_monitor, (char const *)"BC_status_monitor", 320, NULL, tskIDLE_PRIORITY + 1, &BC_status_monitor_task_hdl) != pdPASS){
+		if(os_task_create(&BC_status_monitor_task_hdl, (char const *)"BC_status_monitor", BC_status_monitor, NULL, 1024, 1) != true){
 			BC_printf("[%s] Create BC_status_monitor failed", __FUNCTION__);
 		}
 	}
@@ -317,40 +304,24 @@ void bt_config_wifi_deinit(void)
 	} else
 #endif
 	{
-#if ((defined(CONFIG_BT_SCATTERNET) && CONFIG_BT_SCATTERNET) && \
-	(defined(CONFIG_BT_CENTRAL_CONFIG) && CONFIG_BT_CENTRAL_CONFIG))
-		if (bt_config_gap_dev_state.gap_init_state == 0)
-			ble_scatternet_send_msg(0);
-		else
-			bt_config_send_msg(0);
-#else
 		bt_config_send_msg(0);
-#endif
 	}
 
 	do {
-		vTaskDelay(1);
+		os_delay(1);
 #if defined(CONFIG_BT_AIRSYNC_CONFIG) && CONFIG_BT_AIRSYNC_CONFIG
 		if (airsync_specific) {
 			gap_dev_state = bt_airsync_config_gap_dev_state;
 		} else
 #endif
 		{
-#if ((defined(CONFIG_BT_SCATTERNET) && CONFIG_BT_SCATTERNET) && \
-	(defined(CONFIG_BT_CENTRAL_CONFIG) && CONFIG_BT_CENTRAL_CONFIG))
-			if (bt_config_gap_dev_state.gap_init_state == 0)
-				gap_dev_state = ble_scatternet_gap_dev_state;
-			else
-				gap_dev_state = bt_config_gap_dev_state;
-#else
 			gap_dev_state = bt_config_gap_dev_state;
-#endif
 		}
 	} while (gap_dev_state.gap_adv_state != GAP_ADV_STATE_IDLE);
 
 	BC_cmd_task_deinit();
 	if (BC_status_monitor_task_hdl != NULL) {
-		vTaskDelete(BC_status_monitor_task_hdl);
+		os_task_delete(BC_status_monitor_task_hdl);
 		BC_status_monitor_task_hdl = NULL;
 	}
 	airsync_specific = 0;

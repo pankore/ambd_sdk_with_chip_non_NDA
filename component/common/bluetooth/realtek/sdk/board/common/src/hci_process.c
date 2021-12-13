@@ -22,7 +22,7 @@ extern void hci_normal_start(void);
 extern bool bt_check_iqk(void);
 extern bool hci_start_iqk(void);
 extern uint8_t  hci_tp_lgc_efuse[0x20];
-extern uint8_t  hci_tp_phy_efuse[16];
+extern uint8_t  hci_tp_phy_efuse[19];
 
 static uint8_t vendor_flow;
 static uint8_t iqk_type = 0xff;
@@ -510,16 +510,16 @@ uint8_t hci_tp_write_efuse_iqk(void)
 
     HCI_PRINT_TRACE0("hci_tp_write_efuse_iqk");
     
-    p_cmd = os_mem_zalloc(RAM_TYPE_DATA_ON, 15);
+    p_cmd = os_mem_zalloc(RAM_TYPE_DATA_ON, 23);
     if (p_cmd != NULL)
     {
         p = p_cmd;
         LE_UINT8_TO_STREAM(p, HCI_CMD_PKT);
         LE_UINT16_TO_STREAM(p, HCI_VSC_VENDOR_IQK);
-        LE_UINT8_TO_STREAM(p, 0xc); /* length */
+        LE_UINT8_TO_STREAM(p, 19); /* length */
 
-        memcpy(p, hci_tp_phy_efuse,0x0c);
-        p+=0x0c;
+        memcpy(p, hci_tp_phy_efuse, 19);
+        p+=19;
         hci_adapter_send(p_cmd, p - p_cmd);
         //hci_tp_send(p_cmd, p - p_cmd, hci_rtk_tx_cb);
         return HCI_TP_CHECK_OK;
