@@ -608,6 +608,7 @@ int mbedtls_net_set_nonblock( mbedtls_net_context *ctx )
  * Check if data is available on the socket
  */
 
+#if 0
 int mbedtls_net_poll( mbedtls_net_context *ctx, uint32_t rw, uint32_t timeout )
 {
     int ret = MBEDTLS_ERR_ERROR_CORRUPTION_DETECTED;
@@ -669,7 +670,7 @@ int mbedtls_net_poll( mbedtls_net_context *ctx, uint32_t rw, uint32_t timeout )
 
     return( ret );
 }
-
+#endif
 /*
  * Portable usleep helper
  */
