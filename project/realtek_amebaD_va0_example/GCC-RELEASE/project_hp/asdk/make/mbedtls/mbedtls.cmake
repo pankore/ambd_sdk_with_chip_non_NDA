@@ -5,6 +5,7 @@ project(mbedtls)
 set(dir "${sdk_root}/component/common/network/ssl/mbedtls-2.4.0")
 set(dir_rammap "${sdk_root}/component/common/network/ssl/ssl_ram_map")
 set(dir_mbedtlschip "${ameba_matter_root}/third_party/mbedtls/repo/library")
+set(dir2 "${sdk_root}/component/common/network/ssl/mbedtls-matter")
 
 if(FALSE)
 list(
@@ -72,6 +73,7 @@ list(
     APPEND ${list}
 
     # mbedtls-chip
+	${dir2}/net_sockets.c
     ${dir_mbedtlschip}/aes.c
     ${dir_mbedtlschip}/aesni.c
     ${dir_mbedtlschip}/arc4.c
@@ -110,7 +112,6 @@ list(
     ${dir_mbedtlschip}/md5.c
     ${dir_mbedtlschip}/md.c
     ${dir_mbedtlschip}/memory_buffer_alloc.c
-    ${dir_mbedtlschip}/net_sockets.c
     ${dir_mbedtlschip}/nist_kw.c
     ${dir_mbedtlschip}/oid.c
     ${dir_mbedtlschip}/padlock.c
