@@ -12,7 +12,7 @@
   * possession or use of this module requires written permission of RealTek.
   *
   * Copyright(c) 2015, Realtek Semiconductor Corporation. All rights reserved.
-  ****************************************************************************** 
+  ******************************************************************************
   */
 
 #ifndef _RTL8721D_OTA_H_
@@ -27,9 +27,9 @@
 #define SERVER_TYPE		SERVER_LOCAL						/*configure OTA demo type*/
 #define MAX_IMG_NUM		2
 
-#define HTTP_OTA_UPDATE	
-#define HTTPS_OTA_UPDATE	
-#define SDCARD_OTA_UPDATE
+#define HTTP_OTA_UPDATE
+//#define HTTPS_OTA_UPDATE
+//#define SDCARD_OTA_UPDATE
 
 #if (defined HTTP_OTA_UPDATE) || (defined HTTPS_OTA_UPDATE)
 
@@ -56,7 +56,7 @@ typedef struct {
   * @{
   */
 
-/** 
+/**
   * @brief  OTA firmware file header structure definition
   */
 typedef struct
@@ -67,7 +67,7 @@ typedef struct
 	                         This parameter indicates how many headers in firmware file. */
 }update_file_hdr;
 
-/** 
+/**
   * @brief  OTA firmware file image header structure definition
   */
 typedef struct
@@ -83,7 +83,7 @@ typedef struct
 	u32  FlashAddr;    /*!< Specifies the flash offset address of the corresponding image. */
 }update_file_img_hdr;
 
-/** 
+/**
   * @brief  OTA firmware file download information structure definition
   */
 typedef struct
@@ -97,7 +97,7 @@ typedef struct
 	u32	ImageLen;	/*!< Specifies the OTA image length. */
 }update_dw_info;
 
-/** 
+/**
   * @brief  OTA target image header structure definition
   */
 typedef struct
@@ -113,11 +113,11 @@ typedef struct
 
 /** @defgroup OTA_Exported_Constants OTA Exported Constants
   * @{
-  */ 
-/** @defgroup OTA_system_parameter_definitions 
+  */
+/** @defgroup OTA_system_parameter_definitions
   * @{
-  */ 
-#define BACKUP_SECTOR	(FLASH_RESERVED_DATA_BASE)	/*back up system data offset address*/						
+  */
+#define BACKUP_SECTOR	(FLASH_RESERVED_DATA_BASE)	/*back up system data offset address*/
 #define LS_IMG2_OTA1_ADDR	0x08006000				/* KM0 OTA1 start address*/
 #define LS_IMG2_OTA2_ADDR	0x08106000				/* KM0 OTA2 start address*/
 
@@ -170,7 +170,11 @@ u32 download_new_fw_from_server_http(u8* first_buf, unsigned int firstbuf_len, i
 int http_update_ota(char *host, int port, char *resource);
 #endif
 #ifdef HTTPS_OTA_UPDATE
-#include <mbedtls/config.h>
+#if !defined(MBEDTLS_CONFIG_FILE)
+#include "config.h"
+#else
+#include MBEDTLS_CONFIG_FILE
+#endif
 #include <mbedtls/platform.h>
 #include <mbedtls/net_sockets.h>
 #include <mbedtls/ssl.h>

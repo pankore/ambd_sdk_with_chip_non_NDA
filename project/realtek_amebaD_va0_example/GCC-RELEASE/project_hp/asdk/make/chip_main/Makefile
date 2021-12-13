@@ -108,10 +108,7 @@ CPPSRC += $(CHIPDIR)/src/app/clusters/media-playback-server/media-playback-serve
 CPPSRC += $(CHIPDIR)/src/app/clusters/scenes/scenes.cpp
 CPPSRC += $(CHIPDIR)/src/app/clusters/basic/basic.cpp
 CPPSRC += $(CHIPDIR)/src/app/clusters/bindings/bindings.cpp
-CPPSRC += $(CHIPDIR)/src/app/clusters/door-lock-server/door-lock-server-core.cpp
-CPPSRC += $(CHIPDIR)/src/app/clusters/door-lock-server/door-lock-server-logging.cpp
-CPPSRC += $(CHIPDIR)/src/app/clusters/door-lock-server/door-lock-server-schedule.cpp
-CPPSRC += $(CHIPDIR)/src/app/clusters/door-lock-server/door-lock-server-user.cpp
+CPPSRC += $(CHIPDIR)/src/app/clusters/door-lock-server/door-lock-server.cpp
 CPPSRC += $(CHIPDIR)/src/app/clusters/ias-zone-server/ias-zone-server.cpp
 CPPSRC += $(CHIPDIR)/src/app/clusters/general-commissioning-server/general-commissioning-server.cpp
 CPPSRC += $(CHIPDIR)/src/app/clusters/low-power-server/low-power-server.cpp
@@ -145,6 +142,7 @@ CPPSRC += $(CHIPDIR)/src/app/clusters/thermostat-user-interface-configuration-se
 CPPSRC += $(CHIPDIR)/src/app/clusters/thermostat-server/thermostat-server.cpp
 CPPSRC += $(CHIPDIR)/src/app/clusters/access-control-server/access-control-server.cpp
 CPPSRC += $(CHIPDIR)/src/app/clusters/power-source-configuration-server/power-source-configuration-server.cpp
+CPPSRC += $(CHIPDIR)/src/app/clusters/fixed-label-server/fixed-label-server.cpp
 
 CPPSRC += $(CHIPDIR)/src/app/reporting/Engine.cpp
 
