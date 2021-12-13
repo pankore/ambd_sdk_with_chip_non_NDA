@@ -224,7 +224,7 @@ IFLAGS               += -I$(CHIPDIR)/third_party/mbedtls/repo/include
 IFLAGS               += -I$(CHIPDIR)/third_party/mbedtls/repo/include/mbedtls
 IFLAGS               += -I$(CHIPDIR)/third_party/mbedtls/repo/library
 #mbedtlc_config
-IFLAGS               += -I$(CHIPDIR)/config/ambd
+IFLAGS               += -I$(CHIPDIR)/config/ameba
 IFLAGS               += -I$(BASEDIR)/component/common/network/ssl/mbedtls-matter
 IFLAGS               += -I$(BASEDIR)/component/common/network/ssl/mbedtls_ram_map/rom
 IFLAGS               += -I$(BASEDIR)/component/common/application/amazon/amazon-freertos/lib/include/private
@@ -402,7 +402,7 @@ GLOBAL_CFLAGS += -Wno-format
 
 GLOBAL_CFLAGS += -DFD_SETSIZE=10
 
-GLOBAL_CFLAGS += -DCHIP_DEVICE_LAYER_TARGET=AMBD
+GLOBAL_CFLAGS += -DCHIP_DEVICE_LAYER_TARGET=Ameba
 GLOBAL_CFLAGS += -DCHIP_DEVICE_LAYER_NONE=0
 
 GLOBAL_CFLAGS += -DCHIP_SYSTEM_CONFIG_USE_ZEPHYR_NET_IF=0
