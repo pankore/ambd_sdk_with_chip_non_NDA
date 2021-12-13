@@ -7,7 +7,7 @@ IFLAGS               += -I$(BASEDIR)/component/common/network/libcoap/include
 #*****************************************************************************#
 #                               VARIABLES	                              #
 #*****************************************************************************#
-LWIPDIR = $(BASEDIR)/component/common/network/lwip/lwip_v2.0.2
+LWIPDIR = $(BASEDIR)/component/common/network/lwip/lwip_v2.1.2
 NETWORK = $(BASEDIR)/component/common/network
 WLANDRV = $(BASEDIR)/component/common/drivers/wlan/realtek
 

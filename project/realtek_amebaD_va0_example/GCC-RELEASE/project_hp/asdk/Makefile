@@ -249,8 +249,8 @@ make_subdirs_lib:
 	#@make -C make/network/tftp all
 	#@make -C make/file_system/dct all
 	#@make -C make/network/libcoap all
-	make -C make/chip/all_cluster_app all
-	make -C make/chip_main/all_cluster_app all
+	make -C make/chip all
+	make -C make/chip_main all
 #	MMF LIBRARY
 # 	@make -C make/audio/g711 all
 # 	@make -C make/audio/faac all
