@@ -989,13 +989,13 @@ int CRYPTO_ProcessAD(HAL_CRYPTO_ADAPTER *pIE,
 		ips_err = IPSEC->ERR_STAT;
 		if ( ips_err ) {
 			DBG_PRINTF(MODULE_IPSEC, LEVEL_ERROR, "ips 0x1C err = 0x%08x\r\n", ips_err);
-			return FAIL;
+			return -1;
 		}
 
 		loopWait--;
 		if (loopWait == 0) {
 			DBG_PRINTF(MODULE_IPSEC, LEVEL_ERROR, "Wait Timeout\r\n");
-			return FAIL; /* error occurs */
+			return -1; /* error occurs */
 		}
 	}
 
