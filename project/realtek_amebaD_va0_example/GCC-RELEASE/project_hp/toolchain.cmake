@@ -63,6 +63,7 @@ list(
 	-Wno-write-strings
 #	-Wno-maybe-uninitialized
 	-fdiagnostics-color=always
+	-Wno-stringop-truncation
 )
 
 list(
