@@ -143,6 +143,8 @@ CPPSRC += $(CHIPDIR)/src/app/clusters/thermostat-server/thermostat-server.cpp
 CPPSRC += $(CHIPDIR)/src/app/clusters/access-control-server/access-control-server.cpp
 CPPSRC += $(CHIPDIR)/src/app/clusters/power-source-configuration-server/power-source-configuration-server.cpp
 CPPSRC += $(CHIPDIR)/src/app/clusters/fixed-label-server/fixed-label-server.cpp
+CPPSRC += $(CHIPDIR)/src/app/clusters/switch-server/switch-server.cpp
+CPPSRC += $(CHIPDIR)/src/app/clusters/user-label-server/user-label-server.cpp
 
 CPPSRC += $(CHIPDIR)/src/app/reporting/Engine.cpp
 
