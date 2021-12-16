@@ -28,11 +28,19 @@
 
 ## Matter Ameba-D All Clusters Example
 
-    cd ${HOME}/AmebaD_with_CHIP/connectedhomeip
+`cd ${HOME}/AmebaD_with_CHIP/connectedhomeip`
 
-    $PWD/../ambd_sdk_with_chip_non_NDA/project/realtek_amebaD_va0_example/GCC-RELEASE/build.sh $PWD ninja $PWD/out
+`$PWD/../ambd_sdk_with_chip_non_NDA/project/realtek_amebaD_va0_example/GCC-RELEASE/build.sh $PWD ninja $PWD/out all-clusters-app`
 	
-	cd out ; ninja
+`cd out ; ninja`
+
+## Matter Ameba-D Lighting Example
+
+`cd ${HOME}/AmebaD_with_CHIP/connectedhomeip`
+
+`$PWD/../ambd_sdk_with_chip_non_NDA/project/realtek_amebaD_va0_example/GCC-RELEASE/build.sh $PWD ninja $PWD/out lighting-app`
+	
+`cd out ; ninja`
 
 ## Flash Image on AmebaD EVB
 
@@ -100,3 +108,37 @@ To launch Python Controller, activate the python environment first.
 * Resolve DNS-SD name and update address of the node in the device controller. `chip-device-ctrl > resolve 135246`
 * On-Off cluster command `chip-device-ctrl >zcl OnOff On 135246 1 1`
 * On-Off cluster command `chip-device-ctrl >zcl OnOff Off 135246 1 1`
+
+## Matter Ameba-D All Clusters Example (by Makefile)
+
+### Make Little CPU
+
+`cd ${HOME}/AmebaD_with_CHIP/ambd_sdk_with_chip_non_NDA/project/realtek_amebaD_va0_example/GCC-RELEASE/project_lp`
+
+`make all`
+
+output : project/realtek_amebaD_va0_example/GCC-RELEASE/project_lp/asdk/image/km0_boot_all.bin
+
+### Make libCHIP.a(matter core) and lib_main.a(matter example)
+
+`cd ${HOME}/AmebaD_with_CHIP/ambd_sdk_with_chip_non_NDA/project/realtek_amebaD_va0_example/GCC-RELEASE/project_hp`
+
+`make -C asdk lib_all`
+
+output : ambd_sdk_with_chip_non_NDA/project/realtek_amebaD_va0_example/GCC-RELEASE/project_hp/asdk/lib/application
+
+> libCHIP.a : matter core (generate by GN/ninja in connectedhomeip. Config by [chip/Makefile](https://github.com/pankore/ambd_sdk_with_chip_non_NDA/blob/main/project/realtek_amebaD_va0_example/GCC-RELEASE/project_hp/asdk/make/chip/Makefile))
+
+> lib_main.a : matter example CHIP application (generate by [chip_main/Makefile](https://github.com/pankore/ambd_sdk_with_chip_non_NDA/blob/main/project/realtek_amebaD_va0_example/GCC-RELEASE/project_hp/asdk/make/chip_main/Makefile))
+
+### Make Big CPU
+
+`cd ${HOME}/AmebaD_with_CHIP/ambd_sdk_with_chip_non_NDA/project/realtek_amebaD_va0_example/GCC-RELEASE/project_hp`
+
+`make all`
+
+output : 
+
+project/realtek_amebaD_va0_example/GCC-RELEASE/project_hp/asdk/image/km4_boot_all.bin
+
+project/realtek_amebaD_va0_example/GCC-RELEASE/project_hp/asdk/image/km0_km4_image2.bin
