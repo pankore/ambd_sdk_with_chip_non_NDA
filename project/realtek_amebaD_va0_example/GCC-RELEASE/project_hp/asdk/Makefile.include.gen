@@ -215,8 +215,8 @@ IFLAGS               += -I$(BASEDIR)/component/common/network/ssl/ssl_ram_map/ro
 #MBEDTLS
 IFLAGS               += -I$(CHIPDIR)/third_party/mbedtls/repo/include
 IFLAGS               += -I$(CHIPDIR)/third_party/mbedtls/repo/include/mbedtls
+IFLAGS               += -I$(CHIPDIR)/third_party/mbedtls/repo/library
 #mbedtlc_config
-IFLAGS               += -I$(CHIPDIR)/config/ameba
 IFLAGS               += -I$(BASEDIR)/component/common/network/ssl/mbedtls-matter
 IFLAGS               += -I$(BASEDIR)/component/common/network/ssl/mbedtls_ram_map/rom
 IFLAGS               += -I$(BASEDIR)/component/common/application/amazon/amazon-freertos/lib/include/private
@@ -355,13 +355,44 @@ GLOBAL_CFLAGS += -DDM_ODM_SUPPORT_TYPE=32
 CPPFLAGS = $(GLOBAL_CFLAGS)
 #CPPFLAGS += -std=c++11 -fno-use-cxa-atexit
 
-#CHIP_PROJECT ADD
-GLOBAL_CFLAGS += -DMBEDTLS_CONFIG_FILE=\"mbedtls_config.h\"
-GLOBAL_CFLAGS += -DLWIP_IPV6_ROUTE_TABLE_SUPPORT=1
+#*****************************************************************************#
+#                           MATTER ADD
+#*****************************************************************************#
 CPPFLAGS += -std=gnu++11
 CPPFLAGS += -std=c++14
 CPPFLAGS += -fno-rtti
-#CHIP_PROJECT END
+
+GLOBAL_CFLAGS += -DMBEDTLS_CONFIG_FILE=\"mbedtls_config.h\"
+GLOBAL_CFLAGS += -DLWIP_IPV6_ROUTE_TABLE_SUPPORT=1
+
+GLOBAL_CFLAGS += -Wno-sign-compare
+GLOBAL_CFLAGS += -Wno-unused-function
+GLOBAL_CFLAGS += -Wno-unused-but-set-variable
+GLOBAL_CFLAGS += -Wno-unused-variable
+GLOBAL_CFLAGS += -Wno-deprecated-declarations
+GLOBAL_CFLAGS += -Wno-unused-parameter
+GLOBAL_CFLAGS += -Wno-format
+
+GLOBAL_CFLAGS += -DFD_SETSIZE=10
+
+GLOBAL_CFLAGS += -DCHIP_DEVICE_LAYER_TARGET=AMBD
+GLOBAL_CFLAGS += -DCHIP_DEVICE_LAYER_NONE=0
+
+GLOBAL_CFLAGS += -DCHIP_SYSTEM_CONFIG_USE_ZEPHYR_NET_IF=0
+GLOBAL_CFLAGS += -DCHIP_SYSTEM_CONFIG_USE_BSD_IFADDRS=0
+GLOBAL_CFLAGS += -DCHIP_SYSTEM_CONFIG_USE_ZEPHYR_SOCKET_EXTENSIONS=0
+GLOBAL_CFLAGS += -DCHIP_SYSTEM_CONFIG_USE_LWIP=1
+GLOBAL_CFLAGS += -DCHIP_SYSTEM_CONFIG_USE_SOCKETS=0
+GLOBAL_CFLAGS += -DCHIP_SYSTEM_CONFIG_USE_NETWORK_FRAMEWORK=0
+GLOBAL_CFLAGS += -DCHIP_SYSTEM_CONFIG_POSIX_LOCKING=0
+
+GLOBAL_CFLAGS += -DCHIP_HAVE_CONFIG_H
+
+GLOBAL_CFLAGS += -DINET_CONFIG_ENABLE_IPV4=1
+
+#*****************************************************************************#
+#                           MATTER END
+#*****************************************************************************#
 
 ifeq (${BUILD_TYPE},MFG)
 GLOBAL_CFLAGS += -DCONFIG_BT_MP

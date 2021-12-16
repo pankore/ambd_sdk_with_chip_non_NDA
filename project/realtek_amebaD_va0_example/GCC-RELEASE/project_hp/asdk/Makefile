@@ -183,6 +183,7 @@ image3_s: build_target_folder copy_ld_img3 check_toolchain build_info.h make_sub
 mp_image3_s: build_target_folder copy_ld_img3 check_toolchain build_info.h make_subdirs_secure linker_image3
 bootloader: build_target_folder copy_ld_img1 check_toolchain build_info.h make_subdirs_bootloader linker_loader gen_rom_symbol
 lib_all: build_target_folder copy_ld_img2 check_toolchain build_info.h make_subdirs_lib  
+light: build_target_folder copy_ld_img2 check_toolchain build_info.h make_subdirs_lib_light
 
 #*****************************************************************************#
 #                      RULES TO CREATE DIRECTORY                              #
@@ -236,6 +237,13 @@ make_subdirs_bootloader:
 	@ rm -f $(RAM_OBJS_LIST)
 	@make -C make/bootloader all
 
+make_subdirs_lib_light:
+	@ rm -f $(RAM_OBJS_LIST)
+	#make -C make/nonnda_bootloader lib
+	#make -C make/nonnda_application lib
+	make -C make/chip/lighting_app all
+	make -C make/chip_main/lighting_app all
+
 make_subdirs_lib:
 	@ rm -f $(RAM_OBJS_LIST)
 	#@make -C make/wlan lib
@@ -255,8 +263,8 @@ make_subdirs_lib:
 	#@make -C make/network/libcoap all
 	#make -C make/nonnda_bootloader lib
 	#make -C make/nonnda_application lib
-	make -C make/chip all
-	make -C make/chip_main all
+	make -C make/chip/all_cluster_app all
+	make -C make/chip_main/all_cluster_app all
 #	MMF LIBRARY
 # 	@make -C make/audio/g711 all
 # 	@make -C make/audio/faac all
@@ -613,8 +621,11 @@ clean:
 	@make -C make_secure clean
 	# make -C config clean
 	make -C $(SCRIPTSDIR)/lxdialog clean
-	make -C make/chip clean
-	make -C make/chip_main clean
+
+	make -C make/chip/all_cluster_app clean
+	make -C make/chip_main/all_cluster_app clean
+	make -C make/chip/lighting_app clean
+	make -C make/chip_main/lighting_app clean
 
 clean_rom:
 	@make -C make_rom/make clean
