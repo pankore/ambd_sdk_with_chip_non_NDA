@@ -36,12 +36,12 @@
 #define HEADER_BAK_LEN			32
 
 typedef struct {
-	u32	status_code;
-	u32	header_len;
-	u8		*body;
-	u32	body_len;
-	u8		*header_bak;
-	u32	parse_status;
+	uint32_t	status_code;
+	uint32_t	header_len;
+	uint8_t		*body;
+	uint32_t	body_len;
+	uint8_t		*header_bak;
+	uint32_t	parse_status;
 } http_response_result_t;
 #endif
 
@@ -61,9 +61,9 @@ typedef struct {
   */
 typedef struct
 {
-	u32	FwVer;	/*!< Specifies the OTA firmware verision.
+	uint32_t	FwVer;	/*!< Specifies the OTA firmware verision.
 	                         This parameter is in first Dword in the firmware file. */
-	u32	HdrNum;/*!< Specifies the OTA firmware header number.
+	uint32_t	HdrNum;/*!< Specifies the OTA firmware header number.
 	                         This parameter indicates how many headers in firmware file. */
 }update_file_hdr;
 
@@ -72,15 +72,15 @@ typedef struct
   */
 typedef struct
 {
-	u8	ImgId[4];	/*!< Specifies the OTA image ID.
+	uint8_t	ImgId[4];	/*!< Specifies the OTA image ID.
 	                         	This parameter is used to identify the OTA header needed. */
-	u32	ImgHdrLen;	/*!< Specifies the OTA image header length.
+	uint32_t	ImgHdrLen;	/*!< Specifies the OTA image header length.
 	                         	This parameter indicates the Image Header Length. */
-	u32	Checksum;	/*!< Specifies the OTA image checksum.
+	uint32_t	Checksum;	/*!< Specifies the OTA image checksum.
 	                         	This parameter is used to judge whether the image received is correct. */
-	u32  ImgLen;		/*!< Specifies the OTA image length. */
-	u32  Offset;		/*!< Specifies the the location in the total firmware file. */
-	u32  FlashAddr;    /*!< Specifies the flash offset address of the corresponding image. */
+	uint32_t  ImgLen;		/*!< Specifies the OTA image length. */
+	uint32_t  Offset;		/*!< Specifies the the location in the total firmware file. */
+	uint32_t  FlashAddr;    /*!< Specifies the flash offset address of the corresponding image. */
 }update_file_img_hdr;
 
 /**
@@ -88,13 +88,13 @@ typedef struct
   */
 typedef struct
 {
-	u32 ImgId;		/*!< Specifies the Image ID.*/
+	uint32_t ImgId;		/*!< Specifies the Image ID.*/
 
-	u32	FlashAddr;	/*!< Specifies the Flash Address.
+	uint32_t	FlashAddr;	/*!< Specifies the Flash Address.
 	                         	This parameter is used to write the Image to the flash. */
-	u32	ImgOffset;	/*!< Specifies the Image location in Firmware header.
+	uint32_t	ImgOffset;	/*!< Specifies the Image location in Firmware header.
 	                         	This parameter indicates the Image location in firmware file. */
-	u32	ImageLen;	/*!< Specifies the OTA image length. */
+	uint32_t	ImageLen;	/*!< Specifies the OTA image length. */
 }update_dw_info;
 
 /**
@@ -104,8 +104,8 @@ typedef struct
 {
 	update_file_hdr	FileHdr;			/*!< Specifies the firmware file header. */
 	update_file_img_hdr	FileImgHdr[MAX_IMG_NUM];	/*!< Specifies the target OTA image firmware file header. */
-	u8 Sign[MAX_IMG_NUM][9];			/*!< Specifies the signature of target image. */
-	u8 ValidImgCnt;						/*!< Specifies valid image number in file. */
+	uint8_t Sign[MAX_IMG_NUM][9];			/*!< Specifies the signature of target image. */
+	uint8_t ValidImgCnt;						/*!< Specifies valid image number in file. */
 }update_ota_target_hdr;
 
 
@@ -139,7 +139,7 @@ typedef struct
 /** @defgroup OTA_Exported_Functions OTA Exported Functions
   * @{
   */
-u32 OTA_Change(u32 OTAIdx);
+uint32_t OTA_Change(uint32_t OTAIdx);
 
 void* ota_update_malloc(unsigned int size);
 void ota_update_free(void *buf);
@@ -147,16 +147,17 @@ void ota_update_free(void *buf);
 #if (SERVER_TYPE == SERVER_LOCAL)
 void ota_platform_reset(void);
 int ota_write_ota2_addr(uint32_t ota_addr);
-u32 ota_get_cur_index(void);
-int  ota_readstream_user(u32 address, u32 len, u8 * data);
+uint32_t ota_get_cur_index(void);
+int  ota_readstream_user(uint32_t address, uint32_t len, uint8_t * data);
+int ota_writestream_user(uint32_t address, uint32_t len, uint8_t * data);
 
-u32 recv_file_info_from_server(u8 * Recvbuf, u32 len, int socket);
-u32 recv_ota_file_hdr(u8 * Recvbuf, u32 * len, update_ota_target_hdr * pOtaTgtHdr, int socket);
-u32 get_ota_tartget_header(u8* buf, u32 len, update_ota_target_hdr * pOtaTgtHdr, u8 target_idx);
-void erase_ota_target_flash(u32 addr, u32 len);
-u32 download_new_fw_from_server(int socket, update_ota_target_hdr * pOtaTgtHdr, u8 targetIdx);
-u32 verify_ota_checksum(update_ota_target_hdr * pOtaTgtHdr);
-u32 change_ota_signature(update_ota_target_hdr * pOtaTgtHdr, u32 ota_target_index);
+uint32_t recv_file_info_from_server(uint8_t * Recvbuf, uint32_t len, int socket);
+uint32_t recv_ota_file_hdr(uint8_t * Recvbuf, uint32_t * len, update_ota_target_hdr * pOtaTgtHdr, int socket);
+uint32_t get_ota_tartget_header(uint8_t* buf, uint32_t len, update_ota_target_hdr * pOtaTgtHdr, uint8_t target_idx);
+void erase_ota_target_flash(uint32_t addr, uint32_t len);
+uint32_t download_new_fw_from_server(int socket, update_ota_target_hdr * pOtaTgtHdr, uint8_t targetIdx);
+uint32_t verify_ota_checksum(update_ota_target_hdr * pOtaTgtHdr);
+uint32_t change_ota_signature(update_ota_target_hdr * pOtaTgtHdr, uint32_t ota_target_index);
 #endif
 
 #if (defined HTTP_OTA_UPDATE) || (defined HTTPS_OTA_UPDATE)
@@ -164,9 +165,9 @@ int  parser_url( char *url, char *host, u16 *port, char *resource);
 int parse_http_response(unsigned char *response, unsigned int response_len, http_response_result_t *result);
 #ifdef HTTP_OTA_UPDATE
 int update_ota_http_connect_server(int server_socket, char *host, int port);
-u32 recv_ota_file_hdr_http(u8 * Recvbuf, u32 writelen, u32 * len, update_ota_target_hdr * pOtaTgtHdr, int socket);
-int http_read_socket( int socket, u8 *recevie_buf, int buf_len );
-u32 download_new_fw_from_server_http(u8* first_buf, unsigned int firstbuf_len, int socket, update_ota_target_hdr * pOtaTgtHdr, u8 targetIdx);
+uint32_t recv_ota_file_hdr_http(uint8_t * Recvbuf, uint32_t writelen, uint32_t * len, update_ota_target_hdr * pOtaTgtHdr, int socket);
+int http_read_socket( int socket, uint8_t *recevie_buf, int buf_len );
+uint32_t download_new_fw_from_server_http(uint8_t* first_buf, unsigned int firstbuf_len, int socket, update_ota_target_hdr * pOtaTgtHdr, uint8_t targetIdx);
 int http_update_ota(char *host, int port, char *resource);
 #endif
 #ifdef HTTPS_OTA_UPDATE
@@ -178,9 +179,9 @@ int http_update_ota(char *host, int port, char *resource);
 #include <mbedtls/platform.h>
 #include <mbedtls/net_sockets.h>
 #include <mbedtls/ssl.h>
-u32 recv_ota_file_hdr_https(u8 * Recvbuf, u32 writelen, u32 * len, update_ota_target_hdr * pOtaTgtHdr, mbedtls_ssl_context * ssl);
-int https_read_socket(mbedtls_ssl_context * ssl, u8 * recevie_buf, int buf_len);
-u32 download_new_fw_from_server_https(u8 * first_buf, unsigned int firstbuf_len, mbedtls_ssl_context * ssl, update_ota_target_hdr * pOtaTgtHdr, u8 targetIdx);
+uint32_t recv_ota_file_hdr_https(uint8_t * Recvbuf, uint32_t writelen, uint32_t * len, update_ota_target_hdr * pOtaTgtHdr, mbedtls_ssl_context * ssl);
+int https_read_socket(mbedtls_ssl_context * ssl, uint8_t * recevie_buf, int buf_len);
+uint32_t download_new_fw_from_server_https(uint8_t * first_buf, unsigned int firstbuf_len, mbedtls_ssl_context * ssl, update_ota_target_hdr * pOtaTgtHdr, uint8_t targetIdx);
 int https_update_ota(char *host, int port, char *resource);
 #endif
 #endif

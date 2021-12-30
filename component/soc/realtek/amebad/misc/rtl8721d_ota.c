@@ -82,7 +82,7 @@ typedef struct
 	uint16_t	port;
 }update_cfg_local_t;
 
-const u32 IMG_ADDR[MAX_IMG_NUM][2] = {
+const uint32_t IMG_ADDR[MAX_IMG_NUM][2] = {
 	{LS_IMG2_OTA1_ADDR, LS_IMG2_OTA2_ADDR},
 };
 
@@ -114,8 +114,8 @@ void ota_update_free(void *buf)
 void ota_platform_reset(void)
 {
 	WDG_InitTypeDef WDG_InitStruct;
-	u32 CountProcess;
-	u32 DivFacProcess;
+	uint32_t CountProcess;
+	uint32_t DivFacProcess;
 	
 	vTaskDelay(100);
 
@@ -148,15 +148,15 @@ void ota_platform_reset(void)
   *           useful when calculate checksum.
   */
 IMAGE2_RAM_TEXT_SECTION
-int  ota_readstream_user(u32 address, u32 len, u8 * data)
+int  ota_readstream_user(uint32_t address, uint32_t len, uint8_t * data)
 {
 	assert_param(data != NULL);
 
-	u32 offset_to_align;
-	u32 i;
-	u32 read_word;
-	u8 *ptr;
-	u8 *pbuf;
+	uint32_t offset_to_align;
+	uint32_t i;
+	uint32_t read_word;
+	uint8_t *ptr;
+	uint8_t *pbuf;
 
 	FLASH_Write_Lock();
 
@@ -164,9 +164,9 @@ int  ota_readstream_user(u32 address, u32 len, u8 * data)
 	pbuf = data;
 	if (offset_to_align != 0) {
 		/* the start address is not 4-bytes aligned */
-		FLASH_RxData(0, address - offset_to_align, 4, (u8*)&read_word);
+		FLASH_RxData(0, address - offset_to_align, 4, (uint8_t*)&read_word);
 		
-		ptr = (u8*)&read_word + offset_to_align;
+		ptr = (uint8_t*)&read_word + offset_to_align;
 		offset_to_align = 4 - offset_to_align;
 		for (i=0;i<offset_to_align;i++) {
 			*pbuf = *(ptr+i);
@@ -181,10 +181,10 @@ int  ota_readstream_user(u32 address, u32 len, u8 * data)
 	/* address = next 4-bytes aligned */
 	address = (((address-1) >> 2) + 1) << 2;
 
-	ptr = (u8*)&read_word;
-	if ((u32)pbuf & 0x03) {
+	ptr = (uint8_t*)&read_word;
+	if ((uint32_t)pbuf & 0x03) {
 		while (len >= 4) {
-			FLASH_RxData(0, address, 4, (u8*)&read_word);
+			FLASH_RxData(0, address, 4, (uint8_t*)&read_word);
 			
 			for (i=0;i<4;i++) {
 				*pbuf = *(ptr+i);
@@ -204,7 +204,7 @@ int  ota_readstream_user(u32 address, u32 len, u8 * data)
 	}
 
 	if (len > 0) {
-		FLASH_RxData(0, address, 4, (u8*)&read_word);
+		FLASH_RxData(0, address, 4, (uint8_t*)&read_word);
 		
 		for (i=0;i<len;i++) {
 			*pbuf = *(ptr+i);
@@ -228,29 +228,29 @@ int  ota_readstream_user(u32 address, u32 len, u8 * data)
   *           useful when address or len is not 4 byte aligned.
   */
 IMAGE2_RAM_TEXT_SECTION
-int  ota_writestream_user(u32 address, u32 len, u8 * data)
+int  ota_writestream_user(uint32_t address, uint32_t len, uint8_t * data)
 {
 	// Check address: 4byte aligned & page(256bytes) aligned
-	u32 page_begin = address &  (~0xff);                     
-	u32 page_end = (address + len) & (~0xff);
-	u32 page_cnt = ((page_end - page_begin) >> 8) + 1;
+	uint32_t page_begin = address &  (~0xff);                     
+	uint32_t page_end = (address + len) & (~0xff);
+	uint32_t page_cnt = ((page_end - page_begin) >> 8) + 1;
 
-	u32 addr_begin = address;
-	u32 addr_end = (page_cnt == 1) ? (address + len) : (page_begin + 0x100);
-	u32 size = addr_end - addr_begin;
-	u8 *buffer = data;
-	u8 write_data[12];
+	uint32_t addr_begin = address;
+	uint32_t addr_end = (page_cnt == 1) ? (address + len) : (page_begin + 0x100);
+	uint32_t size = addr_end - addr_begin;
+	uint8_t *buffer = data;
+	uint8_t write_data[12];
 	
-	u32 offset_to_align;
-	u32 read_word;
-	u32 i;
+	uint32_t offset_to_align;
+	uint32_t read_word;
+	uint32_t i;
 
 	FLASH_Write_Lock();
 	while(page_cnt){	
 		offset_to_align = addr_begin & 0x3;
 		
 		if(offset_to_align != 0){
-			FLASH_RxData(0, addr_begin - offset_to_align, 4, (u8*)&read_word);
+			FLASH_RxData(0, addr_begin - offset_to_align, 4, (uint8_t*)&read_word);
 			
 			for(i = offset_to_align;i < 4;i++){
 				read_word = (read_word &  (~(0xff << (8*i)))) |( (*buffer) <<(8*i));
@@ -259,7 +259,7 @@ int  ota_writestream_user(u32 address, u32 len, u8 * data)
 				if(size == 0)
 					break;
 			}
-			FLASH_TxData12B(addr_begin - offset_to_align, 4, (u8*)&read_word);
+			FLASH_TxData12B(addr_begin - offset_to_align, 4, (uint8_t*)&read_word);
 		}
 
 		addr_begin = (((addr_begin-1) >> 2) + 1) << 2;
@@ -280,13 +280,13 @@ int  ota_writestream_user(u32 address, u32 len, u8 * data)
 		}
 
 		if(size > 0){
-			FLASH_RxData(0, addr_begin, 4, (u8*)&read_word);
+			FLASH_RxData(0, addr_begin, 4, (uint8_t*)&read_word);
 			
 			for( i = 0;i < size;i++){
 				read_word = (read_word & (~(0xff << (8*i)))) | ((*buffer) <<(8*i));
 				buffer++;
 			}
-			FLASH_TxData12B(addr_begin, 4, (u8*)&read_word);
+			FLASH_TxData12B(addr_begin, 4, (uint8_t*)&read_word);
 		}
 
 		page_cnt--;
@@ -308,12 +308,12 @@ int  ota_writestream_user(u32 address, u32 len, u8 * data)
   *              OTA_INDEX_1: current images located in OTA1 address space
   *              OTA_INDEX_2: current images located in OTA2 address space
   */   
-u32 ota_get_cur_index(void)
+uint32_t ota_get_cur_index(void)
 {
-	u32 AddrStart, Offset, IsMinus, PhyAddr;;
+	uint32_t AddrStart, Offset, IsMinus, PhyAddr;;
 
 	RSIP_REG_TypeDef* RSIP = ((RSIP_REG_TypeDef *) RSIP_REG_BASE);
-	u32 CtrlTemp = RSIP->FLASH_MMU[0].MMU_ENTRYx_CTRL;
+	uint32_t CtrlTemp = RSIP->FLASH_MMU[0].MMU_ENTRYx_CTRL;
 
 	if (CtrlTemp & MMU_BIT_ENTRY_VALID) {
 		AddrStart = RSIP->FLASH_MMU[0].MMU_ENTRYx_STRADDR;
@@ -342,9 +342,9 @@ u32 ota_get_cur_index(void)
   *		 @arg DISABLE close this area run time decypt mask
   *		 @arg ENABLE enable this area run time decypt mask (this area will not be decrypt when read)
   */ 
-void ota_rsip_mask(u32 addr, u32 len, u8 status)
+void ota_rsip_mask(uint32_t addr, uint32_t len, uint8_t status)
 {
-	u32 NewImg2BlkSize = ((len - 1)/4096) + 1;
+	uint32_t NewImg2BlkSize = ((len - 1)/4096) + 1;
 
 	RSIP_OTF_Mask(1, addr, NewImg2BlkSize, status);
 	DCache_Invalidate(addr, len);
@@ -357,11 +357,11 @@ void ota_rsip_mask(u32 addr, u32 len, u8 status)
   * @param  socket: socket handle
   * @retval 0: receive fail, 1: receive ok
   */   
-u32 recv_file_info_from_server(u8 * Recvbuf, u32 len, int socket)
+uint32_t recv_file_info_from_server(uint8_t * Recvbuf, uint32_t len, int socket)
 {
 	int read_bytes = 0;
-	u32 TempLen;
-	u8 * buf;
+	uint32_t TempLen;
+	uint8_t * buf;
 	
 	/*read 4 Dwords from server, get image header number and header length*/
 	buf = Recvbuf;
@@ -392,11 +392,11 @@ error:
   * @param  socket: socket handle
   * @retval 0: receive fail, 1: receive ok
   */  
-u32 recv_ota_file_hdr(u8 * Recvbuf, u32 * len, update_ota_target_hdr * pOtaTgtHdr, int socket)
+uint32_t recv_ota_file_hdr(uint8_t * Recvbuf, uint32_t * len, update_ota_target_hdr * pOtaTgtHdr, int socket)
 {
 	int read_bytes = 0;
-	u32 TempLen;
-	u8 * buf;
+	uint32_t TempLen;
+	uint8_t * buf;
 	update_file_hdr * pOtaFileHdr;
 	update_file_img_hdr * pOtaFileImgHdr;
 	
@@ -453,12 +453,12 @@ error:
   * @param   ImgId: point to image identification strings
   * @retval 0: receive fail, 1: receive ok
   */ 
-u32 get_ota_tartget_header(u8* buf, u32 len, update_ota_target_hdr * pOtaTgtHdr, u8 target_idx)
+uint32_t get_ota_tartget_header(uint8_t* buf, uint32_t len, update_ota_target_hdr * pOtaTgtHdr, uint8_t target_idx)
 {
 	update_file_img_hdr * ImgHdr;
 	update_file_hdr * FileHdr;
-	u8 * pTempAddr;
-	u32 i = 0, j = 0;
+	uint8_t * pTempAddr;
+	uint32_t i = 0, j = 0;
 	int index = -1;
 
 	/*check if buf and len is valid or not*/
@@ -485,7 +485,7 @@ u32 get_ota_tartget_header(u8* buf, u32 len, update_ota_target_hdr * pOtaTgtHdr,
 			goto error;
 
 		if(index >= 0) {
-			_memcpy((u8*)(&pOtaTgtHdr->FileImgHdr[j]), pTempAddr, sizeof(update_file_img_hdr));
+			_memcpy((uint8_t*)(&pOtaTgtHdr->FileImgHdr[j]), pTempAddr, sizeof(update_file_img_hdr));
 			pOtaTgtHdr->FileImgHdr[j].FlashAddr = IMG_ADDR[index][target_idx];	
 			j++;
 		}
@@ -509,10 +509,10 @@ error:
   * @param   len: new image length
   * @retval  none
   */ 
-void erase_ota_target_flash( u32 addr, u32 len)
+void erase_ota_target_flash( uint32_t addr, uint32_t len)
 {
-	u32 sector_cnt;
-	u32 i;
+	uint32_t sector_cnt;
+	uint32_t i;
 
 	sector_cnt = ((len - 1)/4096) + 1;
 
@@ -531,29 +531,29 @@ void erase_ota_target_flash( u32 addr, u32 len)
   * @param     signature: point to signature strings
   * @retval   download size of OTA image
   */ 
-u32 download_new_fw_from_server(int socket, update_ota_target_hdr * pOtaTgtHdr, u8 targetIdx)
+uint32_t download_new_fw_from_server(int socket, update_ota_target_hdr * pOtaTgtHdr, uint8_t targetIdx)
 {
 	/* To avoid gcc warnings */
 	( void ) targetIdx;
 	
-	u8 * alloc;
-	u8 * buf;
-	s32 size = 0;
+	uint8_t * alloc;
+	uint8_t * buf;
+	int32_t size = 0;
 	int read_bytes;
 	int read_bytes_buf;
-	u32 TempLen;
-	u32 ImageCnt;
+	uint32_t TempLen;
+	uint32_t ImageCnt;
 	update_dw_info DownloadInfo[MAX_IMG_NUM];
 	
 	/*initialize the variables used in downloading procedure*/
-	u32 OtaFg = 0;
-	u32 IncFg = 0;
-	s32 RemainBytes;
-	u32 SigCnt = 0;
-	u32 TempCnt = 0;	
-	u32 i;
-	u8 res = _TRUE;
-	u8 * signature;
+	uint32_t OtaFg = 0;
+	uint32_t IncFg = 0;
+	int32_t RemainBytes;
+	uint32_t SigCnt = 0;
+	uint32_t TempCnt = 0;	
+	uint32_t i;
+	uint8_t res = _TRUE;
+	uint8_t * signature;
 
 	/*acllocate buffer for downloading image from server*/
 	alloc = ota_update_malloc(BUF_SIZE);
@@ -561,7 +561,7 @@ u32 download_new_fw_from_server(int socket, update_ota_target_hdr * pOtaTgtHdr, 
 	buf = alloc;
 
 	/*init download information buffer*/
-	memset((u8 *)DownloadInfo, 0, MAX_IMG_NUM*sizeof(update_dw_info));
+	memset((uint8_t *)DownloadInfo, 0, MAX_IMG_NUM*sizeof(update_dw_info));
 
 	ImageCnt = pOtaTgtHdr->ValidImgCnt;
 	for(i = 0; i < ImageCnt; i++) {
@@ -661,7 +661,7 @@ u32 download_new_fw_from_server(int socket, update_ota_target_hdr * pOtaTgtHdr, 
 		}
 
 		printf("\n\rUpdate file size: %d bytes, start addr:%08x", size + 8, pOtaTgtHdr->FileImgHdr[i].FlashAddr);
-		if((u32)size != (pOtaTgtHdr->FileImgHdr[i].ImgLen - 8)) {
+		if((uint32_t)size != (pOtaTgtHdr->FileImgHdr[i].ImgLen - 8)) {
 			printf("\n\rdownload new firmware failed\n");
 			goto exit;
 		}
@@ -686,16 +686,16 @@ exit:
   * @param  pOtaTgtHdr: point to target image OTA  header
   * @retval 0: verify fail, 1: verify ok
   */ 
-u32 verify_ota_checksum(update_ota_target_hdr * pOtaTgtHdr)
+uint32_t verify_ota_checksum(update_ota_target_hdr * pOtaTgtHdr)
 {
-	u32 i, index;
-	u32 flash_checksum=0;
-	u32 addr, len;
-	u8 * signature;
-	u8 * pTempbuf;
+	uint32_t i, index;
+	uint32_t flash_checksum=0;
+	uint32_t addr, len;
+	uint8_t * signature;
+	uint8_t * pTempbuf;
 	int k;
 	int rlen;
-	u8 res = _TRUE;
+	uint8_t res = _TRUE;
 
 	pTempbuf = ota_update_malloc(BUF_SIZE);
 
@@ -741,13 +741,13 @@ EXIT:
   * @param  addr: new image address
   * @retval 0: change signature fail, 1: change signature ok
   */ 
-u32 change_ota_signature(update_ota_target_hdr * pOtaTgtHdr, u32 ota_target_index)
+uint32_t change_ota_signature(update_ota_target_hdr * pOtaTgtHdr, uint32_t ota_target_index)
 {
-	u32 addr;
-	u8 * signature;
-	u8 index;
-	u8 ota_old_index = ota_target_index ^ 1;
-	u8 empty_sig = 0x0;
+	uint32_t addr;
+	uint8_t * signature;
+	uint8_t index;
+	uint8_t ota_old_index = ota_target_index ^ 1;
+	uint8_t empty_sig = 0x0;
 
 	device_mutex_lock(RT_DEV_LOCK_FLASH);
 
@@ -798,10 +798,10 @@ static void ota_update_local_task(void *param)
 	int ret = -1 ;
 	uint32_t ota_target_index = OTA_INDEX_2;
 	update_ota_target_hdr OtaTargetHdr;
-	u32 RevHdrLen;
-	u8 i = 0;
+	uint32_t RevHdrLen;
+	uint8_t i = 0;
 
-	memset((u8 *)&OtaTargetHdr, 0, sizeof(update_ota_target_hdr));
+	memset((uint8_t *)&OtaTargetHdr, 0, sizeof(update_ota_target_hdr));
 	printf("\n\r[%s] Update task start\n", __FUNCTION__);
 
 	alloc = ota_update_malloc(BUF_SIZE);
@@ -841,7 +841,7 @@ static void ota_update_local_task(void *param)
 	file_size and checksum information of the total firmware file.	Even though the file_info 
 	is received from server , it won't be used.*/
 	memset(file_info, 0, sizeof(file_info));
-	if(!recv_file_info_from_server((u8 *)file_info, sizeof(file_info), server_socket)) {
+	if(!recv_file_info_from_server((uint8_t *)file_info, sizeof(file_info), server_socket)) {
 		printf("\n\r[%s] receive file_info failed", __FUNCTION__);
 		goto update_ota_exit;
 	}
@@ -971,11 +971,11 @@ void cmd_update(int argc, char **argv)
 #if (defined HTTP_OTA_UPDATE) || (defined HTTPS_OTA_UPDATE)
 static char *redirect = NULL;
 static int redirect_len;
-static u16 redirect_server_port;
+static uint16_t redirect_server_port;
 static char *redirect_server_host = NULL;
 static char *redirect_resource = NULL;
 
-int  parser_url( char *url, char *host, u16 *port, char *resource)
+int  parser_url( char *url, char *host, uint16_t *port, char *resource)
 {
 
 	if(url){
@@ -1226,11 +1226,11 @@ int update_ota_http_connect_server(int server_socket, char *host, int port){
   * @param  socket: socket handler 
   * @retval  0:failed;1:success
   */   
-u32 recv_ota_file_hdr_http(u8 * Recvbuf, u32 writelen, u32 * len, update_ota_target_hdr * pOtaTgtHdr, int socket)
+uint32_t recv_ota_file_hdr_http(uint8_t * Recvbuf, uint32_t writelen, uint32_t * len, update_ota_target_hdr * pOtaTgtHdr, int socket)
 {
 	int read_bytes = 0;
-	u32 TempLen;
-	u8 * buf;
+	uint32_t TempLen;
+	uint8_t * buf;
 	update_file_hdr * pOtaFileHdr;
 	update_file_img_hdr * pOtaFileImgHdr;
 
@@ -1272,7 +1272,7 @@ error:
   * @param  buf_len: read data length
   * @retval  >0:success;<0:error
   */   
-int http_read_socket( int socket, u8 *recevie_buf, int buf_len )
+int http_read_socket( int socket, uint8_t *recevie_buf, int buf_len )
 {
 	int bytes_rcvd = -1; 
 	if( socket < 0 ) {
@@ -1298,31 +1298,31 @@ int http_read_socket( int socket, u8 *recevie_buf, int buf_len )
   * @param     targetIdx: target OTA index
   * @retval   	download size of OTA image
   */ 
-u32 download_new_fw_from_server_http(u8* first_buf, unsigned int firstbuf_len, int socket, update_ota_target_hdr * pOtaTgtHdr, u8 targetIdx)
+uint32_t download_new_fw_from_server_http(uint8_t* first_buf, unsigned int firstbuf_len, int socket, update_ota_target_hdr * pOtaTgtHdr, uint8_t targetIdx)
 {
 	/* To avoid gcc warnings */
 	( void ) targetIdx;
 
-	u8 * alloc;
-	u8 * buf;
-	s32 size = 0;
+	uint8_t * alloc;
+	uint8_t * buf;
+	int32_t size = 0;
 	int read_bytes;
 	int read_bytes_buf;
-	u32 TempLen;
-	u32 ImageCnt;
+	uint32_t TempLen;
+	uint32_t ImageCnt;
 	update_dw_info DownloadInfo[MAX_IMG_NUM];
 	/*initialize the variables used in downloading procedure*/
-	u32 OtaFg = 0;
-	u32 IncFg = 0;
-	u32 firstbufFg = 0;
-	s32 RemainBytes;
-	u32 SigCnt = 0;
-	u32 TempCnt = 0;	
-	u32 i;
-	u8 res = _TRUE;
-	u8 * signature;
-	u32 write_sector = 0;
-	u32 next_erase_sector = 0;
+	uint32_t OtaFg = 0;
+	uint32_t IncFg = 0;
+	uint32_t firstbufFg = 0;
+	int32_t RemainBytes;
+	uint32_t SigCnt = 0;
+	uint32_t TempCnt = 0;	
+	uint32_t i;
+	uint8_t res = _TRUE;
+	uint8_t * signature;
+	uint32_t write_sector = 0;
+	uint32_t next_erase_sector = 0;
 
 	/*acllocate buffer for downloading image from server*/
 	alloc = ota_update_malloc(BUF_SIZE);
@@ -1330,7 +1330,7 @@ u32 download_new_fw_from_server_http(u8* first_buf, unsigned int firstbuf_len, i
 	buf = alloc;
 
 	/*init download information buffer*/
-	memset((u8 *)DownloadInfo, 0, MAX_IMG_NUM*sizeof(update_dw_info));
+	memset((uint8_t *)DownloadInfo, 0, MAX_IMG_NUM*sizeof(update_dw_info));
 
 	ImageCnt = pOtaTgtHdr->ValidImgCnt;
 	for(i = 0; i < ImageCnt; i++) {
@@ -1455,7 +1455,7 @@ u32 download_new_fw_from_server_http(u8* first_buf, unsigned int firstbuf_len, i
 		}
 
 		printf("\n\rUpdate file size: %d bytes, start addr:%08x", size + 8, pOtaTgtHdr->FileImgHdr[i].FlashAddr);
-		if((u32)size != (pOtaTgtHdr->FileImgHdr[i].ImgLen - 8)) {
+		if((uint32_t)size != (pOtaTgtHdr->FileImgHdr[i].ImgLen - 8)) {
 			printf("\n\rdownload new firmware failed\n");
 			goto exit;
 		}
@@ -1488,7 +1488,7 @@ int http_update_ota(char *host, int port, char *resource)
 	int read_bytes = 0;
 	int ret = -1;
 	int writelen = 0;
-	u32 RevHdrLen = 0;
+	uint32_t RevHdrLen = 0;
 	http_response_result_t rsp_result = {0};
 	uint32_t ota_target_index = OTA_INDEX_2;
 	update_ota_target_hdr OtaTargetHdr;
@@ -1684,11 +1684,11 @@ static char *https_itoa(int value){
   * @param  ssl: context for mbedtls 
   * @retval  0:failed;1:success
   */   
-u32 recv_ota_file_hdr_https(u8 * Recvbuf, u32 writelen, u32 * len, update_ota_target_hdr * pOtaTgtHdr, mbedtls_ssl_context *ssl)
+uint32_t recv_ota_file_hdr_https(uint8_t * Recvbuf, uint32_t writelen, uint32_t * len, update_ota_target_hdr * pOtaTgtHdr, mbedtls_ssl_context *ssl)
 {
 	int read_bytes = 0;
-	u32 TempLen;
-	u8 * buf;
+	uint32_t TempLen;
+	uint8_t * buf;
 	update_file_hdr * pOtaFileHdr;
 	update_file_img_hdr * pOtaFileImgHdr;
 
@@ -1731,7 +1731,7 @@ error:
   * @param  buf_len: read data length
   * @retval  >0:success;<0:error
   */   
-int https_read_socket( mbedtls_ssl_context *ssl, u8 *recevie_buf, int buf_len )
+int https_read_socket( mbedtls_ssl_context *ssl, uint8_t *recevie_buf, int buf_len )
 {
 	int bytes_rcvd = -1; 
 
@@ -1757,31 +1757,31 @@ int https_read_socket( mbedtls_ssl_context *ssl, u8 *recevie_buf, int buf_len )
   * @param     targetIdx: target OTA index
   * @retval   	download size of OTA image
   */ 
-u32 download_new_fw_from_server_https(u8* first_buf, unsigned int firstbuf_len, mbedtls_ssl_context *ssl, update_ota_target_hdr * pOtaTgtHdr, u8 targetIdx)
+uint32_t download_new_fw_from_server_https(uint8_t* first_buf, unsigned int firstbuf_len, mbedtls_ssl_context *ssl, update_ota_target_hdr * pOtaTgtHdr, uint8_t targetIdx)
 {
 	/* To avoid gcc warnings */
 	( void ) targetIdx;
 
-	u8 * alloc;
-	u8 * buf;
-	s32 size = 0;
+	uint8_t * alloc;
+	uint8_t * buf;
+	int32_t size = 0;
 	int read_bytes;
 	int read_bytes_buf;
-	u32 TempLen;
-	u32 ImageCnt;
+	uint32_t TempLen;
+	uint32_t ImageCnt;
 	update_dw_info DownloadInfo[MAX_IMG_NUM];
 	/*initialize the variables used in downloading procedure*/
-	u32 OtaFg = 0;
-	u32 IncFg = 0;
-	u32 firstbufFg = 0;
-	s32 RemainBytes;
-	u32 SigCnt = 0;
-	u32 TempCnt = 0;	
-	u32 i;
-	u8 res = _TRUE;
-	u8 * signature;
-	u32 write_sector = 0;
-	u32 next_erase_sector = 0;
+	uint32_t OtaFg = 0;
+	uint32_t IncFg = 0;
+	uint32_t firstbufFg = 0;
+	int32_t RemainBytes;
+	uint32_t SigCnt = 0;
+	uint32_t TempCnt = 0;	
+	uint32_t i;
+	uint8_t res = _TRUE;
+	uint8_t * signature;
+	uint32_t write_sector = 0;
+	uint32_t next_erase_sector = 0;
 
 	/*acllocate buffer for downloading image from server*/
 	alloc = ota_update_malloc(BUF_SIZE);
@@ -1789,7 +1789,7 @@ u32 download_new_fw_from_server_https(u8* first_buf, unsigned int firstbuf_len, 
 	buf = alloc;
 
 	/*init download information buffer*/
-	memset((u8 *)DownloadInfo, 0, MAX_IMG_NUM*sizeof(update_dw_info));
+	memset((uint8_t *)DownloadInfo, 0, MAX_IMG_NUM*sizeof(update_dw_info));
 
 	ImageCnt = pOtaTgtHdr->ValidImgCnt;
 	for(i = 0; i < ImageCnt; i++) {
@@ -1913,7 +1913,7 @@ u32 download_new_fw_from_server_https(u8* first_buf, unsigned int firstbuf_len, 
 		}
 
 		printf("\n\rUpdate file size: %d bytes, start addr:%08x", size + 8, pOtaTgtHdr->FileImgHdr[i].FlashAddr);
-		if((u32)size != (pOtaTgtHdr->FileImgHdr[i].ImgLen - 8)) {
+		if((uint32_t)size != (pOtaTgtHdr->FileImgHdr[i].ImgLen - 8)) {
 			printf("\n\rdownload new firmware failed\n");
 			goto exit;
 		}
@@ -1947,7 +1947,7 @@ int https_update_ota(char *host, int port, char *resource)
 	int read_bytes = 0;
 	int ret = -1;
 	int writelen = 0;
-	u32 RevHdrLen = 0;
+	uint32_t RevHdrLen = 0;
 	http_response_result_t rsp_result = {0};
 	uint32_t ota_target_index = OTA_INDEX_2;
 	update_ota_target_hdr OtaTargetHdr;
@@ -2215,7 +2215,7 @@ int sdcard_update_ota(char* filename)
 		printf("\n\r[%s] OTA1 address space will be upgraded", __FUNCTION__);
 	}
 
-	ret = f_read(&m_file, &ota_header, sizeof(ota_header), (u32*)&read_bytes);
+	ret = f_read(&m_file, &ota_header, sizeof(ota_header), (uint32_t*)&read_bytes);
 	if(ret){
 		f_close(&m_file);
 		printf("\n\r[%s] Read error", __FUNCTION__);
@@ -2239,7 +2239,7 @@ int sdcard_update_ota(char* filename)
 	}	
 
 	f_lseek(&m_file, sizeof(ota_header));
-	ret = f_read(&m_file, signature, sizeof(signature), (u32*)&tmp_br);
+	ret = f_read(&m_file, signature, sizeof(signature), (uint32_t*)&tmp_br);
 	if(ret){
 		f_close(&m_file);
 		printf("\n\r[%s] Read error", __FUNCTION__);
@@ -2278,7 +2278,7 @@ int sdcard_update_ota(char* filename)
 		
 		int br;
 		while(read_bytes < recv_len){
-			ret = f_read(&m_file, &buf[read_bytes], recv_len-read_bytes, (u32*)&br);
+			ret = f_read(&m_file, &buf[read_bytes], recv_len-read_bytes, (uint32_t*)&br);
 			if(ret){
 				printf("\n\r[%s] Read data failed", __FUNCTION__);
 				goto update_ota_exit;
