@@ -529,19 +529,25 @@ void fATWx(void *arg){
 
 	int i = 0;
 #if CONFIG_LWIP_LAYER
-	u8 *mac = LwIP_GetMAC(&xnetif[0]);
-	u8 *ip = LwIP_GetIP(&xnetif[0]);
-	u8 *gw = LwIP_GetGW(&xnetif[0]);
-	u8 *msk = LwIP_GetMASK(&xnetif[0]);
+	uint8_t *mac = LwIP_GetMAC(&xnetif[0]);
+	uint8_t *ip = LwIP_GetIP(&xnetif[0]);
+#if LWIP_VERSION_MAJOR >= 2 && LWIP_VERSION_MINOR >= 1
+#if LWIP_IPV6
+	uint8_t *ipv6_0 = LwIP_GetIPv6_linklocal(&xnetif[0]);
+	uint8_t *ipv6_1 = LwIP_GetIPv6_global(&xnetif[0]);
 #endif
-	u8 *ifname[2] = {(u8*)WLAN0_NAME,(u8*)WLAN1_NAME};
+#endif
+	uint8_t *gw = LwIP_GetGW(&xnetif[0]);
+	uint8_t *msk = LwIP_GetMASK(&xnetif[0]);
+#endif
+	uint8_t *ifname[2] = {(uint8_t*)WLAN0_NAME,(uint8_t*)WLAN1_NAME};
 	rtw_wifi_setting_t setting;
 
 	printf("[ATW?]: _AT_WLAN_INFO_\n\r");
 #if defined(CONFIG_INIC_CMD_RSP) && CONFIG_INIC_CMD_RSP
 	int ret = RTW_SUCCESS;
 	int info_sz = 0;
-	u8 *info = malloc(NET_IF_NUM*sizeof(rtw_wifi_setting_t)+3*sizeof(rtw_mac_t));
+	uint8_t *info = malloc(NET_IF_NUM*sizeof(rtw_wifi_setting_t)+3*sizeof(rtw_mac_t));
 	if(info == NULL)
 		ret = RTW_BUFFER_UNAVAILABLE_TEMPORARY;
 #endif
@@ -550,6 +556,12 @@ void fATWx(void *arg){
 #if CONFIG_LWIP_LAYER
 			mac = LwIP_GetMAC(&xnetif[i]);
 			ip = LwIP_GetIP(&xnetif[i]);
+#if LWIP_VERSION_MAJOR >= 2 && LWIP_VERSION_MINOR >= 1
+#if LWIP_IPV6
+			ipv6_0 = LwIP_GetIPv6_linklocal(&xnetif[i]);
+			ipv6_1 = LwIP_GetIPv6_global(&xnetif[i]);
+#endif
+#endif
 			gw = LwIP_GetGW(&xnetif[i]);
 			msk = LwIP_GetMASK(&xnetif[i]);
 #endif
@@ -577,7 +589,17 @@ void fATWx(void *arg){
 			printf("\n\r==============================");
 			printf("\n\r\tMAC => %02x:%02x:%02x:%02x:%02x:%02x", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]) ;
 			printf("\n\r\tIP  => %d.%d.%d.%d", ip[0], ip[1], ip[2], ip[3]);
-			printf("\n\r\tGW  => %d.%d.%d.%d", gw[0], gw[1], gw[2], gw[3]);
+#if LWIP_VERSION_MAJOR >= 2 && LWIP_VERSION_MINOR >= 1
+#if LWIP_IPV6
+			printf("\n\r\tLink-local IPV6 => %02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x",
+				ipv6_0[0], ipv6_0[1],  ipv6_0[2],  ipv6_0[3],  ipv6_0[4],  ipv6_0[5],  ipv6_0[6], ipv6_0[7],
+				ipv6_0[8], ipv6_0[9], ipv6_0[10], ipv6_0[11], ipv6_0[12], ipv6_0[13], ipv6_0[14], ipv6_0[15]);
+			printf("\n\r\tIPV6            => %02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x",
+				ipv6_1[0], ipv6_1[1],  ipv6_1[2],  ipv6_1[3],  ipv6_1[4],  ipv6_1[5],  ipv6_1[6], ipv6_1[7],
+				ipv6_1[8], ipv6_1[9], ipv6_1[10], ipv6_1[11], ipv6_1[12], ipv6_1[13], ipv6_1[14], ipv6_1[15]);
+#endif
+#endif
+			printf("\n\r\tGW              => %d.%d.%d.%d\n\r", gw[0], gw[1], gw[2], gw[3]);
 			printf("\n\r\tmsk  => %d.%d.%d.%d\n\r", msk[0], msk[1], msk[2], msk[3]);
 #endif
 			if(setting.mode == RTW_MODE_AP || i == 1)
@@ -1195,6 +1217,11 @@ void fATWC(void *arg){
 #if CONFIG_LWIP_LAYER
 		/* Start DHCPClient */
 		LwIP_DHCP(0, DHCP_START);
+#if LWIP_VERSION_MAJOR >= 2 && LWIP_VERSION_MINOR >= 1
+#if LWIP_IPV6
+		LwIP_DHCP6(0, DHCP6_START);
+#endif
+#endif
 	tick3 = xTaskGetTickCount();
 	printf("\r\n\nGot IP after %dms.\n", (tick3-tick1));
 #endif

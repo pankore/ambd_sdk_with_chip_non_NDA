@@ -377,6 +377,11 @@ static void wifi_handshake_done_hdl( char* buf, int buf_len, int flags, void* us
 		rtw_up_sema(&join_user_data->join_sema);
 }
 extern void dhcp_stop(struct netif *netif);
+#if LWIP_VERSION_MAJOR >= 2 && LWIP_VERSION_MINOR >= 1
+#if LWIP_IPV6
+extern void dhcp6_stop(struct netif *netif);
+#endif
+#endif
 static void wifi_disconn_hdl( char* buf, int buf_len, int flags, void* userdata)
 {
 	/* To avoid gcc warnings */
@@ -443,6 +448,11 @@ static void wifi_disconn_hdl( char* buf, int buf_len, int flags, void* userdata)
 	//TODO
 #else
 	dhcp_stop(&xnetif[0]);
+#if LWIP_VERSION_MAJOR >= 2 && LWIP_VERSION_MINOR >= 1
+#if LWIP_IPV6
+	dhcp6_stop(&xnetif[0]);
+#endif
+#endif
 #endif
 #endif
 
@@ -1511,6 +1521,11 @@ int wifi_on(rtw_mode_t mode)
 	//TODO
 	#else
 	netif_set_up(&xnetif[0]);
+#if LWIP_VERSION_MAJOR >= 2 && LWIP_VERSION_MINOR >= 1
+#if LWIP_IPV6
+	netif_create_ip6_linklocal_address(&xnetif[0], 1);
+#endif
+#endif
 	if(mode == RTW_MODE_AP) 
 		netif_set_link_up(&xnetif[0]);
 	else	 if(mode == RTW_MODE_STA_AP) {
@@ -1543,6 +1558,11 @@ int wifi_off(void)
 #else
 	dhcps_deinit();
 	LwIP_DHCP(0, DHCP_STOP);
+#if LWIP_VERSION_MAJOR >= 2 && LWIP_VERSION_MINOR >= 1
+#if LWIP_IPV6
+	LwIP_DHCP6(0, DHCP6_STOP);
+#endif
+#endif
 	netif_set_down(&xnetif[0]);
 	netif_set_down(&xnetif[1]);
 #endif
@@ -1590,6 +1610,11 @@ int wifi_off_fastly(void)
 #else
 	dhcps_deinit();
 	LwIP_DHCP(0, DHCP_STOP);
+#if LWIP_VERSION_MAJOR >= 2 && LWIP_VERSION_MINOR >= 1
+#if LWIP_IPV6
+	LwIP_DHCP6(0, DHCP6_STOP);
+#endif
+#endif
 #endif	
 #endif	
 	//RTW_API_INFO("\n\rDeinitializing WIFI ...");
@@ -2998,6 +3023,11 @@ int wifi_restart_ap(
 		if(ret == RTW_SUCCESS) {
 			/* Start DHCPClient */
 			LwIP_DHCP(0, DHCP_START);
+#if LWIP_VERSION_MAJOR >= 2 && LWIP_VERSION_MINOR >= 1
+#if LWIP_IPV6
+			LwIP_DHCP6(0, DHCP6_START);
+#endif
+#endif
 		}
 #endif
 	}
@@ -3115,6 +3145,11 @@ static void wifi_autoreconnect_thread(void *param)
 #endif
 		{
 			LwIP_DHCP(0, DHCP_START);
+#if LWIP_VERSION_MAJOR >= 2 && LWIP_VERSION_MINOR >= 1
+#if LWIP_IPV6
+			LwIP_DHCP6(0, DHCP6_START);
+#endif
+#endif
 #if LWIP_AUTOIP
 #if CONFIG_BRIDGE
 			uint8_t *ip = LwIP_GetIP(&xnetif[NET_IF_NUM - 1]);
