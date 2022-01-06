@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-#   ./build.sh {MATTER DIR} {BUILD METHOD} {OUTPUT DIR} {APP_NAME} {APP_NAME} {rpc (optional)}
+#   ./build.sh {MATTER DIR} {BUILD METHOD} {OUTPUT DIR} {APP_NAME} {rpc (optional)}
 
 BUILD_FILE_DIR=`test -d ${0%/*} && cd ${0%/*}; pwd`
 CMAKE_ROOT=$BUILD_FILE_DIR/project_hp
@@ -41,6 +41,7 @@ elif [ "$4" == "otap" ]; then
     export MATTER_EXAMPLE_PATH=${AMEBA_MATTER}/examples/ota-provider-app/ameba
 elif [ "$4" == "otar" ]; then
     export MATTER_EXAMPLE_PATH=${AMEBA_MATTER}/examples/ota-requestor-app/ameba
+    export MATTER_ENABLE_OTAR=1
 else
     export MATTER_EXAMPLE_PATH=${AMEBA_MATTER}/examples/all-clusters-app/ameba
 fi
