@@ -84,7 +84,7 @@ add_custom_command(
 	COMMAND echo ameba_cxx = \"arm-none-eabi-c++\"  >> ${dir_output}/args.gn
 	COMMAND echo ameba_cpu = \"ameba\"               >> ${dir_output}/args.gn
 	COMMAND cd ${dir_chip} && PW_ENVSETUP_QUIET=1 . scripts/activate.sh
-	COMMAND export PATH=${BASEDIR}/project/realtek_amebaD_va0_example/GCC-RELEASE/project_hp/toolchain/linux/asdk-9.3.0/linux/newlib/bin:${PATH}
+	COMMAND export PATH=${BASEDIR}/project/realtek_amebaD_va0_example/GCC-RELEASE/project_hp/toolchain/linux/asdk-10.3.0/linux/newlib/bin:${PATH}
 	COMMAND mkdir -p ${dir_chip}/config/ameba/components/chip
 	COMMAND cd ${dir_chip}/config/ameba/components/chip && gn gen --check --fail-on-unused-args ${dir_chip}/examples/all-clusters-app/ameba/build/chip
 	COMMAND cd ${dir_chip}/config/ameba/components/chip ; ninja -C ${dir_chip}/examples/all-clusters-app/ameba/build/chip

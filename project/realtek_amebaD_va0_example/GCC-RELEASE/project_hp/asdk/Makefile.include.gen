@@ -77,8 +77,8 @@ BUILD_TARGET_ROM_FOLDER_NS = $(ROOTDIR)/build/rom_ns
 IMAGE_TARGET_FOLDER     = $(ROOTDIR)/image
 
 ifeq ($(COMPILEOS),$(LINUX_OS))
-ASDK_TOOLCHAIN = $(TOOLCHAINDIR)/linux/asdk-9.3.0/linux/newlib
-ASDK_TOOLCHAIN_R = ../toolchain/linux/asdk-9.3.0/linux/newlib
+ASDK_TOOLCHAIN = $(TOOLCHAINDIR)/linux/asdk-10.3.0/linux/newlib
+ASDK_TOOLCHAIN_R = ../toolchain/linux/asdk-10.3.0/linux/newlib
 else ifeq ($(COMPILEOS_CYGWIN),Cygwin)
 ASDK_TOOLCHAIN = $(TOOLCHAINDIR)/cygwin/asdk-6.4.1/cygwin/newlib
 ASDK_TOOLCHAIN_R = ../toolchain/cygwin/asdk-6.4.1/cygwin/newlib

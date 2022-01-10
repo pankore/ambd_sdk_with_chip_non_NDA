@@ -11,9 +11,9 @@ HP_IMAGE=$BUILD_FILE_DIR/project_hp/asdk/image
 cd $CMAKE_ROOT/toolchain
 mkdir linux
 if [ -z "$(ls -A $CMAKE_ROOT/toolchain/linux)" ]; then
-   cat asdk/asdk-9.3.0-linux-newlib-build-3483-x86_64.tar.bz2.part* > asdk/asdk-9.3.0-linux-newlib-build-3483-x86_64.tar.bz2
-    tar -jxvf asdk/asdk-9.3.0-linux-newlib-build-3483-x86_64.tar.bz2 -C linux/
-    rm asdk/asdk-9.3.0-linux-newlib-build-3483-x86_64.tar.bz2
+   cat asdk/asdk-10.3.0-linux-newlib-build-3638-x86_64.tar.bz2.part* > asdk/asdk-10.3.0-linux-newlib-build-3638-x86_64.tar.bz2
+    tar -jxvf asdk/asdk-10.3.0-linux-newlib-build-3638-x86_64.tar.bz2 -C linux/
+    rm asdk/asdk-10.3.0-linux-newlib-build-3638-x86_64.tar.bz2
 else
    echo "Toolchain $(ls -A $CMAKE_ROOT/toolchain/linux) is found at $CMAKE_ROOT/toolchain/linux."
 fi

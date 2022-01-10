@@ -114,7 +114,7 @@ target_link_libraries(
 )
 
 set(TOOLCHAINDIR "${prj_root}/GCC-RELEASE/project_hp/toolchain")
-set(ASDK_TOOLCHAIN "${TOOLCHAINDIR}/linux/asdk-9.3.0/linux/newlib")
+set(ASDK_TOOLCHAIN "${TOOLCHAINDIR}/linux/asdk-10.3.0/linux/newlib")
 target_link_options(
 	${app_ntz}
 	PUBLIC

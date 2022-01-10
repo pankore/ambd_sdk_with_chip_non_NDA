@@ -6,7 +6,7 @@ set(sdk_root "${CMAKE_CURRENT_SOURCE_DIR}/../../../../../..")
 set(prj_root "${CMAKE_CURRENT_SOURCE_DIR}/../../../..")
 
 #set(toolchain_dir "${CMAKE_CURRENT_SOURCE_DIR}/../../toolchain")
-#set(asdk_toolchain "${toolchain_dir}/linux/asdk-9.3.0/linux/newlib")
+#set(asdk_toolchain "${toolchain_dir}/linux/asdk-10.3.0/linux/newlib")
 #set(FROMELF "${asdk_toolchain}/bin/arm-none-eabi-objcopy")
 
 #set(CONFIG_BT_EN ON)

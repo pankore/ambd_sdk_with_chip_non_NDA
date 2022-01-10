@@ -10,7 +10,7 @@ set (prj_root "${CMAKE_CURRENT_SOURCE_DIR}")
 # root of SDK
 
 set(TOOLCHAINDIR "${prj_root}/toolchain")
-set(ASDK_TOOLCHAIN "${TOOLCHAINDIR}/linux/asdk-9.3.0/linux/newlib")
+set(ASDK_TOOLCHAIN "${TOOLCHAINDIR}/linux/asdk-10.3.0/linux/newlib")
 set(TOOL_DIR "${ASDK_TOOLCHAIN}/bin")
 
 message(STATUS "show the toolchain path ${TOOL_DIR}")
