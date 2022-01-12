@@ -729,15 +729,16 @@ static rtw_result_t matter_scan_with_ssid_result_handler( rtw_scan_handler_resul
         {
             // inform matter
             chip_connmgr_callback_func(chip_connmgr_callback_data);
+            vPortFree(matter_ssid);
         }
         else
         {
             printf("chip_connmgr_callback_func is NULL\r\n");
 		    apNum = 0;
+            vPortFree(matter_ssid);
             return RTW_ERROR;
         }
 	}
-    free(matter_ssid);
 	return RTW_SUCCESS;
 }
 
@@ -755,7 +756,7 @@ void matter_scan_networks_with_ssid(const unsigned char *ssid, size_t length)
 {
 	volatile int ret = RTW_SUCCESS;
     apNum = 0; // reset counter at the start of scan
-    matter_ssid = (char*) malloc(length+1);
+    matter_ssid = (char*) pvPortMalloc(length+1);
     memset(matter_ssid, 0, length+1);
     memcpy(matter_ssid, ssid, length);
     matter_ssid[length] = '\0';
