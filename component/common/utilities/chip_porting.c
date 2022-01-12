@@ -11,6 +11,7 @@
 #include <sntp/sntp.h>
 #include "dct.h"
 #include <wifi_conf.h>
+#include "chip_porting.h"
 
 #define MICROSECONDS_PER_SECOND    ( 1000000LL )                                   /**< Microseconds per second. */
 #define NANOSECONDS_PER_SECOND     ( 1000000000LL )                                /**< Nanoseconds per second. */
@@ -233,7 +234,7 @@ int32_t deinitPref(void)
     return ret;
 }
 
-int32_t registerPref(char * ns)
+int32_t registerPref(const char * ns)
 {
     int32_t ret;
     ret = dct_register_module(ns);
@@ -258,7 +259,7 @@ int32_t registerPref2(char * ns)
 }
 
 
-int32_t clearPref(char * ns)
+int32_t clearPref(const char * ns)
 {
     int32_t ret;
     ret = dct_unregister_module(ns);
@@ -270,7 +271,7 @@ int32_t clearPref(char * ns)
     return ret;
 }
 
-int32_t deleteKey(char *domain, char *key)
+int32_t deleteKey(const char *domain, const char *key)
 {
     dct_handle_t handle;
     int32_t ret = -1;
@@ -315,7 +316,7 @@ exit:
     return (DCT_SUCCESS == ret ? 1 : 0);
 }
 
-bool checkExist(char *domain, char *key)
+bool checkExist(const char *domain, const char *key)
 {
 	dct_handle_t handle;
 	int32_t ret = -1;
@@ -382,7 +383,7 @@ exit:
 	return found;
 }
 
-int32_t setPref_new(char *domain, char *key, uint8_t *value, size_t byteCount)
+int32_t setPref_new(const char *domain, const char *key, uint8_t *value, size_t byteCount)
 {
     dct_handle_t handle;
     int32_t ret = -1;
@@ -443,7 +444,7 @@ exit:
     return (DCT_SUCCESS == ret ? 1 : 0);
 }
 
-int32_t getPref_bool_new(char *domain, char *key, uint32_t *val)
+int32_t getPref_bool_new(const char *domain, const char *key, uint32_t *val)
 {
     dct_handle_t handle;
     int32_t ret = -1;
@@ -467,7 +468,7 @@ exit:
     return (DCT_SUCCESS == ret ? 1 : 0);
 }
 
-int32_t getPref_u32_new(char *domain, char *key, uint32_t *val)
+int32_t getPref_u32_new(const char *domain, const char *key, uint32_t *val)
 {
     dct_handle_t handle;
     int32_t ret = -1;
@@ -491,7 +492,7 @@ exit:
     return (DCT_SUCCESS == ret ? 1 : 0);
 }
 
-int32_t getPref_u64_new(char *domain, char *key, uint64_t *val)
+int32_t getPref_u64_new(const char *domain, const char *key, uint64_t *val)
 {
     dct_handle_t handle;
     int32_t ret = -1;
@@ -515,7 +516,7 @@ exit:
     return (DCT_SUCCESS == ret ? 1 : 0);
 }
 
-int32_t getPref_str_new(char *domain, char *key, char * buf, size_t bufSize, size_t *outLen)
+int32_t getPref_str_new(const char *domain, const char *key, char * buf, size_t bufSize, size_t *outLen)
 {
     dct_handle_t handle;
     int32_t ret = -1;
@@ -560,7 +561,7 @@ exit:
     return (DCT_SUCCESS == ret ? 1 : 0);
 }
 
-int32_t getPref_bin_new(char *domain, char *key, uint8_t * buf, size_t bufSize, size_t *outLen)
+int32_t getPref_bin_new(const char *domain, const char *key, uint8_t * buf, size_t bufSize, size_t *outLen)
 {
     dct_handle_t handle;
     int32_t ret = -1;
@@ -605,7 +606,21 @@ exit:
     return (DCT_SUCCESS == ret ? 1 : 0);
 }
 
-rtw_wifi_setting_t chip_wifi_setting = {0};
+/************************** Matter WiFi Related ********************************/
+uint32_t apNum = 0; // no of total AP scanned
+static rtw_scan_result_t matter_userdata[65] = {0};
+static rtw_wifi_setting_t chip_wifi_setting = {0};
+static char *matter_ssid;
+
+chip_connmgr_callback chip_connmgr_callback_func = NULL;
+void *chip_connmgr_callback_data = NULL;
+void chip_connmgr_set_callback_func(chip_connmgr_callback p, void *data)
+{
+    chip_connmgr_callback_func = p;
+    chip_connmgr_callback_data = data;
+}
+
+
 int CHIP_SetWiFiConfig(rtw_wifi_setting_t *config)
 {
 	if(config)
@@ -629,6 +644,130 @@ int CHIP_GetWiFiConfig(rtw_wifi_setting_t *config)
 	}
 
 	return 0;
+}
+
+void print_matter_scan_result( rtw_scan_result_t* record )
+{
+	RTW_API_INFO("%s\t ", ( record->bss_type == RTW_BSS_TYPE_ADHOC ) ? "Adhoc" : "Infra");
+	RTW_API_INFO(MAC_FMT, MAC_ARG(record->BSSID.octet));
+	RTW_API_INFO(" %d\t ", record->signal_strength);
+	RTW_API_INFO(" %d\t  ", record->channel);
+	RTW_API_INFO(" %d\t  ", record->wps_type);
+	RTW_API_INFO("%s\t\t ", ( record->security == RTW_SECURITY_OPEN ) ? "Open" :
+								 ( record->security == RTW_SECURITY_WEP_PSK ) ? "WEP" :
+								 ( record->security == RTW_SECURITY_WPA_TKIP_PSK ) ? "WPA TKIP" :
+								 ( record->security == RTW_SECURITY_WPA_AES_PSK ) ? "WPA AES" :
+								 ( record->security == RTW_SECURITY_WPA_MIXED_PSK ) ? "WPA Mixed" :
+								 ( record->security == RTW_SECURITY_WPA2_AES_PSK ) ? "WPA2 AES" :
+								 ( record->security == RTW_SECURITY_WPA2_TKIP_PSK ) ? "WPA2 TKIP" :
+								 ( record->security == RTW_SECURITY_WPA2_MIXED_PSK ) ? "WPA2 Mixed" :
+								 ( record->security == RTW_SECURITY_WPA_WPA2_TKIP_PSK) ? "WPA/WPA2 TKIP" :
+								 ( record->security == RTW_SECURITY_WPA_WPA2_AES_PSK) ? "WPA/WPA2 AES" :
+								 ( record->security == RTW_SECURITY_WPA_WPA2_MIXED_PSK) ? "WPA/WPA2 Mixed" :
+								 ( record->security == RTW_SECURITY_WPA_TKIP_ENTERPRISE ) ? "WPA TKIP Enterprise" :
+								 ( record->security == RTW_SECURITY_WPA_AES_ENTERPRISE ) ? "WPA AES Enterprise" :
+								 ( record->security == RTW_SECURITY_WPA_MIXED_ENTERPRISE ) ? "WPA Mixed Enterprise" :
+								 ( record->security == RTW_SECURITY_WPA2_TKIP_ENTERPRISE ) ? "WPA2 TKIP Enterprise" :
+								 ( record->security == RTW_SECURITY_WPA2_AES_ENTERPRISE ) ? "WPA2 AES Enterprise" :
+								 ( record->security == RTW_SECURITY_WPA2_MIXED_ENTERPRISE ) ? "WPA2 Mixed Enterprise" :
+								 ( record->security == RTW_SECURITY_WPA_WPA2_TKIP_ENTERPRISE ) ? "WPA/WPA2 TKIP Enterprise" :
+								 ( record->security == RTW_SECURITY_WPA_WPA2_AES_ENTERPRISE ) ? "WPA/WPA2 AES Enterprise" :
+								 ( record->security == RTW_SECURITY_WPA_WPA2_MIXED_ENTERPRISE ) ? "WPA/WPA2 Mixed Enterprise" :
+								 "Unknown");
+
+	RTW_API_INFO(" %s ", record->SSID.val);
+	RTW_API_INFO("\r\n");
+}
+
+static rtw_result_t matter_scan_result_handler( rtw_scan_handler_result_t* malloced_scan_result )
+{
+	if (malloced_scan_result->scan_complete != RTW_TRUE)
+    {
+		rtw_scan_result_t* record = &malloced_scan_result->ap_details;
+		record->SSID.val[record->SSID.len] = 0; /* Ensure the SSID is null terminated */
+
+		RTW_API_INFO("%d\t ", ++apNum);
+		print_matter_scan_result(record);
+
+		if(malloced_scan_result->user_data)
+			memcpy((void *)((char *)malloced_scan_result->user_data+(apNum-1)*sizeof(rtw_scan_result_t)), (char *)record, sizeof(rtw_scan_result_t));
+	} 
+    else
+    {
+        if (chip_connmgr_callback_func && chip_connmgr_callback_data)
+        {
+            // inform matter
+            chip_connmgr_callback_func(chip_connmgr_callback_data);
+        }
+        else
+        {
+            printf("chip_connmgr_callback_func is NULL\r\n");
+		    apNum = 0;
+            return RTW_ERROR;
+        }
+	}
+	return RTW_SUCCESS;
+}
+
+static rtw_result_t matter_scan_with_ssid_result_handler( rtw_scan_handler_result_t* malloced_scan_result )
+{
+	if (malloced_scan_result->scan_complete != RTW_TRUE)
+    {
+		rtw_scan_result_t* record = &malloced_scan_result->ap_details;
+		record->SSID.val[record->SSID.len] = 0; /* Ensure the SSID is null terminated */
+
+		if((malloced_scan_result->user_data) && (!strcmp(matter_ssid, record->SSID.val)))
+        {
+            RTW_API_INFO("%d\t ", ++apNum);
+			memcpy((void *)((char *)malloced_scan_result->user_data+(apNum-1)*sizeof(rtw_scan_result_t)), (char *)record, sizeof(rtw_scan_result_t));
+            print_matter_scan_result(record);
+        }
+	} 
+    else
+    {
+        if (chip_connmgr_callback_func && chip_connmgr_callback_data)
+        {
+            // inform matter
+            chip_connmgr_callback_func(chip_connmgr_callback_data);
+        }
+        else
+        {
+            printf("chip_connmgr_callback_func is NULL\r\n");
+		    apNum = 0;
+            return RTW_ERROR;
+        }
+	}
+    free(matter_ssid);
+	return RTW_SUCCESS;
+}
+
+void matter_scan_networks(void)
+{
+	volatile int ret = RTW_SUCCESS;
+    apNum = 0; // reset counter at the start of scan
+	if((ret = wifi_scan_networks(matter_scan_result_handler, matter_userdata)) != RTW_SUCCESS)
+    {
+		printf("ERROR: wifi scan failed\n\r");
+	}
+}
+
+void matter_scan_networks_with_ssid(const unsigned char *ssid, size_t length)
+{
+	volatile int ret = RTW_SUCCESS;
+    apNum = 0; // reset counter at the start of scan
+    matter_ssid = (char*) malloc(length+1);
+    memset(matter_ssid, 0, length+1);
+    memcpy(matter_ssid, ssid, length);
+    matter_ssid[length] = '\0';
+	if((ret = wifi_scan_networks(matter_scan_with_ssid_result_handler, matter_userdata)) != RTW_SUCCESS)
+    {
+		printf("ERROR: wifi scan failed\n\r");
+	}
+}
+
+void matter_get_scan_results(rtw_scan_result_t *result_buf, uint8_t scanned_num)
+{
+    memcpy(result_buf, matter_userdata, sizeof(rtw_scan_result_t) * scanned_num);
 }
 
 
