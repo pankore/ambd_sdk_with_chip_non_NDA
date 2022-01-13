@@ -70,7 +70,7 @@
 	#define memcpy					_memcpy //memcpy_gdma(dst, src, sz)
 	#define memmove				_memmove
 	#define memset					_memset
-	
+
 	#define strchr(s, c)				_strchr(s, c)			// for B-cut ROM
 	#define strcmp(str1, str2)			_strcmp(str1, str2)
 	#define strcpy					_strcpy
@@ -79,7 +79,7 @@
 	#define strstr(str1, str2)			_strstr(str1, str2)	// NULL function
 	#define strtok(str, delim)			_strtok(str, delim)//_strsep(str, delim)
 	#define strcat					_strcat
-	
+
 	#define strncmp(str1, str2, cnt)	_strncmp(str1, str2, cnt)
 	#define strncpy(dest, src, count)	_strncpy(dest, src, count)
 	#define strncat					_strncat
@@ -88,14 +88,14 @@
 	#define strtol(str, endp, base)		_strtol(str, endp, base)
 
 	#define atol(str)					_strtol(str,NULL,10)
-	#define atoi(str)					_stratoi(str)	
+	#define atoi(str)					_stratoi(str)
 	#define strpbrk(cs, ct)			_strpbrk(cs, ct)		// for B-cut ROM
 	#define rand						Rand
-	#define srand				
-	
+	#define srand
+
 	//extern int _sscanf_patch(const char *buf, const char *fmt, ...);
 	//#define sscanf					_sscanf_patch
-	
+
 
 #endif	// defined (__IARSTDLIB__)
 
@@ -161,18 +161,6 @@ extern time_t _time( time_t * tloc );
     #undef srand
 #endif
 
-#ifdef s8
-    #undef s8
-#endif
-
-#ifdef u32
-    #undef u32
-#endif
-
-#ifdef u64
-    #undef u64
-#endif
-
 #ifdef IN
     #undef IN
 #endif
@@ -182,23 +170,23 @@ extern time_t _time( time_t * tloc );
 #endif
 
 #ifdef memcpy
-		#undef memcpy
+	#undef memcpy
 #endif
 
 #ifdef memset
-		#undef memset
+	#undef memset
 #endif
 
 #ifdef strcmp
-		#undef strcmp
+	#undef strcmp
 #endif
 
 #ifdef strncpy
-		#undef strncpy
+	#undef strncpy
 #endif
 
 #ifdef strlen
-		#undef strlen
+	#undef strlen
 #endif
 
 #endif //CHIP_PROJECT
