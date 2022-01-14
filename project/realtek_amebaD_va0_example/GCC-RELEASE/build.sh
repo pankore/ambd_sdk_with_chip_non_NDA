@@ -37,6 +37,7 @@ elif [ "$4" == "lighting-app" ]; then
     export MATTER_EXAMPLE_PATH=${AMEBA_MATTER}/examples/lighting-app/ameba
 elif [ "$4" == "pigweed-app" ]; then
     export MATTER_EXAMPLE_PATH=${AMEBA_MATTER}/examples/pigweed-app/ameba
+    export MATTER_ENABLE_RPC=1
 elif [ "$4" == "otap" ]; then
     export MATTER_EXAMPLE_PATH=${AMEBA_MATTER}/examples/ota-provider-app/ameba
 elif [ "$4" == "otar" ]; then
