@@ -33,8 +33,10 @@ export MATTER_CONFIG_PATH=${AMEBA_MATTER}/config/ameba
 
 if [ "$4" == "all-clusters-app" ]; then
     export MATTER_EXAMPLE_PATH=${AMEBA_MATTER}/examples/all-clusters-app/ameba
+    export MATTER_ENABLE_OTAR=1
 elif [ "$4" == "lighting-app" ]; then
     export MATTER_EXAMPLE_PATH=${AMEBA_MATTER}/examples/lighting-app/ameba
+    export MATTER_ENABLE_OTAR=1
 elif [ "$4" == "pigweed-app" ]; then
     export MATTER_EXAMPLE_PATH=${AMEBA_MATTER}/examples/pigweed-app/ameba
     export MATTER_ENABLE_RPC=1
