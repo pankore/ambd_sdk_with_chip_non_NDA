@@ -11,7 +11,7 @@ set (matter_output_path $ENV{MATTER_OUTPUT})
 set (matter_example_path $ENV{MATTER_EXAMPLE_PATH})
 set (matter_config_path $ENV{MATTER_CONFIG_PATH})
 set (matter_enable_rpc $ENV{MATTER_ENABLE_RPC})
-set (matter_enable_otar $ENV{MATTER_ENABLE_OTAR})
+set (matter_enable_ota_requestor $ENV{MATTER_ENABLE_OTA_REQUESTOR})
 
 set (BUILD_TZ OFF)
 

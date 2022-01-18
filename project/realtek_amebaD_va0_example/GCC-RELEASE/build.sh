@@ -33,18 +33,18 @@ export MATTER_CONFIG_PATH=${AMEBA_MATTER}/config/ameba
 
 if [ "$4" == "all-clusters-app" ]; then
     export MATTER_EXAMPLE_PATH=${AMEBA_MATTER}/examples/all-clusters-app/ameba
-    export MATTER_ENABLE_OTAR=1
+    export MATTER_ENABLE_OTA_REQUESTOR=1
 elif [ "$4" == "lighting-app" ]; then
     export MATTER_EXAMPLE_PATH=${AMEBA_MATTER}/examples/lighting-app/ameba
-    export MATTER_ENABLE_OTAR=1
+    export MATTER_ENABLE_OTA_REQUESTOR=1
 elif [ "$4" == "pigweed-app" ]; then
     export MATTER_EXAMPLE_PATH=${AMEBA_MATTER}/examples/pigweed-app/ameba
     export MATTER_ENABLE_RPC=1
-elif [ "$4" == "otap" ]; then
+elif [ "$4" == "ota-provider-app" ]; then
     export MATTER_EXAMPLE_PATH=${AMEBA_MATTER}/examples/ota-provider-app/ameba
-elif [ "$4" == "otar" ]; then
+elif [ "$4" == "ota-requestor-app" ]; then
     export MATTER_EXAMPLE_PATH=${AMEBA_MATTER}/examples/ota-requestor-app/ameba
-    export MATTER_ENABLE_OTAR=1
+    export MATTER_ENABLE_OTA_REQUESTOR=1
 else
     export MATTER_EXAMPLE_PATH=${AMEBA_MATTER}/examples/all-clusters-app/ameba
 fi
@@ -67,9 +67,9 @@ function exe_cmake()
 	    exe_cmake_all
 	elif [ "$4" == "lighting-app" ]; then
 	    exe_cmake_light
-	elif [ "$4" == "otar" ]; then
+	elif [ "$4" == "ota-requestor-app" ]; then
 	    exe_cmake_otar
-	elif [ "$4" == "otap" ]; then
+	elif [ "$4" == "ota-provider-app" ]; then
 	    exe_cmake_otap
 	else
 	    exe_cmake_all
