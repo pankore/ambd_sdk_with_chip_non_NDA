@@ -172,8 +172,11 @@ void bt_matter_adapter_app_le_gap_init(void)
 void bt_matter_adapter_app_le_profile_init(void)
 {
     server_init(1);
+        printf("%s %d==========\n", __func__, __LINE__);
     bt_matter_adapter_srv_id = bt_matter_adapter_service_add_service((void *)bt_matter_adapter_app_profile_callback);
+        printf("%s %d==========\n", __func__, __LINE__);
     server_register_app_cb(bt_matter_adapter_app_profile_callback);
+        printf("%s %d==========\n", __func__, __LINE__);
 }
 
 /**

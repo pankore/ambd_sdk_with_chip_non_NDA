@@ -28,10 +28,15 @@
 #define SIMPLE_BLE_SERVICE_CHAR_INDICATE_CCCD_INDEX     (SIMPLE_BLE_SERVICE_CHAR_V4_INDICATE_INDEX + 1)
 
 #define BT_MATTER_ADAPTER_SERVICE_CHAR_V1_READ_WRITE_INDEX           0x02
+#define BT_MATTER_ADAPTER_SERVICE_C3_INDEX           0x07
 //#define UUID_RX	0x18, 0xEE, 0x2E, 0xF5, 0x26, 0x3D, 0x45, 0x59, 0x95, 0x9F, 0x4F, 0x9C, 0x42, 0x9F, 0x9D, 0x11
 //#define UUID_TX 0x18, 0xEE, 0x2E, 0xF5, 0x26, 0x3D, 0x45, 0x59, 0x95, 0x9F, 0x4F, 0x9C, 0x42, 0x9F, 0x9D, 0x12
 #define UUID_RX		0x11, 0x9D, 0x9F, 0x42, 0x9C, 0x4F, 0x9F, 0x95, 0x59, 0x45, 0x3D, 0x26, 0xF5, 0x2E, 0xEE, 0x18
 #define UUID_TX		0x12, 0x9D, 0x9F, 0x42, 0x9C, 0x4F, 0x9F, 0x95, 0x59, 0x45, 0x3D, 0x26, 0xF5, 0x2E, 0xEE, 0x18
+//#if CHIP_ENABLE_ADDITIONAL_DATA_ADVERTISING
+
+#define UUID_C3		0x04, 0x8F, 0x21, 0x83, 0x8A, 0x74, 0x7D, 0xB8, 0xF2, 0x45, 0x72, 0x87, 0x38, 0x02, 0x63, 0x64
+//#endif
 
 T_SERVER_ID bt_matter_adapter_service_id;
 /**<  Value of bt config characteristic. */
@@ -117,12 +122,37 @@ HI_WORD(GATT_CLIENT_CHAR_CONFIG_DEFAULT)
 NULL,
 (GATT_PERM_READ | GATT_PERM_WRITE) /* permissions */
 },
+
+/* <<Characteristic>> Data TX */
+{
+ATTRIB_FLAG_VALUE_INCL, /* flags */
+{ /* type_value */
+LO_WORD(GATT_UUID_CHARACTERISTIC),
+HI_WORD(GATT_UUID_CHARACTERISTIC),
+(GATT_CHAR_PROP_READ) /* characteristic properties */
+/* characteristic UUID not needed here, is UUID of next attrib. */
+},
+1, /* bValueLen */
+NULL,
+GATT_PERM_READ /* permissions */
+},
+{
+ATTRIB_FLAG_VALUE_APPL | ATTRIB_FLAG_UUID_128BIT, /* flags */
+{ /* type_value */
+UUID_C3
+},
+0, /* bValueLen */
+NULL,
+GATT_PERM_READ //GATT_PERM_NONE // permissions 
+},
+ 
 };
 
 
 /**
   * @brief  Set service related data from application.
   *
+
   * @param[in] param_type            parameter type to set.
   * @param[in] len                   value length to be set.
   * @param[in] p_value             value to set.
@@ -133,10 +163,11 @@ NULL,
 bool bt_matter_adapter_service_set_parameter(T_BTCONFIG_PARAM_TYPE param_type, uint16_t len, void *p_value)
 {
 	bool ret = true;
-
+printf("%s %d==========param_type=%d\n", __func__, __LINE__,param_type);
 	switch (param_type) {
 		case BTCONFIG_SERVICE_PARAM_V1_READ_CHAR_VAL:
 			if  (len <= BT_MATTER_ADAPTER_READ_V1_MAX_LEN) {
+			printf("%s %d==========\n", __func__, __LINE__);
 				memcpy(bt_matter_adapter_char_read_value, p_value, len);
 				bt_matter_adapter_char_read_len = len;
 			} else {
@@ -179,6 +210,7 @@ T_APP_RESULT  bt_matter_adapter_service_attr_read_cb(uint8_t conn_id, T_SERVER_I
         break;
     case BT_MATTER_ADAPTER_SERVICE_CHAR_V1_READ_WRITE_INDEX:
         {
+printf("bt_matter_adapter_service_attr_read_cb, Attr index = %d, p_length=%d ,pp_value=%d\r\n", attrib_index,p_length ,pp_value);
             TBTCONFIG_CALLBACK_DATA callback_data;
             callback_data.msg_type = SERVICE_CALLBACK_TYPE_READ_CHAR_VALUE;
 			callback_data.msg_data.read_value_index = BTCONFIG_READ_V1;
@@ -193,7 +225,27 @@ T_APP_RESULT  bt_matter_adapter_service_attr_read_cb(uint8_t conn_id, T_SERVER_I
 			//printf("[BT_MATTER_ADAPTER] Read %d\n\r", bt_matter_adapter_char_read_len);
         }
         break;
-
+    case BT_MATTER_ADAPTER_SERVICE_C3_INDEX:
+        {
+            printf("bt_matter_adapter_service_attr_read_cb, Attr index = %d, p_length=%d ,pp_value=%d\r\n", attrib_index,p_length ,pp_value);
+            TBTCONFIG_CALLBACK_DATA callback_data;
+            callback_data.msg_type = SERVICE_CALLBACK_TYPE_READ_CHAR_VALUE;
+			callback_data.msg_data.read_value_index = BTCONFIG_READ_V1;
+			callback_data.msg_data.read_offset = offset;
+            callback_data.conn_id = conn_id;
+printf("%s %d==========\n", __func__, __LINE__);
+            if (pfn_bt_matter_adapter_service_cb)
+            {
+printf("%s %d==========\n", __func__, __LINE__);
+                pfn_bt_matter_adapter_service_cb(service_id, (void *)&callback_data);
+            }
+printf("%s %d==========\n", __func__, __LINE__);
+            *pp_value = callback_data.msg_data.write.p_value;
+            *p_length = callback_data.msg_data.write.len;
+printf("%s %d==========\n", __func__, __LINE__);
+			//printf("[BT_MATTER_ADAPTER] Read %d\n\r", bt_matter_adapter_char_read_len);
+        }
+        break;
     }
 
     return (cause);
@@ -218,7 +270,7 @@ T_APP_RESULT bt_matter_adapter_service_attr_write_cb(uint8_t conn_id, T_SERVER_I
 	T_APP_RESULT  cause = APP_RESULT_SUCCESS;
 	APP_PRINT_INFO1("bt_matter_adapter_service_attr_write_cb write_type = 0x%x", write_type);
 	*p_write_ind_post_proc = NULL;
-
+    printf("bt_matter_adapter_service_attr_write_cb, Attr index = %d  write_type = 0x%x", attrib_index, write_type);
 	if (BT_MATTER_ADAPTER_SERVICE_CHAR_V1_READ_WRITE_INDEX == attrib_index) {
 		/* Make sure written value size is valid. */
 		if (p_value == NULL) {
@@ -262,7 +314,7 @@ void bt_matter_adapter_service_cccd_update_cb(uint8_t conn_id, T_SERVER_ID servi
     bool is_handled = false;
     callback_data.conn_id = conn_id;
     callback_data.msg_type = SERVICE_CALLBACK_TYPE_INDIFICATION_NOTIFICATION;
-    //printf("simp_ble_service_cccd_update_cb: index = %d, cccbits 0x%x\r\n", index, cccbits);
+    printf("bt_matter_adapter_service_cccd_update_cb: index = %d, cccbits 0x%x\r\n", index, cccbits);
     switch (index)
     {
     case BT_MATTER_ADAPTER_SERVICE_CHAR_NOTIFY_CCCD_INDEX:
