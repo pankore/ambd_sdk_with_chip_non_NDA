@@ -553,12 +553,15 @@ T_APP_RESULT bt_matter_adapter_app_profile_callback(T_SERVER_ID service_id, void
 {
     T_APP_RESULT app_result = APP_RESULT_SUCCESS;
 #if 1
-    //printf("%s %d==========\n", __func__, __LINE__);
     // call blemanagerimpl function
     if (chip_blemgr_callback_func && chip_blemgr_callback_data)
+    {
         chip_blemgr_callback_func(chip_blemgr_callback_data, p_data, service_id, CB_PROFILE_CALLBACK);
+    }
     else
+    {
         printf("chip_blemgr_callback_func is NULL\r\n");
+    }
     return app_result;
 #else
     if (service_id == SERVICE_PROFILE_GENERAL_ID)
