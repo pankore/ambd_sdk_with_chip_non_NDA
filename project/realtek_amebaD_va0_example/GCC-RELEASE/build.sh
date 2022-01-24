@@ -31,18 +31,21 @@ fi
 
 export MATTER_CONFIG_PATH=${AMEBA_MATTER}/config/ameba
 
-if [ "$4" == "all-clusters-app" ]; then
+APP_SELECT="$4"
+echo "********** You are building $APP_SELECT **********"
+
+if [ $APP_SELECT == "all-clusters-app" ]; then
     export MATTER_EXAMPLE_PATH=${AMEBA_MATTER}/examples/all-clusters-app/ameba
     export MATTER_ENABLE_OTA_REQUESTOR=1
-elif [ "$4" == "lighting-app" ]; then
+elif [ $APP_SELECT == "lighting-app" ]; then
     export MATTER_EXAMPLE_PATH=${AMEBA_MATTER}/examples/lighting-app/ameba
     export MATTER_ENABLE_OTA_REQUESTOR=1
-elif [ "$4" == "pigweed-app" ]; then
+elif [ $APP_SELECT == "pigweed-app" ]; then
     export MATTER_EXAMPLE_PATH=${AMEBA_MATTER}/examples/pigweed-app/ameba
     export MATTER_ENABLE_RPC=1
-elif [ "$4" == "ota-provider-app" ]; then
+elif [ $APP_SELECT == "ota-provider-app" ]; then
     export MATTER_EXAMPLE_PATH=${AMEBA_MATTER}/examples/ota-provider-app/ameba
-elif [ "$4" == "ota-requestor-app" ]; then
+elif [ $APP_SELECT == "ota-requestor-app" ]; then
     export MATTER_EXAMPLE_PATH=${AMEBA_MATTER}/examples/ota-requestor-app/ameba
     export MATTER_ENABLE_OTA_REQUESTOR=1
 else
@@ -63,13 +66,15 @@ cd "$MATTER_OUTPUT"
 
 function exe_cmake()
 {
-	if [ "$4" == "all-clusters-app" ]; then
+	if [ $APP_SELECT == "all-clusters-app" ]; then
 	    exe_cmake_all
-	elif [ "$4" == "lighting-app" ]; then
+	elif [ $APP_SELECT == "lighting-app" ]; then
 	    exe_cmake_light
-	elif [ "$4" == "ota-requestor-app" ]; then
+	elif [ $APP_SELECT == "pigweed-app" ]; then
+	    exe_cmake_pigweed
+	elif [ $APP_SELECT == "ota-requestor-app" ]; then
 	    exe_cmake_otar
-	elif [ "$4" == "ota-provider-app" ]; then
+	elif [ $APP_SELECT == "ota-provider-app" ]; then
 	    exe_cmake_otap
 	else
 	    exe_cmake_all
@@ -79,25 +84,31 @@ function exe_cmake()
 function exe_cmake_all()
 {
 	echo "Build all"
-	cmake $CMAKE_ROOT -G"$BUILD_METHOD" -DCMAKE_TOOLCHAIN_FILE=$CMAKE_ROOT/toolchain.cmake -DMATTER_ALL_CLUSTERS_APP=1
+	cmake $CMAKE_ROOT -G"$BUILD_METHOD" -DCMAKE_TOOLCHAIN_FILE=$CMAKE_ROOT/toolchain.cmake -DMATTER_ALL_CLUSTERS_APP=ON
 }
 
 function exe_cmake_light()
 {
 	echo "Build light"
-	cmake $CMAKE_ROOT -G"$BUILD_METHOD" -DCMAKE_TOOLCHAIN_FILE=$CMAKE_ROOT/toolchain.cmake -DMATTER_LIGHTING_APP=1
+	cmake $CMAKE_ROOT -G"$BUILD_METHOD" -DCMAKE_TOOLCHAIN_FILE=$CMAKE_ROOT/toolchain.cmake -DMATTER_LIGHTING_APP=ON
+}
+
+function exe_cmake_pigweed()
+{
+	echo "Build pigweed"
+	cmake $CMAKE_ROOT -G"$BUILD_METHOD" -DCMAKE_TOOLCHAIN_FILE=$CMAKE_ROOT/toolchain.cmake -DMATTER_PIGWEED_APP=ON
 }
 
 function exe_cmake_otar()
 {
 	echo "Build OTA-R"
-	cmake $CMAKE_ROOT -G"$BUILD_METHOD" -DCMAKE_TOOLCHAIN_FILE=$CMAKE_ROOT/toolchain.cmake -DMATTER_OTA_REQUESTOR_APP=1
+	cmake $CMAKE_ROOT -G"$BUILD_METHOD" -DCMAKE_TOOLCHAIN_FILE=$CMAKE_ROOT/toolchain.cmake -DMATTER_OTA_REQUESTOR_APP=ON
 }
 
 function exe_cmake_otap()
 {
 	echo "Build OTA-P"
-	cmake $CMAKE_ROOT -G"$BUILD_METHOD" -DCMAKE_TOOLCHAIN_FILE=$CMAKE_ROOT/toolchain.cmake -DMATTER_OTA_PROVIDER_APP=1
+	cmake $CMAKE_ROOT -G"$BUILD_METHOD" -DCMAKE_TOOLCHAIN_FILE=$CMAKE_ROOT/toolchain.cmake -DMATTER_OTA_PROVIDER_APP=ON
 }
 
 ## Decide meta build method

@@ -15,6 +15,13 @@ set (matter_enable_ota_requestor $ENV{MATTER_ENABLE_OTA_REQUESTOR})
 
 set (BUILD_TZ OFF)
 
+# App selection macros OFF by default, enable through command line argument in build.sh, Eg: -DMATTER_ALL_CLUSTERS_APP=ON
+option(MATTER_ALL_CLUSTERS_APP "Build All-Clusters-App" OFF)
+option(MATTER_LIGHTING_APP "Build Lighting-App" OFF)
+option(MATTER_PIGWEED_APP "Build Pigweed-App" OFF)
+option(MATTER_OTA_REQUESTOR_APP "Build OTA-Requestor-App" OFF)
+option(MATTER_OTA_PROVIDER_APP "Build OTA-Provider-App" OFF)
+
 message(STATUS "Build TZ ${BUILD_TZ}")
 
 #add_subdirectory (bootloader)
