@@ -399,6 +399,8 @@ GLOBAL_CFLAGS += -Wno-unused-variable
 GLOBAL_CFLAGS += -Wno-deprecated-declarations
 GLOBAL_CFLAGS += -Wno-unused-parameter
 GLOBAL_CFLAGS += -Wno-format
+GLOBAL_CFLAGS += -Wno-format-nonliteral
+GLOBAL_CFLAGS += -Wno-format-security
 
 GLOBAL_CFLAGS += -DFD_SETSIZE=10
 

@@ -92,8 +92,6 @@ CPPSRC += $(CHIPDIR)/src/app/util/ember-compatibility-functions.cpp
 CPPSRC += $(CHIPDIR)/src/app/util/ember-print.cpp
 CPPSRC += $(CHIPDIR)/src/app/util/esi-management.cpp
 CPPSRC += $(CHIPDIR)/src/app/util/message.cpp
-CPPSRC += $(CHIPDIR)/src/app/util/process-cluster-message.cpp
-CPPSRC += $(CHIPDIR)/src/app/util/process-global-message.cpp
 CPPSRC += $(CHIPDIR)/src/app/util/util.cpp
 CPPSRC += $(CHIPDIR)/src/app/util/error-mapping.cpp
 
@@ -112,11 +110,10 @@ CPPSRC += $(CHIPDIR)/src/app/clusters/door-lock-server/door-lock-server.cpp
 CPPSRC += $(CHIPDIR)/src/app/clusters/ias-zone-server/ias-zone-server.cpp
 CPPSRC += $(CHIPDIR)/src/app/clusters/general-commissioning-server/general-commissioning-server.cpp
 CPPSRC += $(CHIPDIR)/src/app/clusters/low-power-server/low-power-server.cpp
-CPPSRC += $(CHIPDIR)/src/app/clusters/network-commissioning/network-commissioning.cpp
-CPPSRC += $(CHIPDIR)/src/app/clusters/network-commissioning/network-commissioning-ember.cpp
+CPPSRC += $(CHIPDIR)/src/app/clusters/network-commissioning-old/network-commissioning-old.cpp
+CPPSRC += $(CHIPDIR)/src/app/clusters/network-commissioning-old/network-commissioning-ember.cpp
 CPPSRC += $(CHIPDIR)/src/app/clusters/descriptor/descriptor.cpp
 CPPSRC += $(CHIPDIR)/src/app/clusters/operational-credentials-server/operational-credentials-server.cpp
-CPPSRC += $(CHIPDIR)/src/app/clusters/ota-provider/ota-provider.cpp
 CPPSRC += $(CHIPDIR)/src/app/clusters/test-cluster-server/test-cluster-server.cpp
 CPPSRC += $(CHIPDIR)/src/app/clusters/occupancy-sensor-server/occupancy-sensor-server.cpp
 CPPSRC += $(CHIPDIR)/src/app/clusters/pump-configuration-and-control-server/pump-configuration-and-control-server.cpp
@@ -134,7 +131,7 @@ CPPSRC += $(CHIPDIR)/src/app/clusters/application-basic-server/application-basic
 CPPSRC += $(CHIPDIR)/src/app/clusters/audio-output-server/audio-output-server.cpp
 CPPSRC += $(CHIPDIR)/src/app/clusters/keypad-input-server/keypad-input-server.cpp
 CPPSRC += $(CHIPDIR)/src/app/clusters/application-launcher-server/application-launcher-server.cpp
-CPPSRC += $(CHIPDIR)/src/app/clusters/tv-channel-server/tv-channel-server.cpp
+CPPSRC += $(CHIPDIR)/src/app/clusters/channel-server/channel-server.cpp
 CPPSRC += $(CHIPDIR)/src/app/clusters/media-input-server/media-input-server.cpp
 CPPSRC += $(CHIPDIR)/src/app/clusters/target-navigator-server/target-navigator-server.cpp
 CPPSRC += $(CHIPDIR)/src/app/clusters/account-login-server/account-login-server.cpp
@@ -143,25 +140,34 @@ CPPSRC += $(CHIPDIR)/src/app/clusters/thermostat-server/thermostat-server.cpp
 CPPSRC += $(CHIPDIR)/src/app/clusters/access-control-server/access-control-server.cpp
 CPPSRC += $(CHIPDIR)/src/app/clusters/power-source-configuration-server/power-source-configuration-server.cpp
 CPPSRC += $(CHIPDIR)/src/app/clusters/fixed-label-server/fixed-label-server.cpp
-CPPSRC += $(CHIPDIR)/src/app/clusters/switch-server/switch-server.cpp
 CPPSRC += $(CHIPDIR)/src/app/clusters/user-label-server/user-label-server.cpp
+CPPSRC += $(CHIPDIR)/src/app/clusters/switch-server/switch-server.cpp
+CPPSRC += $(CHIPDIR)/src/app/clusters/group-key-mgmt-server/group-key-mgmt-server.cpp
+CPPSRC += $(CHIPDIR)/src/app/clusters/wake-on-lan-server/wake-on-lan-server.cpp
+CPPSRC += $(CHIPDIR)/src/app/clusters/localization-configuration-server/localization-configuration-server.cpp
+CPPSRC += $(CHIPDIR)/src/app/clusters/bindings/bindings.cpp
+CPPSRC += $(CHIPDIR)/src/app/clusters/ota-requestor/BDXDownloader.cpp
+CPPSRC += $(CHIPDIR)/src/app/clusters/ota-requestor/OTARequestor.cpp
+CPPSRC += $(CHIPDIR)/src/app/clusters/ota-requestor/ota-requestor-server.cpp
+CPPSRC += $(CHIPDIR)/src/app/clusters/network-commissioning/network-commissioning.cpp
 
 CPPSRC += $(CHIPDIR)/src/app/reporting/Engine.cpp
 
 CPPSRC += $(CHIPDIR)/zzz_generated/app-common/app-common/zap-generated/attributes/Accessors.cpp
 CPPSRC += $(CHIPDIR)/zzz_generated/app-common/app-common/zap-generated/cluster-objects.cpp
 
-CPPSRC += $(CHIPDIR)/zzz_generated/all-clusters-app/zap-generated/CHIPClientCallbacks.cpp
 CPPSRC += $(CHIPDIR)/zzz_generated/all-clusters-app/zap-generated/callback-stub.cpp
 CPPSRC += $(CHIPDIR)/zzz_generated/all-clusters-app/zap-generated/IMClusterCommandHandler.cpp
-CPPSRC += $(CHIPDIR)/zzz_generated/all-clusters-app/zap-generated/CHIPClusters.cpp
 
 CPPSRC += $(CHIPDIR)/examples/all-clusters-app/all-clusters-common/src/bridged-actions-stub.cpp
+CPPSRC += $(CHIPDIR)/examples/all-clusters-app/all-clusters-common/src/static-supported-modes-manager.cpp
+
 CPPSRC += $(CHIPDIR)/examples/all-clusters-app/ameba/main/chipinterface.cpp
 CPPSRC += $(CHIPDIR)/examples/all-clusters-app/ameba/main/DeviceCallbacks.cpp
 CPPSRC += $(CHIPDIR)/examples/all-clusters-app/ameba/main/CHIPDeviceManager.cpp
 CPPSRC += $(CHIPDIR)/examples/all-clusters-app/ameba/main/Globals.cpp
 CPPSRC += $(CHIPDIR)/examples/all-clusters-app/ameba/main/LEDWidget.cpp
+CPPSRC += $(CHIPDIR)/examples/all-clusters-app/ameba/main/DsoHack.cpp
 
 #*****************************************************************************#
 #                               Object FILE LIST                              #
