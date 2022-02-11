@@ -6,7 +6,7 @@
     
     cd ${HOME}/AmebaD_with_CHIP
     
-    git clone https://github.com/pankore/ambd_sdk_with_chip_non_NDA.git
+    git clone -b interop_testing_2022_01_18 https://github.com/pankore/ambd_sdk_with_chip_non_NDA.git
     
 ## Get Matter SDK
 
