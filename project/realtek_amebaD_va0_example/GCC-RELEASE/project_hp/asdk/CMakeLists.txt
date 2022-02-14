@@ -221,12 +221,19 @@ add_custom_command(TARGET ${app_ntz} POST_BUILD
 )
 
 if (matter_generate_ota_image)
+file(READ ${prj_root}/GCC-RELEASE/matter_ota_settings.json JSON_STRING)
+string(JSON VendorID GET ${JSON_STRING} VendorID)
+string(JSON ProductID GET ${JSON_STRING} ProductID)
+string(JSON Version GET ${JSON_STRING} Version)
+string(JSON VersionString GET ${JSON_STRING} VersionString)
+string(JSON DigestAlgorithm GET ${JSON_STRING} DigestAlgorithm)
+
 set(ota_imagetool_dir ${ameba_matter_root}src/app)
 add_custom_command(TARGET ${app_ntz} POST_BUILD
     COMMAND python3 ../../python_custom_ecdsa_D_gcc.py ${matter_output_path}/asdk/image/km0_km4_image2.bin ${matter_output_path}/asdk/image/OTA_ALL.bin
     COMMAND echo "========= Generating OTA_ALL.bin Complete =========="
     COMMAND cd ${ota_imagetool_dir}
-    COMMAND python3 ./ota_image_tool.py create -v 0xDEAD -p 0xBEEF -vn 1 -vs "1.0" -da sha256 ${matter_output_path}/asdk/image/OTA_ALL.bin ${matter_output_path}/asdk/image/MATTER_OTA_ALL.bin
+    COMMAND python3 ./ota_image_tool.py create -v ${VendorID} -p ${ProductID} -vn ${Version} -vs ${VersionString} -da ${DigestAlgorithm} ${matter_output_path}/asdk/image/OTA_ALL.bin ${matter_output_path}/asdk/image/MATTER_OTA_ALL.bin
     COMMAND echo "========= Generating MATTER_OTA_ALL.bin Complete =========="
     COMMAND python3 ./ota_image_tool.py show ${matter_output_path}/asdk/image/MATTER_OTA_ALL.bin
 )
