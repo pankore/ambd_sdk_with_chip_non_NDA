@@ -228,7 +228,7 @@ int  ota_readstream_user(uint32_t address, uint32_t len, uint8_t * data)
   *           useful when address or len is not 4 byte aligned.
   */
 IMAGE2_RAM_TEXT_SECTION
-int  ota_writestream_user(uint32_t address, uint32_t len, uint8_t * data)
+int  ota_writestream_user(uint32_t address, uint32_t len, const uint8_t * data)
 {
 	// Check address: 4byte aligned & page(256bytes) aligned
 	uint32_t page_begin = address &  (~0xff);                     

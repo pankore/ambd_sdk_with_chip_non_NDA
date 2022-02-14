@@ -149,7 +149,7 @@ void ota_platform_reset(void);
 int ota_write_ota2_addr(uint32_t ota_addr);
 uint32_t ota_get_cur_index(void);
 int  ota_readstream_user(uint32_t address, uint32_t len, uint8_t * data);
-int ota_writestream_user(uint32_t address, uint32_t len, uint8_t * data);
+int ota_writestream_user(uint32_t address, uint32_t len, const uint8_t * data);
 
 uint32_t recv_file_info_from_server(uint8_t * Recvbuf, uint32_t len, int socket);
 uint32_t recv_ota_file_hdr(uint8_t * Recvbuf, uint32_t * len, update_ota_target_hdr * pOtaTgtHdr, int socket);
