@@ -1,6 +1,19 @@
 #!/usr/bin/env bash
 
-#   ./build.sh {MATTER DIR} {BUILD METHOD} {OUTPUT DIR} {APP_NAME} {rpc (optional)}
+#   ./build.sh -g -r {MATTER DIR} {BUILD METHOD} {OUTPUT DIR} {APP_NAME} 
+#   -g and -r are optional flags, input them as the first two arguments
+#       -g: Generate MATTER_OTA_ALL.bin
+#       -r: Enable RPC
+
+while getopts :gr opt; do
+    case $opt in
+        g) export MATTER_GENERATE_OTA_IMAGE=1 ;;
+        r) export MATTER_ENABLE_RPC=1 ;;
+        :) echo "Missing argument for option -$OPTARG"; exit 1;;
+       \?) echo "Unknown option -$OPTARG"; exit 1;;
+    esac
+done
+shift $(( OPTIND - 1 ))
 
 BUILD_FILE_DIR=`test -d ${0%/*} && cd ${0%/*}; pwd`
 CMAKE_ROOT=$BUILD_FILE_DIR/project_hp
@@ -42,7 +55,6 @@ elif [ $APP_SELECT == "lighting-app" ]; then
     export MATTER_ENABLE_OTA_REQUESTOR=1
 elif [ $APP_SELECT == "pigweed-app" ]; then
     export MATTER_EXAMPLE_PATH=${AMEBA_MATTER}/examples/pigweed-app/ameba
-    export MATTER_ENABLE_RPC=1
 elif [ $APP_SELECT == "ota-provider-app" ]; then
     export MATTER_EXAMPLE_PATH=${AMEBA_MATTER}/examples/ota-provider-app/ameba
 elif [ $APP_SELECT == "ota-requestor-app" ]; then
@@ -52,10 +64,6 @@ else
     export MATTER_EXAMPLE_PATH=${AMEBA_MATTER}/examples/all-clusters-app/ameba
 fi
 echo "MATTER_EXAMPLE_PATH at: ${MATTER_EXAMPLE_PATH}"
-
-if [ "$5" == "rpc" ]; then
-    export MATTER_ENABLE_RPC=1
-fi
 
 ## Check output directory
 if [ ! -z "$3" ]; then
