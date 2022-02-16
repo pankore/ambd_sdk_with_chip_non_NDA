@@ -228,7 +228,7 @@ string(JSON Version GET ${JSON_STRING} Version)
 string(JSON VersionString GET ${JSON_STRING} VersionString)
 string(JSON DigestAlgorithm GET ${JSON_STRING} DigestAlgorithm)
 
-set(ota_imagetool_dir ${ameba_matter_root}src/app)
+set(ota_imagetool_dir ${ameba_matter_root}/src/app)
 add_custom_command(TARGET ${app_ntz} POST_BUILD
     COMMAND python3 ../../python_custom_ecdsa_D_gcc.py ${matter_output_path}/asdk/image/km0_km4_image2.bin ${matter_output_path}/asdk/image/OTA_ALL.bin
     COMMAND echo "========= Generating OTA_ALL.bin Complete =========="

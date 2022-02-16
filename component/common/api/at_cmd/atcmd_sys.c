@@ -923,7 +923,7 @@ void TestBase64(const char * test)
 extern void ChipTest(void);
 extern int32_t deinitPref(void);
 #ifdef MATTER_OTA_REQUESTOR_APP
-extern void amebaQueryImageCmdHandler(uint32_t nodeId, uint32_t fabricId);
+extern void amebaQueryImageCmdHandler();
 extern void amebaApplyUpdateCmdHandler();
 #endif
 void chipapp(void *param)
@@ -942,20 +942,9 @@ void fATchipapp(void *arg)
 
 void fATchipapp1(void *arg)
 {
-	(void) arg;
 #ifdef MATTER_OTA_REQUESTOR_APP
-	// ATS%=1,1
-	unsigned char *argv[MAX_ARGC] = {0};
-	uint32_t nodeId;
-	uint32_t fabricId;
-
-	printf("Chip Test: amebaQueryImageCmdHandler\r\n");
-
-	parse_param(arg, argv);
-	nodeId = atoi(argv[1]);
-	fabricId = atoi(argv[2]);
-
-	amebaQueryImageCmdHandler(nodeId, fabricId);
+	printf("Calling amebaQueryImageCmdHandler\r\n");
+	amebaQueryImageCmdHandler();
 #endif
 }
 

@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 #   ./build.sh -g -r {MATTER DIR} {BUILD METHOD} {OUTPUT DIR} {APP_NAME} 
+#   no trailing '/' for MATTER_DIR and OUTPUT_DIR
 #   -g and -r are optional flags, input them as the first two arguments
 #       -g: Generate MATTER_OTA_ALL.bin
 #       -r: Enable RPC
