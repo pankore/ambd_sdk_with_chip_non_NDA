@@ -63,6 +63,7 @@ elif [ $APP_SELECT == "ota-requestor-app" ]; then
     export MATTER_ENABLE_OTA_REQUESTOR=1
 else
     export MATTER_EXAMPLE_PATH=${AMEBA_MATTER}/examples/all-clusters-app/ameba
+    export MATTER_ENABLE_OTA_REQUESTOR=1
 fi
 echo "MATTER_EXAMPLE_PATH at: ${MATTER_EXAMPLE_PATH}"
 
