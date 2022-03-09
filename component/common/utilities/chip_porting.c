@@ -276,7 +276,7 @@ int32_t deleteKey(const char *domain, const char *key)
     dct_handle_t handle;
     int32_t ret = -1;
 
-	if ( (strcmp(domain,"chip-factory")==0) || (strcmp(domain,"chip-config")==0) || (strcmp(domain,"chip-counters")==0))
+	if ( (strcmp(domain,"chip-factory")==0) || (strcmp(domain,"chip-config")==0) || (strcmp(domain,"chip-counters")==0) || (strncmp(domain,"acl",3)==0))
 	{
 
 	    ret = dct_open_module(&handle, domain);
@@ -324,7 +324,7 @@ bool checkExist(const char *domain, const char *key)
 	uint8_t found = 0;
 	uint8_t *str = malloc(sizeof(uint8_t) * VARIABLE_VALUE_SIZE-4);
 
-	if ( (strcmp(domain,"chip-factory")==0) || (strcmp(domain,"chip-config")==0) || (strcmp(domain,"chip-counters")==0))
+	if ( (strcmp(domain,"chip-factory")==0) || (strcmp(domain,"chip-config")==0) || (strcmp(domain,"chip-counters")==0) || (strncmp(domain,"acl",3)==0))
 	{
 		ret = dct_open_module(&handle, domain);
 		if (ret != DCT_SUCCESS){
@@ -522,7 +522,7 @@ int32_t getPref_str_new(const char *domain, const char *key, char * buf, size_t 
     int32_t ret = -1;
     uint16_t _bufSize = bufSize;
 
-	if(bufSize < 64)
+	if(bufSize < 64 || (strncmp(domain,"acl",3)==0))
 	{
 	    ret = dct_open_module(&handle, domain);
 	    if (DCT_SUCCESS != ret)
@@ -567,7 +567,7 @@ int32_t getPref_bin_new(const char *domain, const char *key, uint8_t * buf, size
     int32_t ret = -1;
     uint16_t _bufSize = bufSize;
 
-	if(bufSize < 64)
+	if(bufSize < 64 || (strncmp(domain,"acl",3)==0))
 	{
 	    ret = dct_open_module(&handle, domain);
 	    if (DCT_SUCCESS != ret)
