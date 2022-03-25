@@ -198,6 +198,82 @@ int _vTaskDelay( const TickType_t xTicksToDelay )
 #define ENABLE_BACKUP           MATTER_KVS_ENABLE_BACKUP
 #define ENABLE_WEAR_LEVELING    MATTER_KVS_ENABLE_WEAR_LEVELING
 
+const char *matter_domain[15] =
+{
+    "chip-factory",
+    "chip-config",
+    "chip-counters",
+    "chip-fabric-1",
+    "chip-fabric-2",
+    "chip-fabric-3",
+    "chip-fabric-4",
+    "chip-fabric-5",
+    "chip-acl",
+    "chip-groupmsgcounters",
+    "chip-attributes",
+    "chip-bindingtable",
+    "chip-ota",
+    "chip-dns",
+    "chip-others"
+};
+
+/*
+ * allocate into predefined domains
+ * needs to be more robust, but currently it gets the job done
+ */
+const char* domainAllocator(const char *domain)
+{
+    // chip-fabrics
+    if(domain[0] == 'f' || (strcmp(domain, "g/fidx") == 0))
+    {
+        // store FabricTable and FabricIndexInfoin chip-others
+        if((domain[2] == 't') || strcmp(domain, "g/fidx") == 0)
+            return matter_domain[14];
+
+        printf("%c\r\n", domain[2]);
+        switch(atoi(&domain[2]))
+        {
+            case 1:
+                return matter_domain[3];
+                break;
+            case 2:
+                return matter_domain[4];
+                break;
+            case 3:
+                return matter_domain[5];
+                break;
+            case 4:
+                return matter_domain[6];
+                break;
+            case 5:
+                return matter_domain[7];
+                break;
+        }
+    }
+    // chip-acl
+    if(strncmp(domain, "acl", 3) == 0)
+        return matter_domain[8];
+    // chip-groupmsgcounters
+    if((strcmp(domain, "gdc") == 0) || (strcmp(domain, "gcc") == 0))
+        return matter_domain[9];
+    // echip-attributes
+    if(strncmp(domain, "a", 1) == 0)
+        return matter_domain[10];
+    // chip-bindingtable
+    if(strncmp(domain, "bt", 2) == 0)
+        return matter_domain[11];
+    // chip-ota
+    if(strncmp(domain, "o", 1) == 0)
+        return matter_domain[12];
+    // chip-dns
+    if(strcmp(domain, "g/d/edt") == 0)
+        return matter_domain[13];
+    // chip-others
+    return matter_domain[14];
+}
+
+
+
 int32_t initPref(void)
 {
     int32_t ret;
@@ -246,7 +322,7 @@ int32_t registerPref(const char * ns)
     return ret;
 }
 
-int32_t registerPref2(char * ns)
+int32_t registerPref2(const char * ns)
 {
     int32_t ret;
     ret = dct_register_module2(ns);
@@ -275,14 +351,17 @@ int32_t deleteKey(const char *domain, const char *key)
 {
     dct_handle_t handle;
     int32_t ret = -1;
+    const char *allocatedDomain = domainAllocator(domain);
+    printf("\r\n\r\n\r\ndomain: %s, allocatedDomain: %s\r\n", domain, allocatedDomain);
 
-	if ( (strcmp(domain,"chip-factory")==0) || (strcmp(domain,"chip-config")==0) || (strcmp(domain,"chip-counters")==0) || (strncmp(domain,"acl",3)==0))
+    if (strncmp(allocatedDomain, "chip-fabric", 11) != 0)
+    //if ( (strcmp(domain,"chip-factory")==0) || (strcmp(domain,"chip-config")==0) || (strcmp(domain,"chip-counters")==0) || (strncmp(domain,"acl",3)==0))
 	{
 
-	    ret = dct_open_module(&handle, domain);
+	    ret = dct_open_module(&handle, allocatedDomain);
 	    if (DCT_SUCCESS != ret)
 	    {
-	        printf("%s : dct_open_module(%s) failed\n",__FUNCTION__,key);
+	        printf("%s : dct_open_module(%s) failed\n",__FUNCTION__,allocatedDomain);
 	        goto exit;
 	    }
 
@@ -296,9 +375,9 @@ int32_t deleteKey(const char *domain, const char *key)
 	}
 	else
 	{
-	    ret = dct_open_module2(&handle, key);
+	    ret = dct_open_module2(&handle, allocatedDomain);
 	    if (ret != DCT_SUCCESS){
-	        printf("%s : dct_open_module2(%s) failed\n",__FUNCTION__,key);
+	        printf("%s : dct_open_module2(%s) failed\n",__FUNCTION__,allocatedDomain);
 	        goto exit;
 	    }
 
@@ -309,7 +388,6 @@ int32_t deleteKey(const char *domain, const char *key)
 	        printf("%s : dct_delete_variable(%s) failed\n",__FUNCTION__,key);
 
 	    dct_close_module2(&handle);
-	    dct_unregister_module2(key);
 	}
 
 exit:
@@ -323,10 +401,13 @@ bool checkExist(const char *domain, const char *key)
 	uint16_t len = 0;
 	uint8_t found = 0;
 	uint8_t *str = malloc(sizeof(uint8_t) * VARIABLE_VALUE_SIZE-4);
+    const char *allocatedDomain = domainAllocator(domain);
+    printf("\r\n\r\n\r\ndomain: %s, allocatedDomain: %s\r\n", domain, allocatedDomain);
 
-	if ( (strcmp(domain,"chip-factory")==0) || (strcmp(domain,"chip-config")==0) || (strcmp(domain,"chip-counters")==0) || (strncmp(domain,"acl",3)==0))
+    if (strncmp(allocatedDomain, "chip-fabric", 11) != 0)
+	//if ( (strcmp(domain,"chip-factory")==0) || (strcmp(domain,"chip-config")==0) || (strcmp(domain,"chip-counters")==0) || (strncmp(domain,"acl",3)==0))
 	{
-		ret = dct_open_module(&handle, domain);
+		ret = dct_open_module(&handle, allocatedDomain);
 		if (ret != DCT_SUCCESS){
 			//printf("%s : dct_open_module(%s) failed\n",__FUNCTION__,domain);
 			goto exit;
@@ -358,7 +439,7 @@ bool checkExist(const char *domain, const char *key)
 	}
 	else
 	{
-		ret = dct_open_module2(&handle, key);
+		ret = dct_open_module2(&handle, allocatedDomain);
 		if (ret != DCT_SUCCESS){
 			//printf("%s : dct_open_module2(%s) failed\n",__FUNCTION__,key);
 			goto exit;
@@ -388,6 +469,9 @@ int32_t setPref_new(const char *domain, const char *key, uint8_t *value, size_t 
     dct_handle_t handle;
     int32_t ret = -1;
     uint32_t prefSize;
+    const char *allocatedDomain = domainAllocator(domain);
+    printf("\r\n\r\n\r\ndomain: %s, allocatedDomain: %s\r\n", domain, allocatedDomain);
+
 
     //if (byteCount > VARIABLE_VALUE_SIZE-4)
     //{
@@ -395,19 +479,22 @@ int32_t setPref_new(const char *domain, const char *key, uint8_t *value, size_t 
     //    goto exit;
     //}
 
-	if(byteCount < 64 )
+    if (strncmp(allocatedDomain, "chip-fabric", 11) != 0)
+	//if(byteCount < 64 )
     {
+#if 0
 	    ret = registerPref(domain);
 	    if (DCT_SUCCESS != ret)
 	    {
 	        printf("%s : registerPref(%s) failed\n",__FUNCTION__,domain);
 	        goto exit;
 	    }
+#endif
 
-	    ret = dct_open_module(&handle, domain);
+	    ret = dct_open_module(&handle, allocatedDomain);
 	    if (DCT_SUCCESS != ret)
 	    {
-	        printf("%s : dct_open_module(%s) failed\n",__FUNCTION__,domain);
+	        printf("%s : dct_open_module(%s) failed\n",__FUNCTION__,allocatedDomain);
 	        goto exit;
 	    }
 
@@ -419,17 +506,19 @@ int32_t setPref_new(const char *domain, const char *key, uint8_t *value, size_t 
 	}
 	else
 	{
+#if 0
 	    ret = registerPref2(key);
 	    if (DCT_SUCCESS != ret)
 	    {
 	        printf("%s : registerPref2(%s) failed\n",__FUNCTION__,key);
 	        goto exit;
 	    }
+#endif
 
-	    ret = dct_open_module2(&handle, key);
+	    ret = dct_open_module2(&handle, allocatedDomain);
 	    if (DCT_SUCCESS != ret)
 	    {
-	        printf("%s : dct_open_module2(%s) failed\n",__FUNCTION__,key);
+	        printf("%s : dct_open_module2(%s) failed\n",__FUNCTION__,allocatedDomain);
 	        goto exit;
 	    }
 
@@ -449,20 +538,41 @@ int32_t getPref_bool_new(const char *domain, const char *key, uint32_t *val)
     dct_handle_t handle;
     int32_t ret = -1;
     uint16_t len = 0;
+    const char *allocatedDomain = domainAllocator(domain);
+    printf("\r\n\r\n\r\ndomain: %s, allocatedDomain: %s\r\n", domain, allocatedDomain);
 
-    ret = dct_open_module(&handle, domain);
-    if (DCT_SUCCESS != ret)
+    if (strncmp(allocatedDomain, "chip-fabric", 11) != 0)
     {
-        printf("%s : dct_open_module(%s) failed\n",__FUNCTION__,domain);
-        goto exit;
+        ret = dct_open_module(&handle, allocatedDomain);
+        if (DCT_SUCCESS != ret)
+        {
+            printf("%s : dct_open_module(%s) failed\n",__FUNCTION__,allocatedDomain);
+            goto exit;
+        }
+
+        len = sizeof(uint32_t);
+        ret = dct_get_variable_new(&handle, key, (char *)val, &len);
+        if (DCT_SUCCESS != ret)
+            printf("%s : dct_get_variable(%s) failed\n",__FUNCTION__,key);
+
+        dct_close_module(&handle);
     }
+    else
+    {
+        ret = dct_open_module2(&handle, allocatedDomain);
+        if (DCT_SUCCESS != ret)
+        {
+            printf("%s : dct_open_module2(%s) failed\n",__FUNCTION__,allocatedDomain);
+            goto exit;
+        }
 
-    len = sizeof(uint32_t);
-    ret = dct_get_variable_new(&handle, key, (char *)val, &len);
-    if (DCT_SUCCESS != ret)
-        printf("%s : dct_get_variable(%s) failed\n",__FUNCTION__,key);
+        len = sizeof(uint32_t);
+        ret = dct_get_variable_new2(&handle, key, (char *)val, &len);
+        if (DCT_SUCCESS != ret)
+            printf("%s : dct_get_variable2(%s) failed\n",__FUNCTION__,key);
 
-    dct_close_module(&handle);
+        dct_close_module(&handle);
+    }
 
 exit:
     return (DCT_SUCCESS == ret ? 1 : 0);
@@ -473,20 +583,41 @@ int32_t getPref_u32_new(const char *domain, const char *key, uint32_t *val)
     dct_handle_t handle;
     int32_t ret = -1;
     uint16_t len = 0;
+    const char *allocatedDomain = domainAllocator(domain);
+    printf("\r\n\r\n\r\ndomain: %s, allocatedDomain: %s\r\n", domain, allocatedDomain);
 
-    ret = dct_open_module(&handle, domain);
-    if (DCT_SUCCESS != ret)
+    if (strncmp(allocatedDomain, "chip-fabric", 11) != 0)
     {
-        printf("%s : dct_open_module(%s) failed\n",__FUNCTION__,domain);
-        goto exit;
+        ret = dct_open_module(&handle, allocatedDomain);
+        if (DCT_SUCCESS != ret)
+        {
+            printf("%s : dct_open_module(%s) failed\n",__FUNCTION__,allocatedDomain);
+            goto exit;
+        }
+
+        len = sizeof(uint32_t);
+        ret = dct_get_variable_new(&handle, key, (char *)val, &len);
+        if (DCT_SUCCESS != ret)
+            printf("%s : dct_get_variable(%s) failed\n",__FUNCTION__,key);
+
+        dct_close_module(&handle);
     }
+    else
+    {
+        ret = dct_open_module2(&handle, allocatedDomain);
+        if (DCT_SUCCESS != ret)
+        {
+            printf("%s : dct_open_module2%s) failed\n",__FUNCTION__,allocatedDomain);
+            goto exit;
+        }
 
-    len = sizeof(uint32_t);
-    ret = dct_get_variable_new(&handle, key, (char *)val, &len);
-    if (DCT_SUCCESS != ret)
-        printf("%s : dct_get_variable(%s) failed\n",__FUNCTION__,key);
+        len = sizeof(uint32_t);
+        ret = dct_get_variable_new2(&handle, key, (char *)val, &len);
+        if (DCT_SUCCESS != ret)
+            printf("%s : dct_get_variable2(%s) failed\n",__FUNCTION__,key);
 
-    dct_close_module(&handle);
+        dct_close_module(&handle);
+    }
 
 exit:
     return (DCT_SUCCESS == ret ? 1 : 0);
@@ -497,20 +628,41 @@ int32_t getPref_u64_new(const char *domain, const char *key, uint64_t *val)
     dct_handle_t handle;
     int32_t ret = -1;
     uint16_t len = 0;
+    const char *allocatedDomain = domainAllocator(domain);
+    printf("\r\n\r\n\r\ndomain: %s, allocatedDomain: %s\r\n", domain, allocatedDomain);
 
-    ret = dct_open_module(&handle, domain);
-    if (DCT_SUCCESS != ret)
+    if (strncmp(allocatedDomain, "chip-fabric", 11) != 0)
     {
-        printf("%s : dct_open_module(%s) failed\n",__FUNCTION__,domain);
-        goto exit;
+        ret = dct_open_module(&handle, allocatedDomain);
+        if (DCT_SUCCESS != ret)
+        {
+            printf("%s : dct_open_module(%s) failed\n",__FUNCTION__,allocatedDomain);
+            goto exit;
+        }
+
+        len = sizeof(uint64_t);
+        ret = dct_get_variable_new(&handle, key, (char *)val, &len);
+        if (DCT_SUCCESS != ret)
+            printf("%s : dct_get_variable(%s) failed\n",__FUNCTION__,key);
+
+        dct_close_module(&handle);
     }
+	else
+	{
+	    ret = dct_open_module2(&handle, allocatedDomain);
+	    if (DCT_SUCCESS != ret)
+	    {
+	        printf("%s : dct_open_module2(%s) failed\n",__FUNCTION__,allocatedDomain);
+	        goto exit;
+	    }
 
-    len = sizeof(uint64_t);
-    ret = dct_get_variable_new(&handle, key, (char *)val, &len);
-    if (DCT_SUCCESS != ret)
-        printf("%s : dct_get_variable(%s) failed\n",__FUNCTION__,key);
+        len = sizeof(uint64_t);
+	    ret = dct_get_variable_new2(&handle, key, (char *)val, &len);
+	    if (DCT_SUCCESS != ret)
+	        printf("%s : dct_get_variable2(%s) failed\n",__FUNCTION__,key);
 
-    dct_close_module(&handle);
+	    dct_close_module2(&handle);
+	}
 
 exit:
     return (DCT_SUCCESS == ret ? 1 : 0);
@@ -521,13 +673,16 @@ int32_t getPref_str_new(const char *domain, const char *key, char * buf, size_t 
     dct_handle_t handle;
     int32_t ret = -1;
     uint16_t _bufSize = bufSize;
+    const char *allocatedDomain = domainAllocator(domain);
+    printf("\r\n\r\n\r\ndomain: %s, allocatedDomain: %s\r\n", domain, allocatedDomain);
 
-	if(bufSize < 64 || (strncmp(domain,"acl",3)==0))
+    if (strncmp(allocatedDomain, "chip-fabric", 11) != 0)
+	//if(bufSize < 64 || (strncmp(domain,"acl",3)==0))
 	{
-	    ret = dct_open_module(&handle, domain);
+	    ret = dct_open_module(&handle, allocatedDomain);
 	    if (DCT_SUCCESS != ret)
 	    {
-	        printf("%s : dct_open_module(%s) failed\n",__FUNCTION__,domain);
+	        printf("%s : dct_open_module(%s) failed\n",__FUNCTION__,allocatedDomain);
 	        goto exit;
 	    }
 
@@ -541,10 +696,10 @@ int32_t getPref_str_new(const char *domain, const char *key, char * buf, size_t 
 	}
 	else
 	{
-	    ret = dct_open_module2(&handle, key);
+	    ret = dct_open_module2(&handle, allocatedDomain);
 	    if (DCT_SUCCESS != ret)
 	    {
-	        printf("%s : dct_open_module2(%s) failed\n",__FUNCTION__,key);
+	        printf("%s : dct_open_module2(%s) failed\n",__FUNCTION__,allocatedDomain);
 	        goto exit;
 	    }
 
@@ -566,13 +721,16 @@ int32_t getPref_bin_new(const char *domain, const char *key, uint8_t * buf, size
     dct_handle_t handle;
     int32_t ret = -1;
     uint16_t _bufSize = bufSize;
+    const char *allocatedDomain = domainAllocator(domain);
+    printf("\r\n\r\n\r\ndomain: %s, allocatedDomain: %s\r\n", domain, allocatedDomain);
 
-	if(bufSize < 64 || (strncmp(domain,"acl",3)==0))
+    if (strncmp(allocatedDomain, "chip-fabric", 11) != 0)
+	//if(bufSize < 64 || (strncmp(domain,"acl",3)==0))
 	{
-	    ret = dct_open_module(&handle, domain);
+	    ret = dct_open_module(&handle, allocatedDomain);
 	    if (DCT_SUCCESS != ret)
 	    {
-	        printf("%s : dct_open_module(%s) failed\n",__FUNCTION__,domain);
+	        printf("%s : dct_open_module(%s) failed\n",__FUNCTION__,allocatedDomain);
 	        goto exit;
 	    }
 
@@ -586,10 +744,10 @@ int32_t getPref_bin_new(const char *domain, const char *key, uint8_t * buf, size
 	}
 	else
 	{
-	    ret = dct_open_module2(&handle, key);
+	    ret = dct_open_module2(&handle, allocatedDomain);
 	    if (DCT_SUCCESS != ret)
 	    {
-	        printf("%s : dct_open_module2(%s) failed\n",__FUNCTION__,key);
+	        printf("%s : dct_open_module2(%s) failed\n",__FUNCTION__,allocatedDomain);
 	        goto exit;
 	    }
 

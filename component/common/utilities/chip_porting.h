@@ -15,11 +15,11 @@ int _nanosleep( const struct timespec * rqtp, struct timespec * rmtp );
 int _vTaskDelay( const TickType_t xTicksToDelay );
 time_t _time( time_t * tloc );
 
-// for AMBDConfig
+// for AmebaConfig
 int32_t initPref(void);
 int32_t deinitPref(void);
 int32_t registerPref(const char * ns);
-int32_t registerPref2(char * ns);
+int32_t registerPref2(const char * ns);
 int32_t clearPref(const char * ns);
 int32_t deleteKey(const char *domain, const char *key);
 BOOL checkExist(const char *domain, const char *key);
