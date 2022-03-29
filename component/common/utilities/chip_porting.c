@@ -535,7 +535,7 @@ int32_t getPref_str_new(const char *domain, const char *key, char * buf, size_t 
 	    if (DCT_SUCCESS != ret)
 	        printf("%s : dct_get_variable(%s) failed\n",__FUNCTION__,key);
 
-	    *outLen = bufSize;
+	    *outLen = _bufSize;
 
 	    dct_close_module(&handle);
 	}
@@ -552,7 +552,7 @@ int32_t getPref_str_new(const char *domain, const char *key, char * buf, size_t 
 	    if (DCT_SUCCESS != ret)
 	        printf("%s : dct_get_variable2(%s) failed\n",__FUNCTION__,key);
 
-	    *outLen = bufSize;
+	    *outLen = _bufSize;
 
 	    dct_close_module2(&handle);
 	}
@@ -580,7 +580,7 @@ int32_t getPref_bin_new(const char *domain, const char *key, uint8_t * buf, size
 	    if (DCT_SUCCESS != ret)
 	        printf("%s : dct_get_variable(%s) failed\n",__FUNCTION__,key);
 
-	    *outLen = bufSize;
+	    *outLen = _bufSize;
 
 	    dct_close_module(&handle);
 	}
@@ -597,7 +597,7 @@ int32_t getPref_bin_new(const char *domain, const char *key, uint8_t * buf, size
 	    if (DCT_SUCCESS != ret)
 	        printf("%s : dct_get_variable2(%s) failed\n",__FUNCTION__,key);
 
-	    *outLen = bufSize;
+	    *outLen = _bufSize;
 
 	    dct_close_module2(&handle);
 	}
