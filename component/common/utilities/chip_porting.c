@@ -276,9 +276,8 @@ int32_t deleteKey(const char *domain, const char *key)
     dct_handle_t handle;
     int32_t ret = -1;
 
-	if ( (strcmp(domain,"chip-factory")==0) || (strcmp(domain,"chip-config")==0) || (strcmp(domain,"chip-counters")==0) || (strncmp(domain,"acl",3)==0))
+	if ( (strcmp(domain,"chip-factory")==0) || (strcmp(domain,"chip-config")==0) || (strcmp(domain,"chip-counters")==0) )
 	{
-
 	    ret = dct_open_module(&handle, domain);
 	    if (DCT_SUCCESS != ret)
 	    {
@@ -294,6 +293,24 @@ int32_t deleteKey(const char *domain, const char *key)
 
 	    dct_close_module(&handle);
 	}
+    else if((strncmp(domain,"acl",3)==0) || (strcmp(domain, "g/fsc")==0))
+    {
+	    ret = dct_open_module(&handle, key);
+	    if (DCT_SUCCESS != ret)
+	    {
+	        printf("%s : dct_open_module(%s) failed\n",__FUNCTION__,key);
+	        goto exit;
+	    }
+
+	    ret = dct_delete_variable(&handle, key);
+	    if(ret == DCT_ERR_NOT_FIND || ret == DCT_SUCCESS)
+	        ret = DCT_SUCCESS;
+	    else
+	        printf("%s : dct_delete_variable(%s) failed\n",__FUNCTION__,key);
+
+	    dct_close_module(&handle);
+	    dct_unregister_module(key);
+    }
 	else
 	{
 	    ret = dct_open_module2(&handle, key);
@@ -324,7 +341,7 @@ bool checkExist(const char *domain, const char *key)
 	uint8_t found = 0;
 	uint8_t *str = malloc(sizeof(uint8_t) * VARIABLE_VALUE_SIZE-4);
 
-	if ( (strcmp(domain,"chip-factory")==0) || (strcmp(domain,"chip-config")==0) || (strcmp(domain,"chip-counters")==0) || (strncmp(domain,"acl",3)==0))
+	if ( (strcmp(domain,"chip-factory")==0) || (strcmp(domain,"chip-config")==0) || (strcmp(domain,"chip-counters")==0) || (strncmp(domain,"acl",3)==0) || (strcmp(domain, "g/fsc")==0))
 	{
 		ret = dct_open_module(&handle, domain);
 		if (ret != DCT_SUCCESS){
@@ -444,7 +461,7 @@ exit:
     return (DCT_SUCCESS == ret ? 1 : 0);
 }
 
-int32_t getPref_bool_new(const char *domain, const char *key, uint32_t *val)
+int32_t getPref_bool_new(const char *domain, const char *key, uint8_t *val)
 {
     dct_handle_t handle;
     int32_t ret = -1;
@@ -457,7 +474,7 @@ int32_t getPref_bool_new(const char *domain, const char *key, uint32_t *val)
         goto exit;
     }
 
-    len = sizeof(uint32_t);
+    len = sizeof(uint8_t);
     ret = dct_get_variable_new(&handle, key, (char *)val, &len);
     if (DCT_SUCCESS != ret)
         printf("%s : dct_get_variable(%s) failed\n",__FUNCTION__,key);

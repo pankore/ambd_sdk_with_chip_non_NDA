@@ -24,7 +24,7 @@ int32_t clearPref(const char * ns);
 int32_t deleteKey(const char *domain, const char *key);
 BOOL checkExist(const char *domain, const char *key);
 int32_t setPref_new(const char *domain, const char *key, uint8_t *value, size_t byteCount);
-int32_t getPref_bool_new(const char *domain, const char *key, uint32_t *val);
+int32_t getPref_bool_new(const char *domain, const char *key, uint8_t *val);
 int32_t getPref_u32_new(const char *domain, const char *key, uint32_t *val);
 int32_t getPref_u64_new(const char *domain, const char *key, uint64_t *val);
 int32_t getPref_str_new(const char *domain, const char *key, char * buf, size_t bufSize, size_t *outLen);
