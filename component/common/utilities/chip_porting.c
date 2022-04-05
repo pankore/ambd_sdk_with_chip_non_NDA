@@ -235,12 +235,8 @@ const char* domainAllocator(const char *domain)
         return matter_domain[2];
 
     // chip-fabrics
-    if(domain[0] == 'f' || (strcmp(domain, "g/fidx") == 0) || (strcmp(domain, "g/fsc") == 0))
+    if(domain[0] == 'f')
     {
-        // store FabricTable, FailSafeContextKey and FabricIndexInfo in chip-others
-        if((strcmp(domain, "f/t") == 0) || (strcmp(domain, "g/fidx") == 0) || (strcmp(domain, "g/fsc") == 0))
-            return matter_domain[14];
-
         switch(atoi(&domain[2]))
         {
             case 1:
@@ -261,24 +257,25 @@ const char* domainAllocator(const char *domain)
         }
     }
     // chip-acl
-    if(strncmp(domain, "acl", 3) == 0)
+    if(strncmp(domain, "g/acl", 5) == 0)
         return matter_domain[8];
     // chip-groupmsgcounters
-    if((strcmp(domain, "gdc") == 0) || (strcmp(domain, "gcc") == 0))
+    if((strcmp(domain, "g/gdc") == 0) || (strcmp(domain, "g/gcc") == 0))
         return matter_domain[9];
     // chip-attributes
-    if(strncmp(domain, "a", 1) == 0)
+    if(strncmp(domain, "g/a", 3) == 0)
         return matter_domain[10];
     // chip-bindingtable
-    if(strcmp(domain, "bt") == 0)
+    if(strncmp(domain, "g/bt", 4) == 0)
         return matter_domain[11];
     // chip-ota
-    if(strncmp(domain, "o", 1) == 0)
+    if(strncmp(domain, "g/o", 3) == 0)
         return matter_domain[12];
     // chip-dns
     if(strcmp(domain, "g/d/edt") == 0)
         return matter_domain[13];
     // chip-others
+    // store FabricTable, FailSafeContextKey, GroupFabricList and FabricIndexInfo in chip-others
     return matter_domain[14];
 }
 
