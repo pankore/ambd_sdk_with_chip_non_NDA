@@ -118,7 +118,7 @@
 #define MATTER_KVS_BEGIN_ADDR2	        0x003B6000  // 20K (4*5)
 #define MATTER_KVS_MODULE_NUM2          30          // max number of module
 #define MATTER_KVS_VARIABLE_NAME_SIZE2  32          // max size of the variable name
-#define MATTER_KVS_VARIABLE_VALUE_SIZE2 1860 + 4    // max size of the variable value
+#define MATTER_KVS_VARIABLE_VALUE_SIZE2 400 + 4    // max size of the variable value
                                                     // max value number in moudle = 4024 / (32 + 1860+4) = 2
 
 /**
