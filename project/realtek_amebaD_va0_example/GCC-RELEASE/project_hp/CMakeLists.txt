@@ -7,6 +7,7 @@ set (prj_root "${CMAKE_CURRENT_SOURCE_DIR}/../..")
 # root of SDK
 set (sdk_root "${CMAKE_CURRENT_SOURCE_DIR}/../../../..")
 set (ameba_matter_root $ENV{AMEBA_MATTER})
+set (matter_platform_8721d $ENV{MATTER_PLATFORM_8721D})
 set (matter_output_path $ENV{MATTER_OUTPUT})
 set (matter_example_path $ENV{MATTER_EXAMPLE_PATH})
 set (matter_config_path $ENV{MATTER_CONFIG_PATH})

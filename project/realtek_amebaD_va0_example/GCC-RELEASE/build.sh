@@ -32,6 +32,9 @@ else
    echo "Toolchain $(ls -A $CMAKE_ROOT/toolchain/linux) is found at $CMAKE_ROOT/toolchain/linux."
 fi
 
+# AMEBAD build
+export MATTER_PLATFORM_8721D=1
+
 ## AMEBA_MATTER to be exported or manually keyed in.
 if [ ! -z ${AMEBA_MATTER} ]; then
     echo "Matter SDK is located at: ${AMEBA_MATTER}"
