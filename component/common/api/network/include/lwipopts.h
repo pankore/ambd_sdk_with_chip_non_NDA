@@ -70,7 +70,7 @@ a lot of data that needs to be copied, this should be set high. */
 #define MEMP_NUM_PBUF           100
 /* MEMP_NUM_UDP_PCB: the number of UDP protocol control blocks. One
    per active UDP "connection". */
-#define MEMP_NUM_UDP_PCB        6
+#define MEMP_NUM_UDP_PCB        10 
 /* MEMP_NUM_TCP_PCB: the number of simulatenously active TCP
    connections. */
 #define MEMP_NUM_TCP_PCB        10
