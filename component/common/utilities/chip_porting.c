@@ -198,7 +198,7 @@ int _vTaskDelay( const TickType_t xTicksToDelay )
 #define ENABLE_BACKUP           MATTER_KVS_ENABLE_BACKUP
 #define ENABLE_WEAR_LEVELING    MATTER_KVS_ENABLE_WEAR_LEVELING
 
-const char *matter_domain[15] =
+const char *matter_domain[17] =
 {
     "chip-factory",
     "chip-config",
@@ -213,7 +213,9 @@ const char *matter_domain[15] =
     "chip-attributes",
     "chip-bindingtable",
     "chip-ota",
-    "chip-dns",
+    "chip-failsafe",
+    "chip-sessionresumptionindex",
+    "chip-sessionresumption",
     "chip-others"
 };
 
@@ -271,12 +273,34 @@ const char* domainAllocator(const char *domain)
     // chip-ota
     if(strncmp(domain, "g/o", 3) == 0)
         return matter_domain[12];
-    // chip-dns
-    if(strcmp(domain, "g/d/edt") == 0)
+    // chip-failsafe
+    if(strncmp(domain, "g/fs", 4) == 0)
         return matter_domain[13];
+    // chip-sessionresumptionindex
+    if(strcmp(domain, "g/sri") == 0)
+        return matter_domain[14];
+    // chip-sessionresumption
+    if(strncmp(domain, "g/s", 3) == 0)
+        return matter_domain[15];
     // chip-others
     // store FabricTable, FailSafeContextKey, GroupFabricList and FabricIndexInfo in chip-others
-    return matter_domain[14];
+    return matter_domain[16];
+}
+
+/*
+ * Assigns DCT region to an allocated domain
+ * retval:
+ *      1 => DCT1 region
+ *      2 => DCT2 region
+ */
+uint8_t allocateRegion(const char *allocatedDomain)
+{
+    if (strncmp(allocatedDomain, "chip-fabric", 11) == 0)
+        return 2;
+    if (strcmp(allocatedDomain, "chip-sessionresumptionindex") == 0)
+        return 2;
+    else
+        return 1;
 }
 
 int32_t initPref(void)
@@ -357,9 +381,9 @@ int32_t deleteKey(const char *domain, const char *key)
     dct_handle_t handle;
     int32_t ret = -1;
     const char *allocatedDomain = domainAllocator(domain);
+    uint8_t allocatedRegion = allocateRegion(allocatedDomain);
 
-	//if ( (strcmp(domain,"chip-factory")==0) || (strcmp(domain,"chip-config")==0) || (strcmp(domain,"chip-counters")==0) )
-    if (strncmp(allocatedDomain, "chip-fabric", 11) != 0)
+    if (allocatedRegion == 1)
 	{
 	    ret = dct_open_module(&handle, allocatedDomain);
 	    if (DCT_SUCCESS != ret)
@@ -406,9 +430,9 @@ bool checkExist(const char *domain, const char *key)
 	uint8_t found = 0;
 	uint8_t *str = malloc(sizeof(uint8_t) * VARIABLE_VALUE_SIZE-4);
     const char *allocatedDomain = domainAllocator(domain);
+    uint8_t allocatedRegion = allocateRegion(allocatedDomain);
 
-	//if ( (strcmp(domain,"chip-factory")==0) || (strcmp(domain,"chip-config")==0) || (strcmp(domain,"chip-counters")==0) || (strncmp(domain,"acl",3)==0) || (strcmp(domain, "g/fsc")==0))
-    if (strncmp(allocatedDomain, "chip-fabric", 11) != 0)
+    if (allocatedRegion == 1)
 	{
 		ret = dct_open_module(&handle, allocatedDomain);
 		if (ret != DCT_SUCCESS){
@@ -473,9 +497,9 @@ int32_t setPref_new(const char *domain, const char *key, uint8_t *value, size_t 
     int32_t ret = -1;
     uint32_t prefSize;
     const char *allocatedDomain = domainAllocator(domain);
+    uint8_t allocatedRegion = allocateRegion(allocatedDomain);
 
-	//if(byteCount < 64 )
-    if (strncmp(allocatedDomain, "chip-fabric", 11) != 0)
+    if (allocatedRegion == 1)
     {
 	    ret = registerPref(allocatedDomain);
 	    if (DCT_SUCCESS != ret)
@@ -530,8 +554,9 @@ int32_t getPref_bool_new(const char *domain, const char *key, uint8_t *val)
     int32_t ret = -1;
     uint16_t len = 0;
     const char *allocatedDomain = domainAllocator(domain);
+    uint8_t allocatedRegion = allocateRegion(allocatedDomain);
 
-    if (strncmp(allocatedDomain, "chip-fabric", 11) != 0)
+    if (allocatedRegion == 1)
     {
         ret = dct_open_module(&handle, allocatedDomain);
         if (DCT_SUCCESS != ret)
@@ -574,8 +599,9 @@ int32_t getPref_u32_new(const char *domain, const char *key, uint32_t *val)
     int32_t ret = -1;
     uint16_t len = 0;
     const char *allocatedDomain = domainAllocator(domain);
+    uint8_t allocatedRegion = allocateRegion(allocatedDomain);
 
-    if (strncmp(allocatedDomain, "chip-fabric", 11) != 0)
+    if (allocatedRegion == 1)
     {
         ret = dct_open_module(&handle, allocatedDomain);
         if (DCT_SUCCESS != ret)
@@ -617,8 +643,9 @@ int32_t getPref_u64_new(const char *domain, const char *key, uint64_t *val)
     int32_t ret = -1;
     uint16_t len = 0;
     const char *allocatedDomain = domainAllocator(domain);
+    uint8_t allocatedRegion = allocateRegion(allocatedDomain);
 
-    if (strncmp(allocatedDomain, "chip-fabric", 11) != 0)
+    if (allocatedRegion == 1)
     {
         ret = dct_open_module(&handle, allocatedDomain);
         if (DCT_SUCCESS != ret)
@@ -661,9 +688,9 @@ int32_t getPref_str_new(const char *domain, const char *key, char * buf, size_t 
     int32_t ret = -1;
     uint16_t _bufSize = bufSize;
     const char *allocatedDomain = domainAllocator(domain);
+    uint8_t allocatedRegion = allocateRegion(allocatedDomain);
 
-	//if(bufSize < 64 || (strncmp(domain,"acl",3)==0))
-    if (strncmp(allocatedDomain, "chip-fabric", 11) != 0)
+    if (allocatedRegion == 1)
 	{
 	    ret = dct_open_module(&handle, allocatedDomain);
 	    if (DCT_SUCCESS != ret)
@@ -708,9 +735,9 @@ int32_t getPref_bin_new(const char *domain, const char *key, uint8_t * buf, size
     int32_t ret = -1;
     uint16_t _bufSize = bufSize;
     const char *allocatedDomain = domainAllocator(domain);
+    uint8_t allocatedRegion = allocateRegion(allocatedDomain);
 
-	//if(bufSize < 64 || (strncmp(domain,"acl",3)==0))
-    if (strncmp(allocatedDomain, "chip-fabric", 11) != 0)
+    if (allocatedRegion == 1)
 	{
 	    ret = dct_open_module(&handle, allocatedDomain);
 	    if (DCT_SUCCESS != ret)
