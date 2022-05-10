@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.6)
 project(make)
 
 set(make_dir ${CMAKE_CURRENT_SOURCE_DIR}/make)
+set(matter_third_party_dir ${ameba_matter_root}/third_party)
 
 if(${CONFIG_BT_EN})
     include(${make_dir}/rtl_bluetooth/rtl_bluetooth.cmake)
@@ -18,7 +19,7 @@ endif()
     include(${make_dir}/os/os.cmake)
 
 if(${CONFIG_MBED_TLS_ENABLED})
-    include(${make_dir}/mbedtls/mbedtls.cmake)
+    include(${matter_third_party_dir}/ameba/mbedtls.cmake)
 endif()
 
 if(${CONFIG_LINKKIT_AWSS})
