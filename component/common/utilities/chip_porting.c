@@ -198,7 +198,7 @@ int _vTaskDelay( const TickType_t xTicksToDelay )
 #define ENABLE_BACKUP           MATTER_KVS_ENABLE_BACKUP
 #define ENABLE_WEAR_LEVELING    MATTER_KVS_ENABLE_WEAR_LEVELING
 
-const char *matter_domain[17] =
+const char *matter_domain[18] =
 {
     "chip-factory",
     "chip-config",
@@ -216,6 +216,7 @@ const char *matter_domain[17] =
     "chip-failsafe",
     "chip-sessionresumptionindex",
     "chip-sessionresumption",
+    "chip-deviceinfoprovider",
     "chip-others"
 };
 
@@ -236,6 +237,9 @@ const char* domainAllocator(const char *domain)
     if(strcmp(domain, "chip-counters") == 0)
         return matter_domain[2];
 
+    // chip-acl
+    if(strncmp(domain+4, "ac", 2) == 0)
+        return matter_domain[8];
     // chip-fabrics
     if(domain[0] == 'f')
     {
@@ -258,9 +262,6 @@ const char* domainAllocator(const char *domain)
                 break;
         }
     }
-    // chip-acl
-    if(strncmp(domain, "g/acl", 5) == 0)
-        return matter_domain[8];
     // chip-groupmsgcounters
     if((strcmp(domain, "g/gdc") == 0) || (strcmp(domain, "g/gcc") == 0))
         return matter_domain[9];
@@ -282,9 +283,12 @@ const char* domainAllocator(const char *domain)
     // chip-sessionresumption
     if(strncmp(domain, "g/s", 3) == 0)
         return matter_domain[15];
+    // chip-deviceinfoprovider
+    if(strncmp(domain, "g/userlbl", 9) == 0)
+        return matter_domain[16];
     // chip-others
-    // store FabricTable, FailSafeContextKey, GroupFabricList and FabricIndexInfo in chip-others
-    return matter_domain[16];
+    // store FabricTable, FailSafeContextKey, GroupFabricList, FabricIndexInfo, IMEventNumber in chip-others
+    return matter_domain[17];
 }
 
 /*
