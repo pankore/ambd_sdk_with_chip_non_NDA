@@ -86,6 +86,10 @@ if(MATTER_OTA_PROVIDER_APP)
     ADD_DEFINITIONS(-DMATTER_OTA_PROVIDER_APP=1)
 endif()
 
+if(MATTER_CHEF_APP)
+    ADD_DEFINITIONS(-DMATTER_CHEF_APP=1)
+endif()
+
 target_compile_definitions(
 	${app_ntz}
 	PRIVATE

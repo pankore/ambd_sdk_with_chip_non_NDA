@@ -23,6 +23,7 @@ option(MATTER_LIGHTING_APP "Build Lighting-App" OFF)
 option(MATTER_PIGWEED_APP "Build Pigweed-App" OFF)
 option(MATTER_OTA_REQUESTOR_APP "Build OTA-Requestor-App" OFF)
 option(MATTER_OTA_PROVIDER_APP "Build OTA-Provider-App" OFF)
+option(MATTER_CHEF_APP "Build OTA-Chef-App" OFF)
 
 message(STATUS "Build TZ ${BUILD_TZ}")
 

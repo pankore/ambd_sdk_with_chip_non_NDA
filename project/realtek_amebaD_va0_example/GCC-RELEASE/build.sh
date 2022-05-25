@@ -64,6 +64,8 @@ elif [ $APP_SELECT == "ota-provider-app" ]; then
 elif [ $APP_SELECT == "ota-requestor-app" ]; then
     export MATTER_EXAMPLE_PATH=${AMEBA_MATTER}/examples/ota-requestor-app/ameba
     export MATTER_ENABLE_OTA_REQUESTOR=1
+elif [ $APP_SELECT == "chef-app" ]; then
+    export MATTER_EXAMPLE_PATH=${AMEBA_MATTER}/examples/chef/ameba
 else
     export MATTER_EXAMPLE_PATH=${AMEBA_MATTER}/examples/all-clusters-app/ameba
     export MATTER_ENABLE_OTA_REQUESTOR=1
@@ -89,6 +91,8 @@ function exe_cmake()
 	    exe_cmake_otar
 	elif [ $APP_SELECT == "ota-provider-app" ]; then
 	    exe_cmake_otap
+	elif [ $APP_SELECT == "chef-app" ]; then
+	    exe_cmake_chef
 	else
 	    exe_cmake_all
 	fi
@@ -122,6 +126,12 @@ function exe_cmake_otap()
 {
 	echo "Build OTA-P"
 	cmake $CMAKE_ROOT -G"$BUILD_METHOD" -DCMAKE_TOOLCHAIN_FILE=$CMAKE_ROOT/toolchain.cmake -DMATTER_OTA_PROVIDER_APP=ON
+}
+
+function exe_cmake_chef()
+{
+	echo "Build chef"
+	cmake $CMAKE_ROOT -G"$BUILD_METHOD" -DCMAKE_TOOLCHAIN_FILE=$CMAKE_ROOT/toolchain.cmake -DMATTER_CHEF_APP=ON
 }
 
 ## Decide meta build method
