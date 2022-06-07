@@ -31,13 +31,15 @@ include(config.cmake)
 include(includepath.cmake)
 include(make/make.cmake)
 
+if(${build_env} STREQUAL LINUX)
 if(DEFINED ameba_matter_root)
 	include(${ameba_matter_root}/src/app/chip_data_model.cmake)
 	include(${matter_example_path}/chip_main.cmake)
-  include(${matter_config_path}/chip.cmake)
+    include(${matter_config_path}/chip.cmake)
 else()
     include(${prj_hp}/asdk/make/chip_main/chip_main.cmake)
     include(${prj_hp}/asdk/make/chip/chip.cmake)
+endif()
 endif()
 
 add_dependencies(chip_main chip-gn)
@@ -122,7 +124,12 @@ target_link_libraries(
 )
 
 set(TOOLCHAINDIR "${prj_root}/GCC-RELEASE/project_hp/toolchain")
+if(${build_env} STREQUAL CYGWIN)
+set(ASDK_TOOLCHAIN "${TOOLCHAINDIR}/linux/asdk-6.4.1/cygwin/newlib")
+else()
 set(ASDK_TOOLCHAIN "${TOOLCHAINDIR}/linux/asdk-10.3.0/linux/newlib")
+endif()
+
 target_link_options(
 	${app_ntz}
 	PUBLIC
@@ -165,10 +172,12 @@ foreach(_file ${app_ntz_sources})
 	)
 endforeach()
 
+if(${build_env} STREQUAL LINUX)
 add_custom_command(TARGET ${app_ntz} PRE_LINK
     COMMAND echo "COPY CHIP library ..."
     COMMAND cp -f ${CHIP_OUTPUT}/lib/libCHIP.a ${LIB_ROOT}
 )
+endif()
 
 add_custom_command(TARGET ${app_ntz} POST_BUILD
 

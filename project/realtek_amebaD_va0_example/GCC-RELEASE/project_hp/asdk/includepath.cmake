@@ -88,12 +88,18 @@ list (
 	#"${ameba_matter_root}/third_party/mbedtls/repo/include"
 	#"${ameba_matter_root}/third_party/mbedtls/repo/include/mbedtls"
 	#"${ameba_matter_root}/third_party/mbedtls/repo/library"
+if(${build_env} STREQUAL CYGWIN)
 	"${ameba_matter_root}/third_party/mbedtls/repo/include"
 	"${ameba_matter_root}/third_party/mbedtls/repo/include/mbedtls"
 	"${ameba_matter_root}/third_party/mbedtls/repo/library"
+else()
+    "${sdk_root}/component/common/network/ssl/mbedtls/include"
+    "${sdk_root}/component/common/network/ssl/mbedtls/include/mbedtls"
+    "${sdk_root}/component/common/network/ssl/mbedtls/library"
+endif()
 	"${sdk_root}/component/common/network/ssl/mbedtls-matter"
 
-#mbedtlc_sonfig
+#mbedtls_config
 	"${sdk_root}/component/common/network/ssl/mbedtls_ram_map/rom"
 	"${sdk_root}/component/common/application/amazon/amazon-freertos/lib/include/private"
 

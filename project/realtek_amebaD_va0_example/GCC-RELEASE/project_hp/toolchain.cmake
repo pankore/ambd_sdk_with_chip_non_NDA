@@ -4,13 +4,18 @@ set(CMAKE_SYSTEM_PROCESSOR arm)
 set(CMAKE_C_COMPILER_WORKS 1)
 set(CMAKE_CXX_COMPILER_WORKS 1)
 set(CMAKE_ASM_COMPILER_WORKS 1)
+set(build_env $ENV{BUILD_ENVIRONMENT})
 
 # root of realtek_amebapro2_v0_example
 set (prj_root "${CMAKE_CURRENT_SOURCE_DIR}")
 # root of SDK
 
 set(TOOLCHAINDIR "${prj_root}/toolchain")
+if(${build_env} STREQUAL CYGWIN)
+set(ASDK_TOOLCHAIN "${TOOLCHAINDIR}/cygwin/asdk-6.4.1/cygwin/newlib")
+else()
 set(ASDK_TOOLCHAIN "${TOOLCHAINDIR}/linux/asdk-10.3.0/linux/newlib")
+endif()
 set(TOOL_DIR "${ASDK_TOOLCHAIN}/bin")
 
 message(STATUS "show the toolchain path ${TOOL_DIR}")

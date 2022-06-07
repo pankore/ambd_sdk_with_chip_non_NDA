@@ -22,13 +22,32 @@ HP_IMAGE=$BUILD_FILE_DIR/project_hp/asdk/image
 
 ## Unzip toolchain
 cd $CMAKE_ROOT/toolchain
+
+## Building with Cygwin
+if [[ $(uname -s) == CYGWIN* ]];then
+export BUILD_ENVIRONMENT="CYGWIN"
+mkdir cygwin
+if [ -z "$(ls -A $CMAKE_ROOT/toolchain/cygwin)" ]; then
+    tar -jxvf asdk/asdk-6.4.1-cygwin-newlib-build-2778-i686.tar.bz2 -C cygwin/
+else
+    echo "Toolchain $(ls -A $CMAKE_ROOT/toolchain/cygwin) is found at $CMAKE_ROOT/toolchain/cygwin."
+fi
+
+elif [[ $(uname -s) == Linux* ]];then
+#Building with Linux
+export BUILD_ENVIRONMENT="LINUX"
 mkdir linux
 if [ -z "$(ls -A $CMAKE_ROOT/toolchain/linux)" ]; then
-   cat asdk/asdk-10.3.0-linux-newlib-build-3638-x86_64.tar.bz2.part* > asdk/asdk-10.3.0-linux-newlib-build-3638-x86_64.tar.bz2
+    cat asdk/asdk-10.3.0-linux-newlib-build-3638-x86_64.tar.bz2.part* > asdk/asdk-10.3.0-linux-newlib-build-3638-x86_64.tar.bz2
     tar -jxvf asdk/asdk-10.3.0-linux-newlib-build-3638-x86_64.tar.bz2 -C linux/
     rm asdk/asdk-10.3.0-linux-newlib-build-3638-x86_64.tar.bz2
 else
-   echo "Toolchain $(ls -A $CMAKE_ROOT/toolchain/linux) is found at $CMAKE_ROOT/toolchain/linux."
+    echo "Toolchain $(ls -A $CMAKE_ROOT/toolchain/linux) is found at $CMAKE_ROOT/toolchain/linux."
+fi
+
+else
+    echo "Build environment not supported, please use only Linux or Cygwin"
+    exit
 fi
 
 # AMEBAD build

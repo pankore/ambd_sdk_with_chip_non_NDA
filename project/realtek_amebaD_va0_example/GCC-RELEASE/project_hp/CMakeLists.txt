@@ -7,6 +7,7 @@ set (prj_root "${CMAKE_CURRENT_SOURCE_DIR}/../..")
 # root of SDK
 set (sdk_root "${CMAKE_CURRENT_SOURCE_DIR}/../../../..")
 set (ameba_matter_root $ENV{AMEBA_MATTER})
+set (build_env $ENV{BUILD_ENVIRONMENT})
 set (matter_platform_8721d $ENV{MATTER_PLATFORM_8721D})
 set (matter_output_path $ENV{MATTER_OUTPUT})
 set (matter_example_path $ENV{MATTER_EXAMPLE_PATH})
@@ -26,6 +27,7 @@ option(MATTER_OTA_PROVIDER_APP "Build OTA-Provider-App" OFF)
 option(MATTER_CHEF_APP "Build OTA-Chef-App" OFF)
 
 message(STATUS "Build TZ ${BUILD_TZ}")
+message(STATUS "Building in ${build_env} environment")
 
 #add_subdirectory (bootloader)
 if(BUILD_TZ)

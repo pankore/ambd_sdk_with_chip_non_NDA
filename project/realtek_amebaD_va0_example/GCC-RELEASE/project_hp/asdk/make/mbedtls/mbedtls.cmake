@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.6)
 project(mbedtls)
 
 set(dir "${sdk_root}/component/common/network/ssl/mbedtls-2.4.0")
+set(dirlib "${sdk_root}/component/common/network/ssl/mbedtls/library")
 set(dir_rammap "${sdk_root}/component/common/network/ssl/ssl_ram_map")
 set(dir_mbedtlschip "${ameba_matter_root}/third_party/mbedtls/repo/library")
 set(dir2 "${sdk_root}/component/common/network/ssl/mbedtls-matter")
@@ -68,6 +69,94 @@ list(
     ${dir_rammap}/ssl_ram_map.c
 )
 endif()
+
+if(${build_env} STREQUAL CYGWIN)
+list(
+    APPEND ${list}
+    # CHIP mbedtls for cygwin build
+    ${dir2}/net_sockets.c
+    ${dirlib}/aes.c
+    ${dirlib}/aesni.c
+    ${dirlib}/arc4.c
+    ${dirlib}/aria.c
+    ${dirlib}/asn1parse.c
+    ${dirlib}/asn1write.c
+    ${dirlib}/base64.c
+    ${dirlib}/bignum.c
+    ${dirlib}/blowfish.c
+    ${dirlib}/camellia.c
+    ${dirlib}/ccm.c
+    ${dirlib}/certs.c
+    ${dirlib}/chacha20.c
+    ${dirlib}/chachapoly.c
+    ${dirlib}/cipher.c
+    ${dirlib}/cipher_wrap.c
+    ${dirlib}/cmac.c
+    ${dirlib}/constant_time.c
+    ${dirlib}/ctr_drbg.c
+    ${dirlib}/debug.c
+    ${dirlib}/des.c
+    ${dirlib}/dhm.c
+    ${dirlib}/ecdh.c
+    ${dirlib}/ecdsa.c
+    ${dirlib}/ecjpake.c
+    ${dirlib}/ecp.c
+    ${dirlib}/ecp_curves.c
+    ${dirlib}/entropy.c
+    ${dirlib}/entropy_poll.c
+    ${dirlib}/error.c
+    ${dirlib}/gcm.c
+    ${dirlib}/havege.c
+    ${dirlib}/hkdf.c
+    ${dirlib}/hmac_drbg.c
+    ${dirlib}/md2.c
+    ${dirlib}/md4.c
+    ${dirlib}/md5.c
+    ${dirlib}/md.c
+    ${dirlib}/memory_buffer_alloc.c
+    ${dirlib}/nist_kw.c
+    ${dirlib}/oid.c
+    ${dirlib}/padlock.c
+    ${dirlib}/pem.c
+    ${dirlib}/pk.c
+    ${dirlib}/pkcs11.c
+    ${dirlib}/pkcs12.c
+    ${dirlib}/pkcs5.c
+    ${dirlib}/pkparse.c
+    ${dirlib}/pk_wrap.c
+    ${dirlib}/pkwrite.c
+    ${dirlib}/platform.c
+    ${dirlib}/platform_util.c
+    ${dirlib}/poly1305.c
+    ${dirlib}/ripemd160.c
+    ${dirlib}/rsa.c
+    ${dirlib}/rsa_internal.c
+    ${dirlib}/sha1.c
+    ${dirlib}/sha256.c
+    ${dirlib}/sha512.c
+    ${dirlib}/ssl_cache.c
+    ${dirlib}/ssl_ciphersuites.c
+    ${dirlib}/ssl_cli.c
+    ${dirlib}/ssl_cookie.c
+    ${dirlib}/ssl_srv.c
+    ${dirlib}/ssl_ticket.c
+    ${dirlib}/ssl_tls.c
+    ${dirlib}/threading.c
+    ${dirlib}/timing.c
+    ${dirlib}/version.c
+    ${dirlib}/version_features.c
+    ${dirlib}/x509.c
+    ${dirlib}/x509_create.c
+    ${dirlib}/x509_crl.c
+    ${dirlib}/x509_crt.c
+    ${dirlib}/x509_csr.c
+    ${dirlib}/x509write_crt.c
+    ${dirlib}/x509write_csr.c
+    ${dirlib}/xtea.c
+    ${dir_rammap}/ssl_ram_map.c
+)
+
+else()
 
 list(
     APPEND ${list}
@@ -152,4 +241,4 @@ list(
     ${dir_mbedtlschip}/x509write_csr.c
     ${dir_mbedtlschip}/xtea.c
 )
-
+endif()
