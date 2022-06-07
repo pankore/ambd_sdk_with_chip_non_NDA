@@ -20,8 +20,7 @@ SDK_ROOT_DIR=$PWD/../../..
 OUTPUT_DIR=$2
 BOOT_DIR=$OUTPUT_DIR/asdk/bootloader
 IMAGE_DIR=$OUTPUT_DIR/asdk/image
-echo $BOOT_DIR
-echo $IMAGE_DIR
+rm -rf log* Image_All.bin*
 sudo ./AmebaD_ImageTool -set chip AmebaD
 sudo ./AmebaD_ImageTool -add device $1
 sudo ./AmebaD_ImageTool -set baudrate 1500000
