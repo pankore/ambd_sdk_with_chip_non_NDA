@@ -19,7 +19,11 @@ endif()
     include(${make_dir}/os/os.cmake)
 
 if(${CONFIG_MBED_TLS_ENABLED})
+if(${build_env} STREQUAL CYGWIN)
+    include(${make_dir}/mbedtls/mbedtls.cmake)
+else()
     include(${matter_third_party_dir}/ameba/mbedtls.cmake)
+endif()
 endif()
 
 if(${CONFIG_LINKKIT_AWSS})

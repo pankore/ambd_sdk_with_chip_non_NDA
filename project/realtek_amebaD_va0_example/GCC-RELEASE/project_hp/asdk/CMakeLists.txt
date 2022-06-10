@@ -42,7 +42,9 @@ else()
 endif()
 endif()
 
+if(${build_env} STREQUAL LINUX)
 add_dependencies(chip_main chip-gn)
+endif()
 
 #copy_ld_img2(ld/rlx8721d_img2_is.ld) copy_ld_img3
 set( ld_script ${prj_hp}/asdk/rlx8721d_test.ld )
