@@ -88,14 +88,14 @@ list (
 	#"${ameba_matter_root}/third_party/mbedtls/repo/include"
 	#"${ameba_matter_root}/third_party/mbedtls/repo/include/mbedtls"
 	#"${ameba_matter_root}/third_party/mbedtls/repo/library"
-if(${build_env} STREQUAL CYGWIN)
+if(${build_env} STREQUAL LINUX)
 	"${ameba_matter_root}/third_party/mbedtls/repo/include"
 	"${ameba_matter_root}/third_party/mbedtls/repo/include/mbedtls"
 	"${ameba_matter_root}/third_party/mbedtls/repo/library"
 else()
-    "${sdk_root}/component/common/network/ssl/mbedtls/include"
-    "${sdk_root}/component/common/network/ssl/mbedtls/include/mbedtls"
-    "${sdk_root}/component/common/network/ssl/mbedtls/library"
+    "${sdk_root}/component/common/network/ssl/mbedtls-2.28/include"
+    "${sdk_root}/component/common/network/ssl/mbedtls-2.28/include/mbedtls"
+    "${sdk_root}/component/common/network/ssl/mbedtls-2.28/library"
 endif()
 	"${sdk_root}/component/common/network/ssl/mbedtls-matter"
 
