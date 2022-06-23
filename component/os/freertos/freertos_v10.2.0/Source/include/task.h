@@ -1468,8 +1468,8 @@ configSTACK_DEPTH_TYPE uxTaskGetStackHighWaterMark2( TaskHandle_t xTask ) PRIVIL
  * uxTaskGetStackSize
  * uxTaskGetFreeStackSize
  */
-uint32_t uxTaskGetStackSize( TaskHandle_t xTask );
-uint32_t uxTaskGetFreeStackSize( TaskHandle_t xTask );
+uint32_t uxTaskGetStackSize( TaskHandle_t xTask ) PRIVILEGED_FUNCTION;
+uint32_t uxTaskGetFreeStackSize( TaskHandle_t xTask ) PRIVILEGED_FUNCTION;
 
 
 /* When using trace macros it is sometimes necessary to include task.h before
