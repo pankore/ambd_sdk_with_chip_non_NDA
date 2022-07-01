@@ -27,6 +27,33 @@ set(utility_dir "${prj_hp}/asdk/gnu_utility")
 set(prepend_tool "${utility_dir}/prepend_header.sh")
 set(pad_tool "${utility_dir}/pad.sh")
 
+if(MATTER_ALL_CLUSTERS_APP)
+    ADD_DEFINITIONS(-DMATTER_ALL_CLUSTERS_APP=1)
+    ADD_DEFINITIONS(-DMATTER_OTA_REQUESTOR_APP=1)
+    if(matter_enable_rpc)
+        set (matter_enable_shell 0)
+    else()
+        set (matter_enable_shell 1)
+    endif(matter_enable_rpc)
+endif(MATTER_ALL_CLUSTERS_APP)
+
+if(MATTER_LIGHTING_APP)
+    ADD_DEFINITIONS(-DMATTER_LIGHTING_APP=1)
+    ADD_DEFINITIONS(-DMATTER_OTA_REQUESTOR_APP=1)
+endif()
+
+if(MATTER_OTA_REQUESTOR_APP)
+    ADD_DEFINITIONS(-DMATTER_OTA_REQUESTOR_APP=1)
+endif()
+
+if(MATTER_OTA_PROVIDER_APP)
+    ADD_DEFINITIONS(-DMATTER_OTA_PROVIDER_APP=1)
+endif()
+
+if(MATTER_CHEF_APP)
+    ADD_DEFINITIONS(-DMATTER_CHEF_APP=1)
+endif()
+
 include(config.cmake)
 include(includepath.cmake)
 include(make/make.cmake)
@@ -67,28 +94,6 @@ list(
 	MBEDTLS_CONFIG_FILE=<mbedtls_config.h>
 	LWIP_IPV6_ROUTE_TABLE_SUPPORT=1
 )
-
-if(MATTER_ALL_CLUSTERS_APP)
-    ADD_DEFINITIONS(-DMATTER_ALL_CLUSTERS_APP=1)
-    ADD_DEFINITIONS(-DMATTER_OTA_REQUESTOR_APP=1)
-endif()
-
-if(MATTER_LIGHTING_APP)
-    ADD_DEFINITIONS(-DMATTER_LIGHTING_APP=1)
-    ADD_DEFINITIONS(-DMATTER_OTA_REQUESTOR_APP=1)
-endif()
-
-if(MATTER_OTA_REQUESTOR_APP)
-    ADD_DEFINITIONS(-DMATTER_OTA_REQUESTOR_APP=1)
-endif()
-
-if(MATTER_OTA_PROVIDER_APP)
-    ADD_DEFINITIONS(-DMATTER_OTA_PROVIDER_APP=1)
-endif()
-
-if(MATTER_CHEF_APP)
-    ADD_DEFINITIONS(-DMATTER_CHEF_APP=1)
-endif()
 
 target_compile_definitions(
 	${app_ntz}

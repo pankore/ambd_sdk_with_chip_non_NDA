@@ -15,6 +15,16 @@ while getopts :gr opt; do
 done
 shift $(( OPTIND - 1 ))
 
+# If RPC is not enabled, then enable Matter Shell, Vice Versa
+if [[ -z "${MATTER_ENABLE_RPC}" ]]; then
+    export MATTER_ENABLE_RPC=0
+    echo "MATTER RPC DISABLED"
+    echo "MATTER SHELL ENABLED"
+else
+    echo "MATTER RPC ENABLED"
+    echo "MATTER SHELL DISABLED"
+fi
+
 BUILD_FILE_DIR=`test -d ${0%/*} && cd ${0%/*}; pwd`
 CMAKE_ROOT=$BUILD_FILE_DIR/project_hp
 LP_IMAGE=$BUILD_FILE_DIR/project_lp/asdk/image
