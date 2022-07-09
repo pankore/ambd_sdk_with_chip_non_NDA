@@ -107,40 +107,43 @@ function exe_cmake()
 	fi
 }
 
+# -DCMAKE_EXPORT_COMPILE_COMMANDS=1 will generate a compile_commands.json file under the output directory
+# To use LSP, copy this compile_commands.json file to the parent directory of both
+# ambd_sdk_with_chip_non_NDA and connectedhomeip
 function exe_cmake_all()
 {
 	echo "Build all"
-	cmake $CMAKE_ROOT -G"$BUILD_METHOD" -DCMAKE_TOOLCHAIN_FILE=$CMAKE_ROOT/toolchain.cmake -DMATTER_ALL_CLUSTERS_APP=ON
+	cmake $CMAKE_ROOT -G"$BUILD_METHOD" -DCMAKE_TOOLCHAIN_FILE=$CMAKE_ROOT/toolchain.cmake -DMATTER_ALL_CLUSTERS_APP=ON -DCMAKE_EXPORT_COMPILE_COMMANDS=1
 }
 
 function exe_cmake_light()
 {
 	echo "Build light"
-	cmake $CMAKE_ROOT -G"$BUILD_METHOD" -DCMAKE_TOOLCHAIN_FILE=$CMAKE_ROOT/toolchain.cmake -DMATTER_LIGHTING_APP=ON
+	cmake $CMAKE_ROOT -G"$BUILD_METHOD" -DCMAKE_TOOLCHAIN_FILE=$CMAKE_ROOT/toolchain.cmake -DMATTER_LIGHTING_APP=ON -DCMAKE_EXPORT_COMPILE_COMMANDS=1
 }
 
 function exe_cmake_pigweed()
 {
 	echo "Build pigweed"
-	cmake $CMAKE_ROOT -G"$BUILD_METHOD" -DCMAKE_TOOLCHAIN_FILE=$CMAKE_ROOT/toolchain.cmake -DMATTER_PIGWEED_APP=ON
+	cmake $CMAKE_ROOT -G"$BUILD_METHOD" -DCMAKE_TOOLCHAIN_FILE=$CMAKE_ROOT/toolchain.cmake -DMATTER_PIGWEED_APP=ON -DCMAKE_EXPORT_COMPILE_COMMANDS=1
 }
 
 function exe_cmake_otar()
 {
 	echo "Build OTA-R"
-	cmake $CMAKE_ROOT -G"$BUILD_METHOD" -DCMAKE_TOOLCHAIN_FILE=$CMAKE_ROOT/toolchain.cmake -DMATTER_OTA_REQUESTOR_APP=ON
+	cmake $CMAKE_ROOT -G"$BUILD_METHOD" -DCMAKE_TOOLCHAIN_FILE=$CMAKE_ROOT/toolchain.cmake -DMATTER_OTA_REQUESTOR_APP=ON -DCMAKE_EXPORT_COMPILE_COMMANDS=1
 }
 
 function exe_cmake_otap()
 {
 	echo "Build OTA-P"
-	cmake $CMAKE_ROOT -G"$BUILD_METHOD" -DCMAKE_TOOLCHAIN_FILE=$CMAKE_ROOT/toolchain.cmake -DMATTER_OTA_PROVIDER_APP=ON
+	cmake $CMAKE_ROOT -G"$BUILD_METHOD" -DCMAKE_TOOLCHAIN_FILE=$CMAKE_ROOT/toolchain.cmake -DMATTER_OTA_PROVIDER_APP=ON -DCMAKE_EXPORT_COMPILE_COMMANDS=1
 }
 
 function exe_cmake_chef()
 {
 	echo "Build chef"
-	cmake $CMAKE_ROOT -G"$BUILD_METHOD" -DCMAKE_TOOLCHAIN_FILE=$CMAKE_ROOT/toolchain.cmake -DMATTER_CHEF_APP=ON
+	cmake $CMAKE_ROOT -G"$BUILD_METHOD" -DCMAKE_TOOLCHAIN_FILE=$CMAKE_ROOT/toolchain.cmake -DMATTER_CHEF_APP=ON -DCMAKE_EXPORT_COMPILE_COMMANDS=1
 }
 
 ## Decide meta build method
