@@ -5,6 +5,7 @@
 #       -g: Generate MATTER_OTA_ALL.bin
 #       -r: Enable RPC
 
+## Build options
 while getopts :gr opt; do
     case $opt in
         g) export MATTER_GENERATE_OTA_IMAGE=1 ;;
@@ -24,6 +25,9 @@ else
     echo "MATTER RPC ENABLED"
     echo "MATTER SHELL DISABLED"
 fi
+
+ENABLE_PERSISTENTSTORAGE_AUDIT=0
+export MATTER_ENABLE_PERSISTENTSTORAGE_AUDIT=$ENABLE_PERSISTENTSTORAGE_AUDIT
 
 BUILD_FILE_DIR=`test -d ${0%/*} && cd ${0%/*}; pwd`
 CMAKE_ROOT=$BUILD_FILE_DIR/project_hp
