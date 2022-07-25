@@ -77,6 +77,9 @@ elif [ $APP_SELECT == "ota-provider-app" ]; then
 elif [ $APP_SELECT == "ota-requestor-app" ]; then
     export MATTER_EXAMPLE_PATH=${AMEBA_MATTER}/examples/ota-requestor-app/ameba
     export MATTER_ENABLE_OTA_REQUESTOR=1
+elif [ $APP_SELECT == "light-switch-app" ]; then
+    export MATTER_EXAMPLE_PATH=${AMEBA_MATTER}/examples/light-switch-app/ameba
+    export MATTER_ENABLE_OTA_REQUESTOR=1
 elif [ $APP_SELECT == "chef-app" ]; then
     export MATTER_EXAMPLE_PATH=${AMEBA_MATTER}/examples/chef/ameba
 else
@@ -104,6 +107,8 @@ function exe_cmake()
 	    exe_cmake_otar
 	elif [ $APP_SELECT == "ota-provider-app" ]; then
 	    exe_cmake_otap
+	elif [ $APP_SELECT == "light-switch-app" ]; then
+	    exe_cmake_switch
 	elif [ $APP_SELECT == "chef-app" ]; then
 	    exe_cmake_chef
 	else
@@ -142,6 +147,12 @@ function exe_cmake_otap()
 {
 	echo "Build OTA-P"
 	cmake $CMAKE_ROOT -G"$BUILD_METHOD" -DCMAKE_TOOLCHAIN_FILE=$CMAKE_ROOT/toolchain.cmake -DMATTER_OTA_PROVIDER_APP=ON -DCMAKE_EXPORT_COMPILE_COMMANDS=1
+}
+
+function exe_cmake_switch()
+{
+	echo "Build switch"
+	cmake $CMAKE_ROOT -G"$BUILD_METHOD" -DCMAKE_TOOLCHAIN_FILE=$CMAKE_ROOT/toolchain.cmake -DMATTER_LIGHT_SWITCH_APP=ON -DCMAKE_EXPORT_COMPILE_COMMANDS=1
 }
 
 function exe_cmake_chef()
