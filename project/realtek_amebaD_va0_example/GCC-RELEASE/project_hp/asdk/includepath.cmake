@@ -68,6 +68,7 @@ list (
 	"${sdk_root}/component/common/network/lwip/lwip_v2.1.2/src/include/netif"
 	"${sdk_root}/component/common/network/lwip/lwip_v2.1.2/port/realtek"
 	"${sdk_root}/component/common/network/lwip/lwip_v2.1.2/port/realtek/freertos"
+	"${sdk_root}/component/common/network/lwip/lwip_v2.1.2/port/realtek/include"
 	"${sdk_root}/component/common/api"
 	"${sdk_root}/component/common/api/at_cmd"
 	"${sdk_root}/component/common/api/wifi/rtw_wpa_supplicant/src"
