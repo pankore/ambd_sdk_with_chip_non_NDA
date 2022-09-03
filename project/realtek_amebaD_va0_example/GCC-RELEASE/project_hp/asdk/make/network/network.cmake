@@ -23,6 +23,7 @@ list(
     ${dir_lwip}/port/realtek/freertos/br_rpt_handle.c
     ${dir_lwip}/port/realtek/freertos/bridgeif.c
     ${dir_lwip}/port/realtek/freertos/bridgeif_fdb.c
+    ${dir_lwip}/port/realtek/hooks/lwip_default_hooks.c
     ${dir_lwip}/src/core/timeouts.c
     ${dir_lwip}/src/core/raw.c
     ${dir_lwip}/src/core/mem.c
