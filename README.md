@@ -105,7 +105,7 @@ In order to send commands to a device, it must be commissioned with the client. 
 
 ### Command for onoff cluster
 
-Use PA_20 as output, connect a LED to this pin and GND.
+Use PB_5 as output, connect a LED to this pin and GND.
 
 * Run CHIP-TOOL on-off cluster command `./chip-tool onoff on 12344321 1`
 
