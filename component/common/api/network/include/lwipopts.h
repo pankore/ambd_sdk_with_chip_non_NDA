@@ -417,6 +417,8 @@ Certain platform allows computing and verifying the IP, UDP, TCP and ICMP checks
 #define LWIP_IPV6_DHCP6                 1
 #undef  MEMP_NUM_SYS_TIMEOUT
 #define MEMP_NUM_SYS_TIMEOUT            13
+#undef  MEMP_NUM_MLD6_GROUP
+#define MEMP_NUM_MLD6_GROUP             6
 #endif
 
 /*CONFIG_LIBCOAP_ON is defined to 1 in the lib_coap project options preprocessor defined symbol
