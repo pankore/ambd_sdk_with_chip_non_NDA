@@ -13,6 +13,8 @@
 #include <wifi_conf.h>
 #include "chip_porting.h"
 
+#include "mbedtls/aes.h"
+
 #define MICROSECONDS_PER_SECOND    ( 1000000LL )                                   /**< Microseconds per second. */
 #define NANOSECONDS_PER_SECOND     ( 1000000000LL )                                /**< Nanoseconds per second. */
 #define NANOSECONDS_PER_TICK       ( NANOSECONDS_PER_SECOND / configTICK_RATE_HZ ) /**< Nanoseconds per FreeRTOS tick. */
@@ -197,6 +199,37 @@ int _vTaskDelay( const TickType_t xTicksToDelay )
 
 #define ENABLE_BACKUP           MATTER_KVS_ENABLE_BACKUP
 #define ENABLE_WEAR_LEVELING    MATTER_KVS_ENABLE_WEAR_LEVELING
+#define ENABLE_DCT_ENCRYPTION   MATTER_KVS_ENABLE_ENCRYPTION // replace with macro from platform_opts or something
+
+#if ENABLE_DCT_ENCRYPTION
+#if defined(MBEDTLS_CIPHER_MODE_CTR)
+    mbedtls_aes_context aes;
+
+    // key length 32 bytes for 256 bit encrypting, it can be 16 or 24 bytes for 128 and 192 bits encrypting mode
+    unsigned char key[] = {0xff, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0xff, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f};
+
+    int dct_encrypt(unsigned char* input_to_encrypt, int input_len, unsigned char* encrypt_output)
+    {
+        size_t nc_off = 0;
+        unsigned char nonce_counter[16] = {0};
+        unsigned char stream_block[16] = {0};
+        int ret = mbedtls_aes_crypt_ctr(&aes, input_len, &nc_off, nonce_counter, stream_block, input_to_encrypt, encrypt_output);
+        // Add return value check
+    }
+
+    int dct_decrypt(unsigned char* input_to_decrypt, int input_len, unsigned char* decrypt_output)
+    {
+        size_t nc_off1 = 0;
+        unsigned char nonce_counter1[16] = {0};
+        unsigned char stream_block1[16] = {0};
+        int ret = mbedtls_aes_crypt_ctr(&aes, input_len, &nc_off1, nonce_counter1, stream_block1, input_to_decrypt, decrypt_output);
+        // Add return value check
+    }
+
+#else
+#error "MBEDTLS_CIPHER_MODE_CTR must be enabled to perform DCT flash encryption" 
+#endif // MBEDTLS_CIPHER_MODE_CTR
+#endif // ENABLE_DCT_ENCRYPTION
 
 const char *matter_domain[19] =
 {
@@ -338,6 +371,13 @@ int32_t initPref(void)
     else
         printf("dct_init2 success\n");
 
+#if ENABLE_DCT_ENCRYPTION
+    // Initialize mbedtls aes context and set encryption key
+    mbedtls_aes_init(&aes);
+    mbedtls_aes_setkey_enc(&aes, key, 256);
+#endif
+
+exit:
     return ret;
 }
 
@@ -355,6 +395,11 @@ int32_t deinitPref(void)
         printf("dct_format2 failed with error: %d\n", ret);
     else
         printf("dct_format2 success\n");
+
+#if ENABLE_DCT_ENCRYPTION
+    // free aes context
+    mbedtls_aes_free(&aes);
+#endif
 
     return ret;
 }
@@ -479,7 +524,11 @@ bool checkExist(const char *domain, const char *key)
 
         if(found == 0)
         {
-            len = sizeof(uint32_t);
+#if ENABLE_DCT_ENCRYPTION
+            len = 68;
+#else
+            len = 64;
+#endif
             ret = dct_get_variable_new(&handle, key, (char *)str, &len);
             if(ret == DCT_SUCCESS)
             {
@@ -490,7 +539,11 @@ bool checkExist(const char *domain, const char *key)
 
         if(found == 0)
         {
-            len = sizeof(uint64_t);
+#if ENABLE_DCT_ENCRYPTION
+            len = 68;
+#else
+            len = 64;
+#endif
             ret = dct_get_variable_new(&handle, key, (char *)str, &len);
             if(ret == DCT_SUCCESS)
             {
@@ -511,7 +564,11 @@ bool checkExist(const char *domain, const char *key)
                 goto exit;
             }
 
-            len = VARIABLE_VALUE_SIZE-4;
+#if ENABLE_DCT_ENCRYPTION
+            len = 404;
+#else
+            len = 400;
+#endif
             ret = dct_get_variable_new2(&handle, key, str, &len);
             if(ret == DCT_SUCCESS)
             {
@@ -530,7 +587,11 @@ bool checkExist(const char *domain, const char *key)
             goto exit;
         }
 
-        len = VARIABLE_VALUE_SIZE-4;
+#if ENABLE_DCT_ENCRYPTION
+        len = 404;
+#else
+        len = 400;
+#endif
         ret = dct_get_variable_new2(&handle, key, str, &len);
         if(ret == DCT_SUCCESS)
         {
@@ -558,6 +619,14 @@ int32_t setPref_new(const char *domain, const char *key, uint8_t *value, size_t 
     allocatedDomain = domainAllocator(domain);
     allocatedRegion = allocateRegion(allocatedDomain);
 
+#if ENABLE_DCT_ENCRYPTION
+    uint8_t data_to_encrypt[404] = {0};
+    uint8_t encrypted_data[404] = {0};
+
+    memcpy(data_to_encrypt, &byteCount, sizeof(size_t));
+    memcpy(data_to_encrypt + sizeof(size_t), value, byteCount);
+#endif
+
     if (allocatedRegion == 1)
     {
         if (byteCount > 64) // This is a **new unknown key** that should be stored in chip-others2 inside region2
@@ -571,7 +640,12 @@ int32_t setPref_new(const char *domain, const char *key, uint8_t *value, size_t 
                 goto exit;
             }
 
+#if ENABLE_DCT_ENCRYPTION
+            dct_encrypt(data_to_encrypt, 404, encrypted_data);
+            ret = dct_set_variable_new2(&handle, key, (char *)encrypted_data, 404);
+#else
             ret = dct_set_variable_new2(&handle, key, (char *)value, (uint16_t)byteCount);
+#endif
             if (DCT_SUCCESS != ret)
                 printf("%s : dct_set_variable2(%s) failed with error: %d\n" ,__FUNCTION__, key, ret);
 
@@ -586,7 +660,13 @@ int32_t setPref_new(const char *domain, const char *key, uint8_t *value, size_t 
                 goto exit;
             }
 
+#if ENABLE_DCT_ENCRYPTION
+            printf("data_to_encrypt after addr: %p\n", data_to_encrypt);
+            dct_encrypt(data_to_encrypt, 68, encrypted_data);
+            ret = dct_set_variable_new(&handle, key, (char *)encrypted_data, 68);
+#else
             ret = dct_set_variable_new(&handle, key, (char *)value, (uint16_t)byteCount);
+#endif
             if (DCT_SUCCESS != ret)
                 printf("%s : dct_set_variable(%s) failed with error: %d\n" ,__FUNCTION__, key, ret);
 
@@ -602,7 +682,12 @@ int32_t setPref_new(const char *domain, const char *key, uint8_t *value, size_t 
             goto exit;
         }
 
+#if ENABLE_DCT_ENCRYPTION
+        dct_encrypt(data_to_encrypt, 404, encrypted_data);
+        ret = dct_set_variable_new2(&handle, key, (char *)encrypted_data, 404);
+#else
         ret = dct_set_variable_new2(&handle, key, (char *)value, (uint16_t)byteCount);
+#endif
         if (DCT_SUCCESS != ret)
             printf("%s : dct_set_variable2(%s) failed with error: %d\n" ,__FUNCTION__, key, ret);
 
@@ -620,6 +705,10 @@ int32_t getPref_bool_new(const char *domain, const char *key, uint8_t *val)
     uint16_t len = 0;
     const char *allocatedDomain = domainAllocator(domain);
     uint8_t allocatedRegion = allocateRegion(allocatedDomain);
+#if ENABLE_DCT_ENCRYPTION
+    uint8_t encrypted_data[404] = {0};
+    uint8_t decrypted_data[404] = {0};
+#endif
 
     if (allocatedRegion == 1)
     {
@@ -630,9 +719,16 @@ int32_t getPref_bool_new(const char *domain, const char *key, uint8_t *val)
             goto exit;
         }
 
+#if ENABLE_DCT_ENCRYPTION
+        len = 68;
+        memset(encrypted_data, 0, len);
+        ret = dct_get_variable_new(&handle, key, (char *)encrypted_data, &len);
+#else
         len = sizeof(uint8_t);
         ret = dct_get_variable_new(&handle, key, (char *)val, &len);
+#endif
         dct_close_module(&handle);
+
         if (DCT_SUCCESS != ret)
         {
             printf("%s : dct_get_variable(%s) failed with error: %d\n" ,__FUNCTION__, key, ret);
@@ -649,10 +745,22 @@ int32_t getPref_bool_new(const char *domain, const char *key, uint8_t *val)
                     goto exit;
                 }
 
+#if ENABLE_DCT_ENCRYPTION
+                len = 404;
+                memset(encrypted_data, 0, len);
+                ret = dct_get_variable_new2(&handle, key, (char *)encrypted_data, &len);
+#else
                 len = sizeof(uint8_t);
                 ret = dct_get_variable_new2(&handle, key, (char *)val, &len);
+#endif
                 if (DCT_SUCCESS != ret)
+                {
                     printf("%s : dct_get_variable2(%s) failed with error: %d\n" ,__FUNCTION__, key, ret);
+                    dct_close_module2(&handle);
+                    goto exit;
+                }
+                else
+                    allocatedRegion = 2; // Variable is found in region2
 
                 dct_close_module2(&handle);
             }
@@ -667,13 +775,40 @@ int32_t getPref_bool_new(const char *domain, const char *key, uint8_t *val)
             goto exit;
         }
 
+#if ENABLE_DCT_ENCRYPTION
+        len = 404;
+        memset(encrypted_data, 0, len);
+        ret = dct_get_variable_new2(&handle, key, (char *)encrypted_data, &len);
+#else
         len = sizeof(uint8_t);
         ret = dct_get_variable_new2(&handle, key, (char *)val, &len);
+#endif
         if (DCT_SUCCESS != ret)
+        {
             printf("%s : dct_get_variable2(%s) failed with error: %d\n" ,__FUNCTION__, key, ret);
+            dct_close_module2(&handle);
+            goto exit;
+        }
 
         dct_close_module2(&handle);
     }
+
+#if ENABLE_DCT_ENCRYPTION
+    if (DCT_SUCCESS == ret)
+    {
+        size_t decrypt_len;
+        if (allocatedRegion == 1)
+            decrypt_len = 68;
+        else
+            decrypt_len = 404;
+        dct_decrypt(encrypted_data, decrypt_len, decrypted_data);
+
+        size_t val_len = 0;
+        memset(val, 0, sizeof(uint8_t));
+        memcpy(&val_len, decrypted_data, sizeof(size_t));
+        memcpy(val, decrypted_data + sizeof(size_t), val_len);
+    }
+#endif
 
 exit:
     return ret;
@@ -686,6 +821,10 @@ int32_t getPref_u32_new(const char *domain, const char *key, uint32_t *val)
     uint16_t len = 0;
     const char *allocatedDomain = domainAllocator(domain);
     uint8_t allocatedRegion = allocateRegion(allocatedDomain);
+#if ENABLE_DCT_ENCRYPTION
+    uint8_t encrypted_data[404] = {0};
+    uint8_t decrypted_data[404] = {0};
+#endif
 
     if (allocatedRegion == 1)
     {
@@ -696,9 +835,16 @@ int32_t getPref_u32_new(const char *domain, const char *key, uint32_t *val)
             goto exit;
         }
 
+#if ENABLE_DCT_ENCRYPTION
+        len = 68;
+        memset(encrypted_data, 0, len);
+        ret = dct_get_variable_new(&handle, key, (char *)encrypted_data, &len);
+#else
         len = sizeof(uint32_t);
         ret = dct_get_variable_new(&handle, key, (char *)val, &len);
+#endif
         dct_close_module(&handle);
+
         if (DCT_SUCCESS != ret)
         {
             printf("%s : dct_get_variable(%s) failed with error: %d\n" ,__FUNCTION__, key, ret);
@@ -715,10 +861,22 @@ int32_t getPref_u32_new(const char *domain, const char *key, uint32_t *val)
                     goto exit;
                 }
 
+#if ENABLE_DCT_ENCRYPTION
+                len = 404;
+                memset(encrypted_data, 0, len);
+                ret = dct_get_variable_new2(&handle, key, (char *)encrypted_data, &len);
+#else
                 len = sizeof(uint32_t);
                 ret = dct_get_variable_new2(&handle, key, (char *)val, &len);
+#endif
                 if (DCT_SUCCESS != ret)
+                {
                     printf("%s : dct_get_variable2(%s) failed with error: %d\n" ,__FUNCTION__, key, ret);
+                    dct_close_module2(&handle);
+                    goto exit;
+                }
+                else
+                    allocatedRegion = 2; // Variable is found in region2
 
                 dct_close_module2(&handle);
             }
@@ -733,13 +891,40 @@ int32_t getPref_u32_new(const char *domain, const char *key, uint32_t *val)
             goto exit;
         }
 
+#if ENABLE_DCT_ENCRYPTION
+        len = 404;
+        memset(encrypted_data, 0, len);
+        ret = dct_get_variable_new2(&handle, key, (char *)encrypted_data, &len);
+#else
         len = sizeof(uint32_t);
         ret = dct_get_variable_new2(&handle, key, (char *)val, &len);
+#endif
         if (DCT_SUCCESS != ret)
+        {
             printf("%s : dct_get_variable2(%s) failed with error: %d\n" ,__FUNCTION__, key, ret);
+            dct_close_module2(&handle);
+            goto exit;
+        }
 
         dct_close_module2(&handle);
     }
+
+#if ENABLE_DCT_ENCRYPTION
+    if (DCT_SUCCESS == ret)
+    {
+        size_t decrypt_len;
+        if (allocatedRegion == 1)
+            decrypt_len = 68;
+        else
+            decrypt_len = 404;
+        dct_decrypt(encrypted_data, decrypt_len, decrypted_data);
+        size_t val_len = 0;
+        memset(val, 0, sizeof(uint32_t));
+        memcpy(&val_len, decrypted_data, sizeof(size_t));
+        memcpy(val, decrypted_data + sizeof(size_t), val_len);
+    }
+#endif
+
 exit:
     return ret;
 }
@@ -751,6 +936,10 @@ int32_t getPref_u64_new(const char *domain, const char *key, uint64_t *val)
     uint16_t len = 0;
     const char *allocatedDomain = domainAllocator(domain);
     uint8_t allocatedRegion = allocateRegion(allocatedDomain);
+#if ENABLE_DCT_ENCRYPTION
+    uint8_t encrypted_data[404] = {0};
+    uint8_t decrypted_data[404] = {0};
+#endif
 
     if (allocatedRegion == 1)
     {
@@ -761,9 +950,16 @@ int32_t getPref_u64_new(const char *domain, const char *key, uint64_t *val)
             goto exit;
         }
 
+#if ENABLE_DCT_ENCRYPTION
+        len = 68;
+        memset(encrypted_data, 0, len);
+        ret = dct_get_variable_new(&handle, key, (char *)encrypted_data, &len);
+#else
         len = sizeof(uint64_t);
         ret = dct_get_variable_new(&handle, key, (char *)val, &len);
+#endif
         dct_close_module(&handle);
+
         if (DCT_SUCCESS != ret)
         {
             printf("%s : dct_get_variable(%s) failed with error: %d\n" ,__FUNCTION__, key, ret);
@@ -780,10 +976,22 @@ int32_t getPref_u64_new(const char *domain, const char *key, uint64_t *val)
                     goto exit;
                 }
 
+#if ENABLE_DCT_ENCRYPTION
+                len = 404;
+                memset(encrypted_data, 0, len);
+                ret = dct_get_variable_new2(&handle, key, (char *)encrypted_data, &len);
+#else
                 len = sizeof(uint64_t);
                 ret = dct_get_variable_new2(&handle, key, (char *)val, &len);
+#endif
                 if (DCT_SUCCESS != ret)
+                {
                     printf("%s : dct_get_variable2(%s) failed with error: %d\n" ,__FUNCTION__, key, ret);
+                    dct_close_module2(&handle);
+                    goto exit;
+                }
+                else
+                    allocatedRegion = 2; // Variable is found in region2
 
                 dct_close_module2(&handle);
             }
@@ -798,13 +1006,40 @@ int32_t getPref_u64_new(const char *domain, const char *key, uint64_t *val)
             goto exit;
         }
 
+#if ENABLE_DCT_ENCRYPTION
+        len = 404;
+        memset(encrypted_data, 0, len);
+        ret = dct_get_variable_new2(&handle, key, (char *)encrypted_data, &len);
+#else
         len = sizeof(uint64_t);
         ret = dct_get_variable_new2(&handle, key, (char *)val, &len);
+#endif
         if (DCT_SUCCESS != ret)
+        {
             printf("%s : dct_get_variable2(%s) failed with error: %d\n" ,__FUNCTION__, key, ret);
+            dct_close_module2(&handle);
+            goto exit;
+        }
 
         dct_close_module2(&handle);
     }
+
+#if ENABLE_DCT_ENCRYPTION
+    if (DCT_SUCCESS == ret)
+    {
+        size_t decrypt_len;
+        if (allocatedRegion == 1)
+            decrypt_len = 68;
+        else
+            decrypt_len = 404;
+        dct_decrypt(encrypted_data, decrypt_len, decrypted_data);
+
+        size_t val_len = 0;
+        memset(val, 0, sizeof(uint64_t));
+        memcpy(&val_len, decrypted_data, sizeof(size_t));
+        memcpy(val, decrypted_data + sizeof(size_t), val_len);
+    }
+#endif
 
 exit:
     return ret;
@@ -817,6 +1052,10 @@ int32_t getPref_str_new(const char *domain, const char *key, char * buf, size_t 
     uint16_t _bufSize = bufSize;
     const char *allocatedDomain = domainAllocator(domain);
     uint8_t allocatedRegion = allocateRegion(allocatedDomain);
+#if ENABLE_DCT_ENCRYPTION
+    uint8_t encrypted_data[404] = {0};
+    uint8_t decrypted_data[404] = {0};
+#endif
 
     if (allocatedRegion == 1)
     {
@@ -827,12 +1066,21 @@ int32_t getPref_str_new(const char *domain, const char *key, char * buf, size_t 
             goto exit;
         }
 
+#if ENABLE_DCT_ENCRYPTION
+        _bufSize = 68;
+        memset(encrypted_data, 0, _bufSize);
+        ret = dct_get_variable_new(&handle, key, encrypted_data, &_bufSize);
+#else
         ret = dct_get_variable_new(&handle, key, buf, &_bufSize);
+#endif
         dct_close_module(&handle);
+
         if (DCT_SUCCESS != ret)
         {
             printf("%s : dct_get_variable(%s) failed with error: %d\n",__FUNCTION__, key, ret);
+#if !ENABLE_DCT_ENCRYPTION
             *outLen = _bufSize;
+#endif
 
             if (DCT_ERR_NOT_FIND == ret) // Only enter here if variable is not found in region1
             {
@@ -846,16 +1094,32 @@ int32_t getPref_str_new(const char *domain, const char *key, char * buf, size_t 
                     goto exit;
                 }
 
+#if ENABLE_DCT_ENCRYPTION
+                _bufSize = 404;
+                memset(encrypted_data, 0, _bufSize);
+                ret = dct_get_variable_new2(&handle, key, encrypted_data, &_bufSize);
+#else
                 ret = dct_get_variable_new2(&handle, key, buf, &_bufSize);
+#endif
                 if (DCT_SUCCESS != ret)
+                {
                     printf("%s : dct_get_variable2(%s) failed with error: %d\n" ,__FUNCTION__, key, ret);
+                    dct_close_module2(&handle);
+                    *outLen = bufSize;
+                    goto exit;
+                }
 
-                *outLen = bufSize;
+                allocatedRegion = 2; // Variable is found in region2
+#if !ENABLE_DCT_ENCRYPTION
+                *outLen = _bufSize;
+#endif
                 dct_close_module2(&handle);
             }
         }
+#if !ENABLE_DCT_ENCRYPTION
         else
             *outLen = _bufSize;
+#endif
     }
     else
     {
@@ -866,14 +1130,57 @@ int32_t getPref_str_new(const char *domain, const char *key, char * buf, size_t 
             goto exit;
         }
 
+#if ENABLE_DCT_ENCRYPTION
+        _bufSize = 404;
+        memset(encrypted_data, 0, _bufSize);
+        ret = dct_get_variable_new2(&handle, key, (char *)encrypted_data, &_bufSize);
+#else
         ret = dct_get_variable_new2(&handle, key, buf, &_bufSize);
+#endif
         if (DCT_SUCCESS != ret)
+        {
             printf("%s : dct_get_variable2(%s) failed with error: %d\n" ,__FUNCTION__, key, ret);
+            dct_close_module2(&handle);
+            *outLen = bufSize;
+            goto exit;
+        }
 
+#if !ENABLE_DCT_ENCRYPTION
         *outLen = _bufSize;
+#endif
 
         dct_close_module2(&handle);
     }
+
+#if ENABLE_DCT_ENCRYPTION
+    if (DCT_SUCCESS == ret)
+    {
+        size_t decrypt_len;
+        if (allocatedRegion == 1)
+            decrypt_len = 68;
+        else
+            decrypt_len = 404;
+        dct_decrypt(encrypted_data, decrypt_len, decrypted_data);
+
+        size_t val_len = 0;
+        memset(buf, 0, bufSize);
+        memcpy(&val_len, decrypted_data, sizeof(size_t));
+
+        // Buffer provided is too small, copy data up to provided buffer size only
+        if (bufSize < val_len)
+        {
+            memcpy(buf, decrypted_data + sizeof(size_t), bufSize);
+            ret = -8; // buffer too small
+            *outLen = bufSize;
+        }
+        // Copy data of length val_len as per normal
+        else
+        {
+            memcpy(buf, decrypted_data + sizeof(size_t), val_len);
+            *outLen = val_len;
+        }
+    }
+#endif
 
 exit:
     return ret;
@@ -886,6 +1193,10 @@ int32_t getPref_bin_new(const char *domain, const char *key, uint8_t * buf, size
     uint16_t _bufSize = bufSize;
     const char *allocatedDomain = domainAllocator(domain);
     uint8_t allocatedRegion = allocateRegion(allocatedDomain);
+#if ENABLE_DCT_ENCRYPTION
+    uint8_t encrypted_data[404] = {0};
+    uint8_t decrypted_data[404] = {0};
+#endif
 
     if (allocatedRegion == 1)
     {
@@ -896,12 +1207,21 @@ int32_t getPref_bin_new(const char *domain, const char *key, uint8_t * buf, size
             goto exit;
         }
 
+#if ENABLE_DCT_ENCRYPTION
+        _bufSize = 68;
+        memset(encrypted_data, 0, _bufSize);
+        ret = dct_get_variable_new(&handle, key, (char *)encrypted_data, &_bufSize);
+#else
         ret = dct_get_variable_new(&handle, key, (char *)buf, &_bufSize);
+#endif
         dct_close_module(&handle);
+
         if (DCT_SUCCESS != ret)
         {
             printf("%s : dct_get_variable(%s) failed with error: %d\n" ,__FUNCTION__, key, ret);
+#if !ENABLE_DCT_ENCRYPTION
             *outLen = _bufSize;
+#endif
 
             if (DCT_ERR_NOT_FIND == ret) // Only enter here if variable is not found in region1
             {
@@ -915,16 +1235,33 @@ int32_t getPref_bin_new(const char *domain, const char *key, uint8_t * buf, size
                     goto exit;
                 }
 
+#if ENABLE_DCT_ENCRYPTION
+                _bufSize = 404;
+                memset(encrypted_data, 0, _bufSize);
+                ret = dct_get_variable_new2(&handle, key, encrypted_data, &_bufSize);
+#else
                 ret = dct_get_variable_new2(&handle, key, buf, &_bufSize);
+#endif
                 if (DCT_SUCCESS != ret)
+                {
                     printf("%s : dct_get_variable2(%s) failed with error: %d\n" ,__FUNCTION__, key, ret);
+                    dct_close_module2(&handle);
+                    *outLen = bufSize;
+                    goto exit;
+                }
 
-                *outLen = bufSize;
+                allocatedRegion = 2; // Variable is found in region2
+#if !ENABLE_DCT_ENCRYPTION
+                *outLen = _bufSize;
+#endif
+
                 dct_close_module2(&handle);
             }
         }
+#if !ENABLE_DCT_ENCRYPTION
         else
             *outLen = _bufSize;
+#endif
     }
     else
     {
@@ -935,14 +1272,57 @@ int32_t getPref_bin_new(const char *domain, const char *key, uint8_t * buf, size
             goto exit;
         }
 
+#if ENABLE_DCT_ENCRYPTION
+        _bufSize = 404;
+        memset(encrypted_data, 0, _bufSize);
+        ret = dct_get_variable_new2(&handle, key, (char *)encrypted_data, &_bufSize);
+#else
         ret = dct_get_variable_new2(&handle, key, (char *)buf, &_bufSize);
+#endif
         if (DCT_SUCCESS != ret)
+        {
             printf("%s : dct_get_variable2(%s) failed with error: %d\n" ,__FUNCTION__, key, ret);
+            dct_close_module2(&handle);
+            *outLen = bufSize;
+            goto exit;
+        }
 
+#if !ENABLE_DCT_ENCRYPTION
         *outLen = _bufSize;
+#endif
 
         dct_close_module2(&handle);
     }
+
+#if ENABLE_DCT_ENCRYPTION
+    if (DCT_SUCCESS == ret)
+    {
+        size_t decrypt_len;
+        if (allocatedRegion == 1)
+            decrypt_len = 68;
+        else
+            decrypt_len = 404;
+        dct_decrypt(encrypted_data, decrypt_len, decrypted_data);
+
+        size_t val_len = 0;
+        memset(buf, 0, bufSize);
+        memcpy(&val_len, decrypted_data, sizeof(size_t));
+
+        // Buffer provided is too small, copy data up to provided buffer size only
+        if (bufSize < val_len)
+        {
+            memcpy(buf, decrypted_data + sizeof(size_t), bufSize);
+            ret = -8; // buffer too small
+            *outLen = bufSize;
+        }
+        // Copy data of length val_len as per normal
+        else
+        {
+            memcpy(buf, decrypted_data + sizeof(size_t), val_len);
+            *outLen = val_len;
+        }
+    }
+#endif
 
 exit:
     return ret;
