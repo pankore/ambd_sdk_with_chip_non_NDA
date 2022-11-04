@@ -743,7 +743,7 @@ bool osif_msg_peek(void *p_handle, void *p_msg, uint32_t wait_ms)
 void *osif_mem_alloc(RAM_TYPE ram_type, size_t size)
 {
     (void) ram_type;
-    return Psram_reserve_malloc(size);
+    return pvPortMalloc(size);
 }
 
 /****************************************************************************/
@@ -760,7 +760,7 @@ void *osif_mem_aligned_alloc(RAM_TYPE ram_type, size_t size, uint8_t alignment)
         alignment = portBYTE_ALIGNMENT;
     }
 
-    p = Psram_reserve_malloc(size + sizeof(void *) + alignment);
+    p = pvPortMalloc(size + sizeof(void *) + alignment);
     if (p == NULL)
     {
         return p;
@@ -782,7 +782,7 @@ void osif_mem_free(void *p_block)
     {
         return;
     }
-    Psram_reserve_free(p_block);
+    vPortFree(p_block);
 }
 
 /****************************************************************************/
@@ -797,7 +797,7 @@ void osif_mem_aligned_free(void *p_block)
     }
     memcpy(&p, (uint8_t *)p_block - sizeof(void *), sizeof(void *));
 
-    Psram_reserve_free(p);
+    vPortFree(p);
 }
 
 /****************************************************************************/
