@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.6)
 project(utilities_example)
 
 set(dir "${sdk_root}/component/common/example")
+set(matter_example_dir "${sdk_root}/component/common/application/matter/application")
 
 # Temporary setting of macros
 set(CONFIG_AUDIO_EN OFF)        # Unable to find file
@@ -94,7 +95,7 @@ list(
     #${dir}/competitive_headphones/headphone_burst.c
     #${dir}/competitive_headphones/headphone_packet_compensation.c
     #${dir}/competitive_headphones_dongle/example_competitive_headphones_dongle.c
-    ${dir}/matter_task/example_matter.c
+    ${matter_example_dir}/example_matter.c
 )
 
 if(${CONFIG_AUDIO_EN})

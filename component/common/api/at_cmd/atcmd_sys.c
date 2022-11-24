@@ -920,63 +920,6 @@ void TestBase64(const char * test)
     printf("\n");
 }
 
-extern void ChipTest(void);
-extern int32_t deinitPref(void);
-#ifdef MATTER_OTA_REQUESTOR_APP
-extern void amebaQueryImageCmdHandler();
-extern void amebaApplyUpdateCmdHandler();
-#endif
-void chipapp(void *param)
-{
-	ChipTest();
-}
-
-void fATchipapp(void *arg)
-{
-	(void) arg;
-	printf("Chip Test:\r\n");
-	xTaskCreate(chipapp, "chipapp",
-                                8192 / sizeof(StackType_t), NULL,
-                                1, NULL);
-}
-
-void fATchipapp1(void *arg)
-{
-#ifdef MATTER_OTA_REQUESTOR_APP
-	printf("Calling amebaQueryImageCmdHandler\r\n");
-	amebaQueryImageCmdHandler();
-#endif
-}
-
-void fATchipapp2(void *arg)
-{
-	(void) arg;
-#ifdef MATTER_OTA_REQUESTOR_APP
-	printf("Chip Test: amebaApplyUpdateCmdHandler\r\n");
-
-	amebaApplyUpdateCmdHandler();
-#endif
-}
-
-void fATSt(void *arg)
-{
-	/* To avoid gcc warnings */
-	( void ) arg;
-
-	printf("xPortGetTotalHeapSize = %d \n",xPortGetTotalHeapSize());
-	printf("xPortGetFreeHeapSize = %d \n",xPortGetFreeHeapSize());
-	printf("xPortGetMinimumEverFreeHeapSize = %d \n",xPortGetMinimumEverFreeHeapSize());
-
-	deinitPref();
-
-#if CONFIG_EXAMPLE_WLAN_FAST_CONNECT
-	Erase_Fastconnect_data();
-	printf("Erased Fast Connect data\r\n");
-#endif
-
-	AT_PRINTK("[ATS#]: _AT_SYSTEM_TEST_");
-}
-
 #if defined(CONFIG_PLATFORM_8711B)
 /*Function: Check if the input jtag key is matched with the jtag password derived from the SB key stored in EFUSE.
 		    If the input jtag key is correct, it will be stored in system data area of the flash.
@@ -1690,10 +1633,6 @@ log_item_t at_sys_items[] = {
 #endif
 	{"ATS@", fATSs,{NULL,NULL}},	// Debug message setting
 	{"ATS!", fATSc,{NULL,NULL}},	// Debug config setting
-	{"ATS#", fATSt,{NULL,NULL}},	// test command
-	{"ATS$", fATchipapp, {NULL, NULL}},
-	{"ATS%", fATchipapp1, {NULL, NULL}},
-	{"ATS^", fATchipapp2, {NULL, NULL}},
 	{"ATS?", fATSx,{NULL,NULL}},	// Help
 #if WIFI_LOGO_CERTIFICATION_CONFIG
 	{"ATSV", fATSV},				// Write SW version for wifi logo test

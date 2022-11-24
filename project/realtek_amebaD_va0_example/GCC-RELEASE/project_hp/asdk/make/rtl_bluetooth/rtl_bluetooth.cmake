@@ -4,6 +4,7 @@ project(rtl_bluetooth)
 
 set(dir "${sdk_root}/component/common/bluetooth/realtek")
 set(dir_sdk "${sdk_root}/component/common/bluetooth/realtek/sdk")
+set(matter_bt_dir "${sdk_root}/component/common/application/matter/common/bluetooth/bt_matter_adapter")
 
 if(${CONFIG_BT_EN})
 
@@ -132,10 +133,10 @@ list(
     # ble_scatternet
 
     # ble_matter
-    ${dir}/sdk/example/bt_matter_adapter/bt_matter_adapter_app_main.c
-    ${dir}/sdk/example/bt_matter_adapter/bt_matter_adapter_app_task.c
-    ${dir}/sdk/example/bt_matter_adapter/bt_matter_adapter_peripheral_app.c
-    ${dir}/sdk/example/bt_matter_adapter/bt_matter_adapter_service.c
-    ${dir}/sdk/example/bt_matter_adapter/bt_matter_adapter_wifi.c
+    ${matter_bt_dir}/bt_matter_adapter_app_main.c
+    ${matter_bt_dir}/bt_matter_adapter_app_task.c
+    ${matter_bt_dir}/bt_matter_adapter_peripheral_app.c
+    ${matter_bt_dir}/bt_matter_adapter_service.c
+    ${matter_bt_dir}/bt_matter_adapter_wifi.c
 )
 endif()

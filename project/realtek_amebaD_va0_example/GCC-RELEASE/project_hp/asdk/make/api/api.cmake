@@ -17,6 +17,7 @@ list(
     ${dir}/at_cmd/log_service.c
     ${dir}/at_cmd/atcmd_mp.c
     ${dir}/at_cmd/atcmd_mp_ext2.c
+    ${dir}/../application/matter/common/atcmd_matter.c
 
     # network
     ${dir}/network/src/wlan_network.c

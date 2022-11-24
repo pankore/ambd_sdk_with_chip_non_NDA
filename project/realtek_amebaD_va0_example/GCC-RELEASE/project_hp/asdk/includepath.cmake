@@ -27,6 +27,9 @@ list (
     "${sdk_root}/component/common/api/wifi"
     "${sdk_root}/component/common/api/network"
     "${sdk_root}/component/common/api/network/include"
+    "${sdk_root}/component/common/application/matter/application"
+    "${sdk_root}/component/common/application/matter/protobuf"
+    "${sdk_root}/component/common/application/matter/protobuf/nanopb"
     "${sdk_root}/component/common/audio"
     "${sdk_root}/component/common/test"
     "${sdk_root}/component/common/example"
@@ -92,7 +95,7 @@ list (
 	"${ameba_matter_root}/third_party/mbedtls/repo/include"
 	"${ameba_matter_root}/third_party/mbedtls/repo/include/mbedtls"
 	"${ameba_matter_root}/third_party/mbedtls/repo/library"
-	"${sdk_root}/component/common/network/ssl/mbedtls-matter"
+    "${sdk_root}/component/common/application/matter/mbedtls"
 
 #mbedtlc_sonfig
 	"${sdk_root}/component/common/network/ssl/mbedtls_ram_map/rom"
@@ -121,7 +124,6 @@ list (
 #BT config
 	"${sdk_root}/component/common/bluetooth/realtek/sdk/example/ble_peripheral"
 	"${sdk_root}/component/common/bluetooth/realtek/sdk/example/bt_config"
-	"${sdk_root}/component/common/bluetooth/realtek/sdk/example/bt_matter_adapter"
 
 )
 
@@ -149,7 +151,7 @@ if(CONFIG_BT_EN)
 
 		"${sdk_root}/component/common/bluetooth/realtek/sdk/example/ble_peripheral"
 		"${sdk_root}/component/common/bluetooth/realtek/sdk/example/ble_central"
-		"${sdk_root}/component/common/bluetooth/realtek/sdk/example/bt_matter_adapter"
+        "${sdk_root}/component/common/application/matter/common/bluetooth/bt_matter_adapter"
 		"${sdk_root}/component/common/bluetooth/realtek/sdk/example/ble_scatternet"
 		"${sdk_root}/component/common/bluetooth/realtek/sdk/example/bt_beacon"
 		"${sdk_root}/component/common/bluetooth/realtek/sdk/example/bt_config"
