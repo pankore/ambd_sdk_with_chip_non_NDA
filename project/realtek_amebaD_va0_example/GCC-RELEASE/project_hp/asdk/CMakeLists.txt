@@ -162,9 +162,9 @@ add_custom_command(TARGET ${app_ntz} PRE_BUILD
 
 #RENAME CODE2SRAM
 foreach(_file ${code2sram})
-	string(CONCAT _file_obj ${CMAKE_CURRENT_BINARY_DIR} "/CMakeFiles/${app_ntz}.dir" ${_file_net} ".obj")
+	string(CONCAT _file_obj ${CMAKE_CURRENT_BINARY_DIR} "/CMakeFiles/${app_ntz}.dir" ${_file} ".obj")
 	add_custom_command(TARGET ${app_ntz} PRE_LINK
-		COMMAND ${CMAKE_OBJCOPY} --rename-section .text=.image2.ram.text ${_file_obj} ${_file_obj}
+		COMMAND ${CMAKE_OBJCOPY} --prefix-section .image2.ram.text ${_file_obj} ${_file_obj}
 	)
 endforeach()
 
@@ -172,7 +172,7 @@ endforeach()
 foreach(_file_net ${code2sram_network})
 	string(CONCAT _file_obj ${CMAKE_CURRENT_BINARY_DIR} "/CMakeFiles/${app_ntz}.dir" ${_file_net} ".obj")
 	add_custom_command(TARGET ${app_ntz} PRE_LINK
-		COMMAND ${CMAKE_OBJCOPY} --rename-section .text=.image2.net.ram.text ${_file_obj} ${_file_obj}
+		COMMAND ${CMAKE_OBJCOPY} --prefix-section .image2.net.ram.text ${_file_obj} ${_file_obj}
 	)
 endforeach()
 
