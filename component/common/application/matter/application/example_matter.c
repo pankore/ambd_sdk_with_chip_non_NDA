@@ -3,6 +3,7 @@
 
 #if defined(CONFIG_EXAMPLE_MATTER) && CONFIG_EXAMPLE_MATTER
 
+void *__dso_handle = 0;
 extern void ChipTest(void);
 
 static void example_matter_task_thread(void *pvParameters)
