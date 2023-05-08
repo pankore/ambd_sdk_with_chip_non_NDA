@@ -13,6 +13,7 @@ extern "C" {
 #include "errno.h"
 #include "FreeRTOS.h"
 #include "chip_porting.h"
+#include "rtc_api.h"
 
 #define MICROSECONDS_PER_SECOND    ( 1000000LL )                                   /**< Microseconds per second. */
 #define NANOSECONDS_PER_SECOND     ( 1000000000LL )                                /**< Nanoseconds per second. */
@@ -179,6 +180,21 @@ int _vTaskDelay( const TickType_t xTicksToDelay )
     vTaskDelay(xTicksToDelay);
 
     return 0;
+}
+
+void matter_rtc_init()
+{
+    rtc_init();
+}
+
+long long matter_rtc_read()
+{
+    return rtc_read();
+}
+
+void matter_rtc_write(long long time)
+{
+    rtc_write(time);
 }
 
 #ifdef __cplusplus
