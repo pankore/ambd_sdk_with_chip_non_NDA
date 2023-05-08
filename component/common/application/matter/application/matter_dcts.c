@@ -348,7 +348,7 @@ s32 getPref_bool_new(const char *domain, const char *key, u8 *val)
         }
         ret = dct_get_variable_new(&handle, key, (char *)val, &len);
         dct_close_module(&handle);
-        if (ret != DCT_SUCCESS)
+        if (ret == DCT_SUCCESS)
         {
             return ret;
         }
@@ -366,7 +366,7 @@ s32 getPref_bool_new(const char *domain, const char *key, u8 *val)
         }
         ret = dct_get_variable_new2(&handle, key, (char *)val, &len);
         dct_close_module2(&handle);
-        if (ret != DCT_SUCCESS)
+        if (ret == DCT_SUCCESS)
         {
             return ret;
         }
@@ -395,7 +395,7 @@ s32 getPref_u32_new(const char *domain, const char *key, u32 *val)
         }
         ret = dct_get_variable_new(&handle, key, (char *)val, &len);
         dct_close_module(&handle);
-        if (ret != DCT_SUCCESS)
+        if (ret == DCT_SUCCESS)
         {
             return ret;
         }
@@ -413,7 +413,7 @@ s32 getPref_u32_new(const char *domain, const char *key, u32 *val)
         }
         ret = dct_get_variable_new2(&handle, key, (char *)val, &len);
         dct_close_module2(&handle);
-        if (ret != DCT_SUCCESS)
+        if (ret == DCT_SUCCESS)
         {
             return ret;
         }
@@ -442,7 +442,7 @@ s32 getPref_u64_new(const char *domain, const char *key, u64 *val)
         }
         ret = dct_get_variable_new(&handle, key, (char *)val, &len);
         dct_close_module(&handle);
-        if (ret != DCT_SUCCESS)
+        if (ret == DCT_SUCCESS)
         {
             return ret;
         }
@@ -460,7 +460,7 @@ s32 getPref_u64_new(const char *domain, const char *key, u64 *val)
         }
         ret = dct_get_variable_new2(&handle, key, (char *)val, &len);
         dct_close_module2(&handle);
-        if (ret != DCT_SUCCESS)
+        if (ret == DCT_SUCCESS)
         {
             return ret;
         }
@@ -488,7 +488,7 @@ s32 getPref_str_new(const char *domain, const char *key, char * buf, size_t bufS
         }
         ret = dct_get_variable_new(&handle, key, buf, &bufSize);
         dct_close_module(&handle);
-        if (ret != DCT_SUCCESS)
+        if (ret == DCT_SUCCESS)
         {
             *outLen = bufSize;
             return ret;
@@ -507,7 +507,7 @@ s32 getPref_str_new(const char *domain, const char *key, char * buf, size_t bufS
         }
         ret = dct_get_variable_new2(&handle, key, buf, &bufSize);
         dct_close_module2(&handle);
-        if (ret != DCT_SUCCESS)
+        if (ret == DCT_SUCCESS)
         {
             *outLen = bufSize;
             return ret;
@@ -536,7 +536,7 @@ s32 getPref_bin_new(const char *domain, const char *key, u8 * buf, size_t bufSiz
         }
         ret = dct_get_variable_new(&handle, key, (char *)buf, &bufSize);
         dct_close_module(&handle);
-        if (ret != DCT_SUCCESS)
+        if (ret == DCT_SUCCESS)
         {
             *outLen = bufSize;
             return ret;
@@ -555,7 +555,7 @@ s32 getPref_bin_new(const char *domain, const char *key, u8 * buf, size_t bufSiz
         }
         ret = dct_get_variable_new2(&handle, key, (char *)buf, &bufSize);
         dct_close_module2(&handle);
-        if (ret != DCT_SUCCESS)
+        if (ret == DCT_SUCCESS)
         {
             *outLen = bufSize;
             return ret;
