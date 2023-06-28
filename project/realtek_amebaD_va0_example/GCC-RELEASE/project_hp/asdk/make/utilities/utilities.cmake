@@ -16,6 +16,7 @@ list(
 	${dir}/xml.c
 	${dir}/cJSON.c
     ${matter_app_dir}/matter_dcts.c
+    ${matter_app_dir}/matter_ota.c
     ${matter_app_dir}/matter_timers.c
     ${matter_app_dir}/matter_utils.c
     ${matter_app_dir}/matter_wifis.c
