@@ -68,7 +68,7 @@ list(
 
 list(
 	APPEND GLOBAL_CPP_FLAGS
-	-std=c++14
+	-std=c++17
 	-fno-rtti
 )
 
