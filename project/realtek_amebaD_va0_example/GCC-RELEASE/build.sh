@@ -67,6 +67,12 @@ echo "********** You are building $APP_SELECT **********"
 if [ $APP_SELECT == "all-clusters-app" ]; then
     export MATTER_EXAMPLE_PATH=${AMEBA_MATTER}/examples/all-clusters-app/ameba
     export MATTER_ENABLE_OTA_REQUESTOR=1
+elif [ $APP_SELECT == "all-clusters-minimal-app" ]; then
+    export MATTER_EXAMPLE_PATH=${AMEBA_MATTER}/examples/all-clusters-minimal-app/ameba
+    export MATTER_ENABLE_OTA_REQUESTOR=1
+elif [ $APP_SELECT == "air-purifier-app" ]; then
+    export MATTER_EXAMPLE_PATH=${AMEBA_MATTER}/examples/air-purifier-app/ameba
+    export MATTER_ENABLE_OTA_REQUESTOR=1
 elif [ $APP_SELECT == "lighting-app" ]; then
     export MATTER_EXAMPLE_PATH=${AMEBA_MATTER}/examples/lighting-app/ameba
     export MATTER_ENABLE_OTA_REQUESTOR=1

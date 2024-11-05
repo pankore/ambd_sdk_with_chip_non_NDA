@@ -109,6 +109,7 @@ list(
 	DM_ODM_SUPPORT_TYPE=32
 	MBEDTLS_CONFIG_FILE=<mbedtls_config.h>
 	LWIP_IPV6_ROUTE_TABLE_SUPPORT=1
+	CONFIG_ENABLE_AMEBA_SNTP=1
 )
 
 target_compile_definitions(
