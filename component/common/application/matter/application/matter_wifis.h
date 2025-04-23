@@ -64,7 +64,7 @@ void matter_lwip_dhcp6(void);
 void matter_lwip_releaseip(void);
 int matter_wifi_get_ap_bssid(unsigned char*);
 int matter_wifi_get_network_mode(rtw_network_mode_t *pmode);
-int matter_wifi_get_security_type(uint8_t wlan_idx, uint16_t *alg, uint8_t *key_idx, uint8_t *passphrase);
+int matter_wifi_get_security_type(uint8_t wlan_idx, uint32_t *wifi_security);
 int matter_wifi_get_wifi_channel_number(uint8_t wlan_idx, uint8_t *ch);
 int matter_wifi_get_rssi(int *prssi);
 int matter_wifi_get_mac_address(char *mac);
