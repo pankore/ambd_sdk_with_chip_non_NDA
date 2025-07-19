@@ -15,6 +15,7 @@ list(
 	${dir}/http_client.c
 	${dir}/xml.c
 	${dir}/cJSON.c
+    ${matter_app_dir}/matter_data_providers.c
     ${matter_app_dir}/matter_dcts.c
     ${matter_app_dir}/matter_ota.c
     ${matter_app_dir}/matter_timers.c

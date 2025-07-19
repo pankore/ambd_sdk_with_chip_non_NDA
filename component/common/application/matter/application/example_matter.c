@@ -6,7 +6,9 @@
 #if defined(CONFIG_EXAMPLE_MATTER) && CONFIG_EXAMPLE_MATTER
 
 void *__dso_handle = 0;
+
 extern void ChipTest(void);
+extern void matter_ameba_device_provider_init(void);
 
 static void example_matter_task_thread(void *pvParameters)
 {
@@ -15,8 +17,10 @@ static void example_matter_task_thread(void *pvParameters)
     }
 
     matter_timer_init();
+
     ChipTest();
 
+    matter_ameba_device_provider_init();
     vTaskDelete(NULL);
     return;
 }
