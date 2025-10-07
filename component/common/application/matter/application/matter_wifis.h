@@ -31,26 +31,43 @@ extern int CHIP_SetWiFiConfig(rtw_wifi_setting_t *config);
 extern int CHIP_GetWiFiConfig(rtw_wifi_setting_t *config);
 extern rtw_mode_t wifi_mode;
 
+/******************************************************
+ *               WiFi Structure
+ ******************************************************/
+#if defined(CONFIG_AUTO_RECONNECT) && CONFIG_AUTO_RECONNECT
+struct matter_wifi_autoreconnect_param {
+    rtw_security_t security_type;
+    char *ssid;
+    int ssid_len;
+    char *password;
+    int password_len;
+    int key_id;
+};
+#endif /* CONFIG_AUTO_RECONNECT */
+
+/******************************************************
+ *               WiFi Security
+ ******************************************************/
+
+#define MATTER_WIFI_VERSION_11B       0x01
+#define MATTER_WIFI_VERSION_11G       0x02
+#define MATTER_WIFI_VERSION_11A       0x04
+#define MATTER_WIFI_VERSION_11N       0x18  // 0x8: 2.4G, 0x10: 5Gs
+#define MATTER_WIFI_VERSION_11AC      0x40
+#define MATTER_WIFI_VERSION_11AX      0x80
+#define MATTER_WIFI_VERSION_11AH      0x100
+
 extern u32 apNum;
 typedef int (*chip_connmgr_callback)(void *object);
 void chip_connmgr_set_callback_func(chip_connmgr_callback p, void *data);
-void matter_scan_networks(void);
-void matter_scan_networks_with_ssid(const unsigned char *ssid, size_t length);
+void matter_wifi_scan_networks(void);
+void matter_wifi_scan_networks_with_ssid(const unsigned char *ssid, size_t length);
 rtw_scan_result_t *matter_get_scan_results(void);
-void matter_wifi_autoreconnect_hdl(
-    rtw_security_t security_type,
-    char *ssid, int ssid_len,
-    char *password, int password_len,
-    int key_id);
-void matter_set_autoreconnect(u8 mode);
-int matter_wifi_connect(
-    char              *ssid,
-    rtw_security_t    security_type,
-    char              *password,
-    int               ssid_len,
-    int               password_len,
-    int               key_id,
-    void              *semaphore);
+void matter_wifi_autoreconnect_hdl(rtw_security_t security_type, char *ssid, int ssid_len,
+                                   char *password, int password_len, int key_id);
+void matter_wifi_set_autoreconnect(u8 mode);
+int matter_wifi_connect(char *ssid, rtw_security_t security_type, char *password,
+                        int ssid_len, int password_len, int key_id, void *semaphore);
 int matter_get_sta_wifi_info(rtw_wifi_setting_t *pSetting);
 int matter_wifi_disconnect(void);
 int matter_wifi_on(rtw_mode_t mode);
@@ -64,10 +81,12 @@ void matter_lwip_dhcp(void);
 void matter_lwip_dhcp6(void);
 void matter_lwip_releaseip(void);
 int matter_wifi_get_ap_bssid(unsigned char*);
-int matter_wifi_get_network_mode(rtw_network_mode_t *pmode);
-int matter_wifi_get_security_type(uint8_t wlan_idx, uint32_t *wifi_security);
-int matter_wifi_get_wifi_channel_number(uint8_t wlan_idx, uint8_t *ch);
-int matter_wifi_get_rssi(int *prssi);
+int matter_wifi_sta_get_network_mode(rtw_network_mode_t *pmode);
+int matter_wifi_sta_get_security_type(uint32_t *wifi_security);
+int matter_wifi_sta_get_channel_number(uint8_t *ch);
+int matter_wifi_sta_get_rssi(int *prssi);
+int matter_wifi_sta_get_ap_bssid(unsigned char *bssid);
+int matter_wifi_sta_get_wifi_version(uint8_t *mode);
 int matter_wifi_get_mac_address(char *mac);
 int matter_wifi_get_last_error(void);
 #if LWIP_VERSION_MAJOR > 2 || LWIP_VERSION_MINOR > 0

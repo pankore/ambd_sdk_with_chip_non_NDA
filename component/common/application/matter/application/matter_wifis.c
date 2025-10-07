@@ -20,15 +20,6 @@ static rtw_scan_result_t matter_userdata[65] = {0};
 static char *matter_ssid;
 void* matter_param_indicator;
 struct task_struct matter_wifi_autoreconnect_task;
-struct matter_wifi_autoreconnect_param {
-       rtw_security_t security_type;
-       char *ssid;
-       int ssid_len;
-       char *password;
-       int password_len;
-       int key_id;
-};
-
 unsigned int wifi_event[] =
 {
     WIFI_EVENT_CONNECT,
@@ -144,7 +135,7 @@ static rtw_result_t matter_scan_with_ssid_result_handler( rtw_scan_handler_resul
     return RTW_SUCCESS;
 }
 
-void matter_scan_networks(void)
+void matter_wifi_scan_networks(void)
 {
     volatile int ret = RTW_SUCCESS;
     apNum = 0; // reset counter at the start of scan
@@ -154,7 +145,7 @@ void matter_scan_networks(void)
     }
 }
 
-void matter_scan_networks_with_ssid(const unsigned char *ssid, size_t length)
+void matter_wifi_scan_networks_with_ssid(const unsigned char *ssid, size_t length)
 {
     volatile int ret = RTW_SUCCESS;
     apNum = 0; // reset counter at the start of scan
@@ -273,10 +264,8 @@ static void matter_wifi_autoreconnect_thread(void *param)
     rtw_delete_task(&matter_wifi_autoreconnect_task);
 }
 
-void matter_wifi_autoreconnect_hdl(rtw_security_t security_type,
-                            char *ssid, int ssid_len,
-                            char *password, int password_len,
-                            int key_id)
+void matter_wifi_autoreconnect_hdl(rtw_security_t security_type, char *ssid, int ssid_len,
+                                   char *password, int password_len, int key_id)
 {
     static struct matter_wifi_autoreconnect_param param;
     matter_param_indicator = &param;
@@ -308,14 +297,8 @@ void matter_wifi_autoreconnect_hdl(rtw_security_t security_type,
 
 }
 
-int matter_wifi_connect(
-    char              *ssid,
-    rtw_security_t    security_type,
-    char              *password,
-    int               ssid_len,
-    int               password_len,
-    int               key_id,
-    void              *semaphore)
+int matter_wifi_connect(char *ssid, rtw_security_t security_type, char *password,
+                        int ssid_len, int password_len, int key_id, void *semaphore)
 {
     u8 connect_channel;
     int security_retry_count = 0;
@@ -346,7 +329,7 @@ int matter_wifi_connect(
     }
 
     matter_wifi_trigger = 1;
-    matter_set_autoreconnect(1);
+    matter_wifi_set_autoreconnect(1);
     wifi_connect(ssid, security_type, password, strlen(ssid), strlen(password), key_id, NULL);
 
     return RTW_SUCCESS;
@@ -409,7 +392,7 @@ int matter_wifi_is_station_mode(void)
 void matter_lwip_dhcp()
 {
     netif_set_link_up(&xnetif[0]);
-    matter_set_autoreconnect(0);
+    matter_wifi_set_autoreconnect(0);
 
     LwIP_DHCP(0, DHCP_START);
 }
@@ -429,57 +412,33 @@ int matter_wifi_get_ap_bssid(unsigned char *bssid)
     return wifi_get_ap_bssid(bssid);
 }
 
-int matter_wifi_get_network_mode(rtw_network_mode_t *pmode)
+int matter_wifi_sta_get_network_mode(rtw_network_mode_t *pmode)
 {
     return wifi_get_network_mode(pmode);
 }
 
-int matter_wifi_get_security_type(uint8_t wlan_idx, uint32_t *wifi_security)
+int matter_wifi_sta_get_security_type(uint32_t *wifi_security)
 {
     int ret = RTW_ERROR;
-    const char *iface_name = NULL;
     rtw_wifi_setting_t setting;
 
-    if (wlan_idx == WLAN0_IDX) {
-        iface_name = WLAN0_NAME;
-    } else if (wlan_idx == WLAN1_IDX) {
-        iface_name = WLAN1_NAME;
-    } else {
-        return ret;
-    }
-
-    ret = wifi_get_setting(iface_name, &setting);
+    ret = wifi_get_setting(WLAN0_NAME, &setting);
     if (ret == RTW_SUCCESS) {
         *wifi_security = setting.security_type;
     }
     return ret;
 }
 
-int matter_wifi_get_wifi_channel_number(uint8_t wlan_idx, uint8_t *ch)
+int matter_wifi_sta_get_channel_number(uint8_t *ch)
 {
-    switch(wlan_idx)
+    if (wext_get_channel(WLAN0_NAME, ch) < 0)
     {
-        case(WLAN0_IDX):
-        {
-            if (wext_get_channel(WLAN0_NAME, ch) < 0)
-            {
-                return RTW_ERROR;
-            }
-            break;
-        }
-        case(WLAN1_IDX):
-        {
-            if (wext_get_channel(WLAN1_NAME, ch) < 0)
-            {
-                return RTW_ERROR;
-            }
-            break;
-        }
+        return RTW_ERROR;
     }
     return RTW_SUCCESS;
 }
 
-int matter_wifi_get_rssi(int *prssi)
+int matter_wifi_sta_get_rssi(int *prssi)
 {
     return wifi_get_rssi(prssi);
 }
@@ -494,9 +453,33 @@ int matter_wifi_get_last_error()
     return wifi_get_last_error();
 }
 
-void matter_set_autoreconnect(u8 mode)
+void matter_wifi_set_autoreconnect(u8 mode)
 {
     wifi_set_autoreconnect(mode);
+}
+
+int matter_wifi_sta_get_ap_bssid(unsigned char *bssid)
+{
+    return wifi_get_ap_bssid(bssid);
+}
+
+int matter_wifi_sta_get_wifi_version(uint8_t *mode)
+{
+    int ret = RTW_ERROR;
+    rtw_network_mode_t network_mode = 0;
+
+    ret = wifi_get_network_mode(&network_mode);
+
+    if (ret == RTW_SUCCESS)
+    {
+        *mode = (uint8_t) network_mode;
+    }
+    else
+    {
+        *mode = (uint8_t) RTW_NETWORK_BGN;
+    }
+
+    return ret;
 }
 
 #if LWIP_VERSION_MAJOR > 2 || LWIP_VERSION_MINOR > 0
