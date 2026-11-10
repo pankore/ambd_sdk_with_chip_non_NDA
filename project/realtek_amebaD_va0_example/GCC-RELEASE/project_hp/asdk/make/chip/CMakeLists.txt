@@ -22,7 +22,7 @@ list(
     -DDM_ODM_SUPPORT_TYPE=32
 
     -DCHIP_DEVICE_LAYER_TARGET=Ameba
-    -DMBEDTLS_CONFIG_FILE=\"mbedtls_config.h\"
+    -DMBEDTLS_CONFIG_FILE=\"matter_mbedtls_config.h\"
 
     -DLWIP_IPV6_ND=1
     -DLWIP_IPV6_SCOPES=0

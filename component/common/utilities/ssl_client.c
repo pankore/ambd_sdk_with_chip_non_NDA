@@ -248,12 +248,21 @@ void cmd_ssl_client(int argc, char **argv)
 
 #elif CONFIG_USE_MBEDTLS /* CONFIG_USE_POLARSSL */
 
+#if defined(MBEDTLS_VERSION_NUMBER) && (MBEDTLS_VERSION_NUMBER>=0x03010000)
+#include "mbedtls/build_info.h"
+#include "psa/crypto_types.h"
+#include "psa/crypto_values.h"
+#include "mbedtls/x509.h"
+#define MBEDTLS_CERTS_C
+#else
 #include "mbedtls/config.h"
+#endif
 #include "mbedtls/platform.h"
 #include "mbedtls/net_sockets.h"
 #include "mbedtls/ssl.h"
 #include "mbedtls/error.h"
 #include "mbedtls/debug.h"
+#include "mbedtls/version.h"
 
 #if defined(configENABLE_TRUSTZONE) && (configENABLE_TRUSTZONE == 1) && defined(CONFIG_SSL_CLIENT_PRIVATE_IN_TZ) && (CONFIG_SSL_CLIENT_PRIVATE_IN_TZ == 1)
 #include "device_lock.h"

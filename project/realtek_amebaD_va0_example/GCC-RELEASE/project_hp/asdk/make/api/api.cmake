@@ -33,7 +33,7 @@ list(
     ${dir}/wifi/rtw_wpa_supplicant/wpa_supplicant/wifi_eap_config.c
     ${dir}/wifi/rtw_wpa_supplicant/wpa_supplicant/wifi_p2p_config.c
     ${dir}/wifi/rtw_wpa_supplicant/wpa_supplicant/wifi_wps_config.c
-    ${dir}/wifi/rtw_wpa_supplicant/src/crypto/tls_polarssl.c
+    #${dir}/wifi/rtw_wpa_supplicant/src/crypto/tls_polarssl.c
 )
 
 if(${CONFIG_BT_EN})

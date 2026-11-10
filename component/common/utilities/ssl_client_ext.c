@@ -186,9 +186,13 @@ int ssl_client_ext_setup(ssl_context *ssl)
 
 #elif CONFIG_USE_MBEDTLS /* CONFIG_USE_POLARSSL */
 
-#include "mbedtls/config.h"
 #include "mbedtls/platform.h"
 #include "mbedtls/ssl.h"
+#if defined(MBEDTLS_VERSION_NUMBER) && (MBEDTLS_VERSION_NUMBER>=0x03010000)
+#include "mbedtls/build_info.h"
+#else
+#include "mbedtls/config.h"
+#endif
 
 //#define SSL_VERIFY_CLIENT
 //#define SSL_VERIFY_SERVER

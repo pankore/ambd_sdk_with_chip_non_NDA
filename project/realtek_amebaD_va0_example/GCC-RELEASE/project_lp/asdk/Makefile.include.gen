@@ -256,7 +256,7 @@ GLOBAL_CFLAGS += -Wextra
 #GLOBAL_CFLAGS += -Wconversion
 GLOBAL_CFLAGS += $(IFLAGS)
 GLOBAL_CFLAGS += -DCONFIG_PLATFORM_8721D
-GLOBAL_CFLAGS += -DMBEDTLS_CONFIG_FILE=\"mbedtls_config.h\"
+GLOBAL_CFLAGS += -DMBEDTLS_CONFIG_FILE=\"matter_mbedtls_config.h\"
 
 #*****************************************************************************#
 #                           ARM LD FLAGS

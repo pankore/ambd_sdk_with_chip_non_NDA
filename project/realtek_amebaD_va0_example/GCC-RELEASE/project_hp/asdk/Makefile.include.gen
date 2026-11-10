@@ -389,7 +389,7 @@ CPPFLAGS += -std=gnu++11
 CPPFLAGS += -std=c++14
 CPPFLAGS += -fno-rtti
 
-GLOBAL_CFLAGS += -DMBEDTLS_CONFIG_FILE=\"mbedtls_config.h\"
+GLOBAL_CFLAGS += -DMBEDTLS_CONFIG_FILE=\"matter_mbedtls_config.h\"
 GLOBAL_CFLAGS += -DLWIP_IPV6_ROUTE_TABLE_SUPPORT=1
 
 GLOBAL_CFLAGS += -Wno-sign-compare

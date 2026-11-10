@@ -956,6 +956,7 @@ uint64_t	rtw_modular64(uint64_t x, uint64_t y);
  * @return	  0
 */
 int	rtw_get_random_bytes(void* dst, uint32_t size);
+int rtw_get_random_bytes_f_rng( void *p_rng, unsigned char *output, size_t output_size );
 
 /**
  * @brief  This function gets the available heap size.

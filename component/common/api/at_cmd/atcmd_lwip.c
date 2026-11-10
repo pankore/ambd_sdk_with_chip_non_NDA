@@ -3256,7 +3256,12 @@ static void server_start(void *param)
 			goto err_exit;
 		}
 		srv_key = (atcmd_ssl_server_key[ServerNodeUsed->con_id])?atcmd_ssl_server_key[ServerNodeUsed->con_id]:(char *)mbedtls_test_srv_key;
-		if((ret = mbedtls_pk_parse_key(server_pk, srv_key, strlen(srv_key)+1, NULL, 0)) != 0) {
+#if defined(MBEDTLS_VERSION_NUMBER) && (MBEDTLS_VERSION_NUMBER>=0x03010000)
+		if((ret = mbedtls_pk_parse_key(server_pk, srv_key, strlen(srv_key)+1, NULL, 0, rtw_get_random_bytes_f_rng, (void*)1 )) != 0)
+#else
+		if((ret = mbedtls_pk_parse_key(server_pk, srv_key, strlen(srv_key)+1, NULL, 0)) != 0)
+#endif
+		{
 			AT_DBG_MSG(AT_FLAG_LWIP, AT_DBG_ERROR,"ERROR: pk_parse_key server_pk %d\n", ret);
 			error_no = 20;
 			goto err_exit;

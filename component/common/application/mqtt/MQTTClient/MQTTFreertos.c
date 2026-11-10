@@ -779,7 +779,12 @@ int NetworkConnect(Network* n, char* addr, int port)
 				goto err;
 			}
 #else
-			if ( mbedtls_pk_parse_key(client_rsa, (const unsigned char *)n->private_key, strlen(n->private_key)+1, NULL, 0) != 0 ) {
+#if defined(MBEDTLS_VERSION_NUMBER) && (MBEDTLS_VERSION_NUMBER>=0x03010000)
+			if ( mbedtls_pk_parse_key(client_rsa, (const unsigned char *)n->private_key, strlen(n->private_key)+1, NULL, 0, rtw_get_random_bytes_f_rng, (void*)1 ) != 0 )
+#else
+			if ( mbedtls_pk_parse_key(client_rsa, (const unsigned char *)n->private_key, strlen(n->private_key)+1, NULL, 0) != 0 )
+#endif
+			{
 				mqtt_printf(MQTT_DEBUG, "parse client_rsa failed!");
 				goto err;
 			}
